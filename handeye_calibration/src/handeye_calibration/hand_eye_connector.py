@@ -137,12 +137,14 @@ class HandEyeConnector(object):
         return camera_to_base
 
     def _edit_menu(self):
-        prompt_str = 'Press a number and ENTER to delete the respective sample, or ENTER to continue:\n'
-        for i in range(len(self.samples)):
-            prompt_str += str(i + 1) + ' ' + str(self.samples[i]) + '\n'
-        i = raw_input(prompt_str)
-        if i.isdigit():
-            del self.samples[i]
+        sample_to_delete=None
+        while sample_to_delete != '':
+            prompt_str = 'Press a number and ENTER to delete the respective sample, or ENTER to continue:\n'
+            for i in range(len(self.samples)):
+                prompt_str += str(i + 1) + ' ' + str(self.samples[i]) + '\n'
+            sample_to_delete = raw_input(prompt_str)
+            if sample_to_delete.isdigit():
+                del self.samples[int(sample_to_delete)-1]
 
     def _save_menu(self):
         i = raw_input('Press c+ENTER to compute the calibration or ENTER to continue\n')
