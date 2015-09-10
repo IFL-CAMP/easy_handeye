@@ -34,7 +34,7 @@ rospy.loginfo('publishing transformation ' + orig + ' -> ' + dest + ':\n' + str(
 
 broad = TransformBroadcaster()
 
-rate = rospy.Rate(10)
+rate = rospy.Rate(50)
 
 while not rospy.is_shutdown():
     broad.sendTransform(translation, rotation, rospy.Time.now(), dest, orig)  #  FIXME: looks like inverted
