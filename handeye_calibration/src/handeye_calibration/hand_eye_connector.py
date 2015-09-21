@@ -132,7 +132,8 @@ class HandEyeConnector(object):
             rospy.set_param(prefix + '_qz', float(result.effector_camera.rotation.z))
             rospy.set_param(prefix + '_qw', float(result.effector_camera.rotation.w))
 
-        rospy.loginfo("Result:\n" + str(camera_to_base))
+        rospy.loginfo("Camera to base:\n" + str(camera_to_base))
+        rospy.loginfo("Base to camera:\n" + str(result.effector_camera))
 
         return camera_to_base
 
