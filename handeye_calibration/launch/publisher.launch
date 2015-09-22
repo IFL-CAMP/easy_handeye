@@ -7,6 +7,8 @@
     <arg unless="$(arg eye_on_hand)" name="base_link_frame" default="base_link" />
     <arg name="optical_origin_frame" default="optical_origin" />
     
+    <arg name="inverse" default="false" />
+    
     <arg name="load_handeye" default="true" />
 
     <include if="$(arg load_handeye)" file="$(find handeye_calibration)/launch/load.launch">
@@ -18,6 +20,7 @@
         <param unless="$(arg eye_on_hand)" name="base_link_frame" value="$(arg base_link_frame)" />
         <param if="$(arg eye_on_hand)" name="tool_frame" value="$(arg tool_frame)" />
         <param name="optical_origin_frame" value="$(arg optical_origin_frame)" />
+        <param name="inverse" value="$(arg inverse)" />
         <node name="$(anon handeye_publisher)" pkg="handeye_calibration" type="publisher.py" output="screen"/>
     </group>
 </launch>
