@@ -1,4 +1,5 @@
 import rospy
+import std_msgs
 import tf
 from tf import transformations as tfs
 
@@ -38,11 +39,15 @@ class HandEyeConnector(object):
         self.hand_world_samples = TransformArray()
         self.camera_marker_samples = TransformArray()
 
-        # automatic mode
-        self.first_stable_time = None
-        self.first_stable_sample = None
-        self.auto_samples = []
-
+        # external input guidance
+        def add_point_callback(msg):
+            step()
+        self.add_point_listener = rospy.Subscriber('/handeyecalibration/trigger/add_point', std_msgs.msg.Bool, add_point_callback)
+        def remove_last_point_callback(msg):
+            if len(self.samples) > 0:
+                del self.samples[-1]
+        self.remove_last_point_listener = rospy.Subscriber('/handeyecalibration/trigger/remove_last_point', std_msgs.msg.Bool, remove_last_point_callback)
+        
         # calibration service
         rospy.wait_for_service('compute_effector_camera_quick')
         self.calibrate = rospy.ServiceProxy(
@@ -160,7 +165,10 @@ class HandEyeConnector(object):
         self._edit_menu()
         self._save_menu()
 
-    # TODO: compute new calibration if enough samples, output result, ask for editing list of samples or save / output
+    def step():
+        transforms = self._get_transforms()
+        self.process_sample(transforms)
+                
     def process_sample(self, msg):
 
         rospy.loginfo("Processing sample")
@@ -212,11 +220,10 @@ class HandEyeConnector(object):
             try:
                 raw_input('Hit a button to get a sample\n')
                 try:
-                    transforms = self._get_transforms()
+                    step()
                 except tf.Exception as ex:
                     rospy.logwarn(str(ex))
                     continue
-                self.process_sample(transforms)
 
             except KeyboardInterrupt:
                 break
