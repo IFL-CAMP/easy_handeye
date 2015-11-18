@@ -2,6 +2,6 @@
     <arg name="namespace" default="handeye_calibration" doc="The namespace containing the parameters to be saved" />
     <arg name="filename" default="$(arg namespace)" />
 
-    <node name="mkdir_calibration" pkg="moveit_object_follower" type="mkdir_calibration.sh" />
+    <node name="mkdir_calibration" pkg="handeye_calibration" type="mkdir_calibration.sh" />
     <rosparam command="dump" ns="$(arg namespace)" file="$(env HOME)/.ros/handeye_calibration/$(arg filename).yaml" />
 </launch>
