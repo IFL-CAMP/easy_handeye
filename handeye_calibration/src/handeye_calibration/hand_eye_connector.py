@@ -41,11 +41,13 @@ class HandEyeConnector(object):
 
         # external input guidance
         def add_point_callback(msg):
-            step()
+            if msg.data == True:
+                self.step()
         self.add_point_listener = rospy.Subscriber('/handeyecalibration/trigger/add_point', std_msgs.msg.Bool, add_point_callback)
         def remove_last_point_callback(msg):
-            if len(self.samples) > 0:
-                del self.samples[-1]
+            if msg.data == True:
+                if len(self.samples) > 0:
+                    del self.samples[-1]
         self.remove_last_point_listener = rospy.Subscriber('/handeyecalibration/trigger/remove_last_point', std_msgs.msg.Bool, remove_last_point_callback)
         
         # calibration service
@@ -165,9 +167,11 @@ class HandEyeConnector(object):
         self._edit_menu()
         self._save_menu()
 
-    def step():
+    def step(self):
+        rospy.loginfo("Getting transforms")
         transforms = self._get_transforms()
-        self.process_sample(transforms)
+        rospy.loginfo("Got transforms")
+        self.samples.append(transforms)
                 
     def process_sample(self, msg):
 
@@ -217,16 +221,17 @@ class HandEyeConnector(object):
         rospy.loginfo('Waiting for transforms between frames')
         self._wait_for_tf_init()
         while not rospy.is_shutdown():
-            try:
-                raw_input('Hit a button to get a sample\n')
-                try:
-                    step()
-                except tf.Exception as ex:
-                    rospy.logwarn(str(ex))
-                    continue
+            #try:
+                #raw_input('Hit a button to get a sample\n')
+                #try:
+                    #self.step()
+                #except tf.Exception as ex:
+                    #rospy.logwarn(str(ex))
+                    #continue
 
-            except KeyboardInterrupt:
-                break
+            #except KeyboardInterrupt:
+                #break
+             self._save_menu()
 
                 # def _reset_auto_samples(self):
                 # self.auto_samples = []
