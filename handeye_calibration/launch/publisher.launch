@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
     <arg name="eye_on_hand" default="false" doc="eye-on-hand instead of eye_on_base" />
     <arg unless="$(arg eye_on_hand)" name="namespace" default="eye_on_base" />

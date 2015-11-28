@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
     <arg name="namespace" default="handeye_calibration" doc="The namespace containing the parameters to be saved" />
     <arg name="filename" default="$(arg namespace)" />

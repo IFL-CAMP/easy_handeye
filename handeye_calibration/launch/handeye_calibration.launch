@@ -1,3 +1,4 @@
+<?xml version="1.0" ?>
 <launch>
     <!-- TODO bring over rviz from ur5_rviz.launch; create launch file with just static_transform_publisher to be killed after calibration -->
     <arg name="eye_on_hand" default="false" doc="eye-on-hand instead of eye_on_base" />
