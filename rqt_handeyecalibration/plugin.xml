@@ -1,0 +1,15 @@
+<library path="src">
+  <class name="Hand-eye Calibration" type="rqt_handeyecalibration.rqt_handeyecalibration.RqtHandeyeCalibration" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      GUI for interactive hand-eye calibration.
+    </description>
+    <qtgui>
+      <group>
+        <label>Robot Tools</label>
+      </group>
+      <label>Hand-eye calibration</label>
+      <icon type="theme">system-help</icon>
+      <statustip>Interactive hand-eye calibration system.</statustip>
+    </qtgui>
+  </class>
+</library>
