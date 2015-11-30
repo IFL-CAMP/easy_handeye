@@ -8,7 +8,7 @@ from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtGui import QWidget, QListWidgetItem
 
-from handeye_calibration.hand_eye_connector import HandEyeConnector
+from handeye_calibration.handeye_calibrator import HandeyeCalibrator
 
 class RqtHandeyeCalibration(Plugin):
 
@@ -47,7 +47,7 @@ class RqtHandeyeCalibration(Plugin):
         # Add widget to the user interface
         context.add_widget(self._widget)
 
-        self.hec = HandEyeConnector()
+        self.hec = HandeyeCalibrator()
         self.hec.initialize()
 
         self._widget.calibNameLineEdit.setText(self.hec.prefix)

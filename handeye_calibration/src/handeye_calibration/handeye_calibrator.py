@@ -8,7 +8,7 @@ from visp_hand2eye_calibration.msg import TransformArray
 from visp_hand2eye_calibration.srv import compute_effector_camera_quick
 
 
-class HandEyeConnector(object):
+class HandeyeCalibrator(object):
     MIN_SAMPLES = 2  # TODO: correct?
 
     def __init__(self):
@@ -69,15 +69,15 @@ class HandEyeConnector(object):
         self.hand_world_samples.header.frame_id = self.optical_origin_frame 
         self.camera_marker_samples.header.frame_id = self.optical_origin_frame
         for s in self.samples:
-            to = HandEyeConnector._tuple_to_visp_transform(s['optical'])
+            to = HandeyeCalibrator._tuple_to_visp_transform(s['optical'])
             self.camera_marker_samples.transforms.append(to)
-            tr = HandEyeConnector._tuple_to_visp_transform(s['robot'])
+            tr = HandeyeCalibrator._tuple_to_visp_transform(s['robot'])
             self.hand_world_samples.transforms.append(tr)
 
     def compute_calibration(self):
 
-        if len(self.samples) < HandEyeConnector.MIN_SAMPLES:
-            rospy.logwarn("%d more samples needed..." % (HandEyeConnector.MIN_SAMPLES - len(self.samples)))
+        if len(self.samples) < HandeyeCalibrator.MIN_SAMPLES:
+            rospy.logwarn("%d more samples needed..." % (HandeyeCalibrator.MIN_SAMPLES - len(self.samples)))
             return
 
         # Update data

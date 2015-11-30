@@ -1,2 +1,2 @@
 
-from .hand_eye_connector import HandEyeConnector
+from .handeye_calibrator import HandeyeCalibrator

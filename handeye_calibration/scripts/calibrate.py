@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
 import rospy
-from handeye_calibration import HandEyeConnector
+from handeye_calibration import HandeyeCalibrator
 
 
 def main():
     rospy.init_node('handeye_calibration')
     while rospy.get_time() == 0.0: pass
 
-    hec = HandEyeConnector()
+    hec = HandeyeCalibrator()
 
     automatic = rospy.get_param('automatic')
     if automatic:
