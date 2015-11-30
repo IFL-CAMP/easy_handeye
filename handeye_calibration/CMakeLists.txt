@@ -60,7 +60,7 @@ install(PROGRAMS
 # )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
+install(FILES
     launch/handeye_calibration.launch
     launch/load.launch
     launch/publish.launch
