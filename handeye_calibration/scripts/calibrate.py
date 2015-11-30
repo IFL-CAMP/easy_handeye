@@ -40,19 +40,11 @@ class HandEyeCalibratorWrapper:
 
     def compute_calibration(self):
         base_to_camera = self.calibrator.compute_calibration()
-
-        self.calibrator.set_parameters()
-
         self.calibration_result_publisher.publish()
 
     def save_calibration(self):
-        base_to_camera = self.calibrator.compute_calibration()
-
-        # TODO: save as yaml file
-        directory = '~/.ros/handeye_calibration'
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        filename = rospy.get_namespace()+'.yaml'
+        calibration = self.calibrator.compute_calibration()
+        self.calibrator.save(calibration)
 
 
 def main():

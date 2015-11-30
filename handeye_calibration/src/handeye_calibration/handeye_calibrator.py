@@ -1,3 +1,5 @@
+
+import os
 import rospy
 import std_msgs
 import tf
@@ -158,7 +160,7 @@ class HandeyeCalibrator(object):
 
         return ret
 
-    def set_parameters(self, calibration):
+    def _set_parameters(self, calibration):
         prefix = None
 
         if self.eye_on_hand:
@@ -177,3 +179,17 @@ class HandeyeCalibrator(object):
         rospy.set_param(prefix + '_qy', calibration['transformation']['qy'])
         rospy.set_param(prefix + '_qz', calibration['transformation']['qz'])
         rospy.set_param(prefix + '_qw', calibration['transformation']['qw'])
+
+    def _write_to_file(self, calibration):
+        # TODO: save as yaml file
+        directory = '~/.ros/handeye_calibration'
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        filename = rospy.get_namespace()+'.yaml'
+
+        with open(filename) as calib_file:
+            calib_file.write(yaml.dump(calibration))
+
+    def save(self, calibration):
+        self._set_parameters(calibration)
+        self._write_to_file(calibration)
