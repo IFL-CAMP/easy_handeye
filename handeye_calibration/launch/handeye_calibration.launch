@@ -13,22 +13,15 @@
     <!-- Publish frames while calibrating -->
     <arg name="publish_tf" default="true"/>
 
-    <!-- Wait for key press or detect absence of movement -->
-    <arg name="automatic" default="false"/>
-    <arg name="sample_rate" default="10"/>
-
     <!-- Run the VISP solver to determine the extrinsic parameters -->
     <node ns="$(arg namespace)" name="hand_eye_solver"
-        pkg="visp_hand2eye_calibration"
-        type="visp_hand2eye_calibration_calibrator">
+          pkg="visp_hand2eye_calibration"
+          type="visp_hand2eye_calibration_calibrator">
         <remap from="/compute_effector_camera_quick" to="compute_effector_camera_quick"/>
     </node>
-    
+
     <group ns="$(arg namespace)" >
         <param name="eye_on_hand" value="$(arg eye_on_hand)"/>
-        <param name="sample_rate" value="$(arg sample_rate)"/>
-        <param name="publish_tf" value="$(arg publish_tf)"/>
-        <param name="automatic" value="$(arg automatic)"/>
         <param name="base_link_frame"       value="$(arg base_link_frame)" />
         <param name="tool_frame"            value="$(arg tool_frame)" />
         <param name="optical_origin_frame"  value="$(arg optical_origin_frame)" />
@@ -38,9 +31,8 @@
     <!-- Connect the tracker to the solver -->
     <node name="hand_eye_connector"
           ns="$(arg namespace)"
-        pkg="handeye_calibration"
-        type="calibrate.py"
-        output="screen">
-    </node>
+          pkg="handeye_calibration"
+          type="calibrate.py"
+          output="screen" />
 
 </launch>

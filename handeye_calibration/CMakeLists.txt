@@ -46,6 +46,7 @@ catkin_package(
 ## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
     scripts/calibrate.py
+    scripts/handeye_calibration_commander.py
     scripts/publish.py
     scripts/mkdir_calibration.sh
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -62,7 +63,7 @@ install(PROGRAMS
 # install(FILES
     launch/handeye_calibration.launch
     launch/load.launch
-    launch/publisher.launch
+    launch/publish.launch
     launch/save.launch
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
