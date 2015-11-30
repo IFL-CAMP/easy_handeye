@@ -3,7 +3,7 @@
     <name>handeye_calibration</name>
     <version>0.1.0</version>
     <description>
-        This package uses vis_hand2eye_calibration to determine the
+        This package uses visp_hand2eye_calibration to determine the
         extrinsic parameters of cameras.
     </description>
 

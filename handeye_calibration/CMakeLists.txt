@@ -46,7 +46,7 @@ catkin_package(
 ## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
     scripts/calibrate.py
-    scripts/publisher.py
+    scripts/publish.py
     scripts/mkdir_calibration.sh
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
