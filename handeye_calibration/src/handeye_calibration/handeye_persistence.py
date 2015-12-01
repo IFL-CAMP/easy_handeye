@@ -73,6 +73,12 @@ class HandeyePersistence(object):
         else:
             self.transformation.header.frame_id = in_dict['base_link_frame']
 
+    def to_yaml(self):
+        return yaml.dump(self.to_dict())
+
+    def from_yaml(self, in_yaml):
+        self.from_dict(yaml.load(in_yaml))
+
     def from_parameters(self, namespace, eye_on_hand):
         prefix = namespace
 
