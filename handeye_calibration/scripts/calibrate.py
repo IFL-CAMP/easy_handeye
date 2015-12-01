@@ -40,7 +40,7 @@ class HandEyeCalibratorWrapper:
 
     def compute_calibration(self):
         base_to_camera = self.calibrator.compute_calibration()
-        self.calibration_result_publisher.publish()
+        self.calibration_result_publisher.publish(base_to_camera)
 
     def save_calibration(self):
         calibration = self.calibrator.compute_calibration()
@@ -52,7 +52,6 @@ def main():
     while rospy.get_time() == 0.0:
         pass
 
-    # prefix = '/'  # TODO: flexible prefix for multiple instances at once? sounds like extreme overkill
     cw = HandEyeCalibratorWrapper()
 
     rospy.spin()

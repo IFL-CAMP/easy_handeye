@@ -85,12 +85,13 @@ class HandeyeCalibrator(object):
         return {'robot': rob, 'optical': opt}
 
     def take_sample(self):
-        rospy.loginfo("Getting transforms")
+        rospy.loginfo("Taking a sample...")
         transforms = self._get_transforms()
-        rospy.loginfo("Got transforms")
+        rospy.loginfo("Got a sample")
         self.samples.append(transforms)
 
     def remove_sample(self, index):
+        if 0 <= index < len(self.samples):
             del self.samples[index]
 
     def compute_calibration(self):
@@ -159,36 +160,6 @@ class HandeyeCalibrator(object):
             ret['prefix'] = 'base_to_camera'
 
         return ret
-
-    def _set_parameters(self, calibration):
-        prefix = None
-
-        if self.eye_on_hand:
-            rospy.set_param('tool_frame', self.tool_frame)
-            rospy.set_param('optical_origin_frame', self.optical_origin_frame)
-            prefix = 'tool_to_camera'
-        else:
-            rospy.set_param('optical_origin_frame', self.optical_origin_frame)
-            rospy.set_param('base_link_frame', self.base_link_frame)
-            prefix = 'base_to_camera'
-
-        rospy.set_param(prefix + '_x', calibration['transformation']['x'])
-        rospy.set_param(prefix + '_y', calibration['transformation']['y'])
-        rospy.set_param(prefix + '_z', calibration['transformation']['z'])
-        rospy.set_param(prefix + '_qx', calibration['transformation']['qx'])
-        rospy.set_param(prefix + '_qy', calibration['transformation']['qy'])
-        rospy.set_param(prefix + '_qz', calibration['transformation']['qz'])
-        rospy.set_param(prefix + '_qw', calibration['transformation']['qw'])
-
-    def _write_to_file(self, calibration):
-        # TODO: save as yaml file
-        directory = '~/.ros/handeye_calibration'
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        filename = rospy.get_namespace()+'.yaml'
-
-        with open(filename) as calib_file:
-            calib_file.write(yaml.dump(calibration))
 
     def save(self, calibration):
         self._set_parameters(calibration)
