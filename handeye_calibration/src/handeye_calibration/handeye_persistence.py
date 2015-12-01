@@ -1,10 +1,6 @@
 import os
 import yaml
 import rospy
-import tf
-import tf_conversions
-from tf import transformations as tfs
-from std_msgs.msg import Header
 from geometry_msgs.msg import Vector3, Quaternion, Transform, TransformStamped
 
 
@@ -82,8 +78,6 @@ class HandeyePersistence(object):
         self.from_dict(yaml.load(in_yaml))
 
     def to_file(self):
-        # TODO: save as yaml file
-
         if not os.path.exists(HandeyePersistence.DIRECTORY):
             os.makedirs(HandeyePersistence.DIRECTORY)
         filename = HandeyePersistence.DIRECTORY + rospy.get_namespace() + '.yaml'

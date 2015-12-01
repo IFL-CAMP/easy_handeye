@@ -9,17 +9,23 @@ from geometry_msgs.msg import Vector3, Quaternion, Transform
 from visp_hand2eye_calibration.msg import TransformArray
 from visp_hand2eye_calibration.srv import compute_effector_camera_quick
 
+from handeye_persistence import HandeyePersistence
+
 
 class HandeyeCalibrator(object):
     MIN_SAMPLES = 2  # TODO: correct?
 
     def __init__(self):
-
         self.eye_on_hand = rospy.get_param('eye_on_hand', False)
 
         # tf names
-        self.base_link_frame = rospy.get_param('base_link_frame', 'base_link')
-        self.tool_frame = rospy.get_param('tool_frame', 'tool0')
+        if self.eye_on_hand:
+            self.tool_frame = rospy.get_param('tool_frame', 'tool0')
+            self.base_link_frame = None
+        else:
+            self.tool_frame = None
+            self.base_link_frame = rospy.get_param('base_link_frame', 'base_link')
+
         self.optical_origin_frame = rospy.get_param('optical_origin_frame', 'optical_origin')
         self.optical_target_frame = rospy.get_param('optical_target_frame', 'optical_target')
 
@@ -28,7 +34,7 @@ class HandeyeCalibrator(object):
         self.broadcaster = tf.TransformBroadcaster()
         self.transformer = tf.TransformerROS()  # for converting messages to rotation matrices, etc.
 
-        # inner input data
+        # internal input data
         self.samples = []
 
         # VISP input data
@@ -40,24 +46,6 @@ class HandeyeCalibrator(object):
         self.calibrate = rospy.ServiceProxy(
             'compute_effector_camera_quick',
             compute_effector_camera_quick)
-
-    @staticmethod
-    def _tuple_to_visp_transform(tf_t):
-        transl = Vector3(*tf_t[0])
-        rot = Quaternion(*tf_t[1])
-        return Transform(transl, rot)
-
-    # TODO: find a reasonable name
-    def _inner_to_visp_samples(self):
-        self.hand_world_samples = TransformArray()
-        self.camera_marker_samples = TransformArray()
-        self.hand_world_samples.header.frame_id = self.optical_origin_frame 
-        self.camera_marker_samples.header.frame_id = self.optical_origin_frame
-        for s in self.samples:
-            to = HandeyeCalibrator._tuple_to_visp_transform(s['optical'])
-            self.camera_marker_samples.transforms.append(to)
-            tr = HandeyeCalibrator._tuple_to_visp_transform(s['robot'])
-            self.hand_world_samples.transforms.append(tr)
 
     def _wait_for_tf_init(self):
         self.listener.waitForTransform(self.base_link_frame, self.tool_frame, rospy.Time(0), rospy.Duration(10))
@@ -94,6 +82,27 @@ class HandeyeCalibrator(object):
         if 0 <= index < len(self.samples):
             del self.samples[index]
 
+    @staticmethod
+    def _tuple_to_visp_transform(tf_t):
+        transl = Vector3(*tf_t[0])
+        rot = Quaternion(*tf_t[1])
+        return Transform(transl, rot)
+
+    def get_visp_samples(self):
+        hand_world_samples = TransformArray()
+        hand_world_samples.header.frame_id = self.optical_origin_frame  # TODO: ???
+
+        camera_marker_samples = TransformArray()
+        camera_marker_samples.header.frame_id = self.optical_origin_frame
+
+        for s in self.samples:
+            to = HandeyeCalibrator._tuple_to_visp_transform(s['optical'])
+            camera_marker_samples.transforms.append(to)
+            tr = HandeyeCalibrator._tuple_to_visp_transform(s['robot'])
+            hand_world_samples.transforms.append(tr)
+
+        return hand_world_samples, camera_marker_samples
+
     def compute_calibration(self):
 
         if len(self.samples) < HandeyeCalibrator.MIN_SAMPLES:
@@ -101,65 +110,36 @@ class HandeyeCalibrator(object):
             return
 
         # Update data
-        self._inner_to_visp_samples()
+        hand_world_samples, camera_marker_samples = self.get_visp_samples()
 
-        if len(self.hand_world_samples.transforms) != len(self.camera_marker_samples.transforms):
+        if len(hand_world_samples.transforms) != len(camera_marker_samples.transforms):
             rospy.logerr("Different numbers of hand-world and camera-marker samples.")
             return
 
         rospy.loginfo("Computing from %g poses..." % len(self.samples))
-        result = None
 
         try:
-            result = self.calibrate(self.camera_marker_samples, self.hand_world_samples)
+            result = self.calibrate(camera_marker_samples, hand_world_samples)
+            transl = result.effector_camera.translation
+            rot = result.effector_camera.rotation
+            result_tf = Transform((transl.x,
+                                   transl.y,
+                                   transl.z),
+                                  (rot.x,
+                                   rot.y,
+                                   rot.z,
+                                   rot.w))
+
+            ret = HandeyePersistence(self.eye_on_hand,
+                                     self.base_link_frame,
+                                     self.tool_frame,
+                                     self.optical_origin_frame,
+                                     result_tf)
+            return ret
+
         except rospy.ServiceException as ex:
             rospy.logerr("Calibration failed: " + str(ex))
             return None
-
-        transl = result.effector_camera.translation
-        rot = result.effector_camera.rotation
-        result_tf = Transform((transl.x,
-                               transl.y,
-                               transl.z),
-                              (rot.x,
-                               rot.y,
-                               rot.z,
-                               rot.w))
-
-        cal_mat = self.transformer.fromTranslationRotation(result_tf.translation,
-                                                           result_tf.rotation)
-        cal_mat_inv = tfs.inverse_matrix(cal_mat)
-        transl = tfs.translation_from_matrix(cal_mat_inv)
-        rot = tfs.quaternion_from_matrix(cal_mat_inv)
-        camera_to_base = Transform(Vector3(transl[0],
-                                           transl[1],
-                                           transl[2]),
-                                   Quaternion(rot[0],
-                                              rot[1],
-                                              rot[2],
-                                              rot[3]))
-
-        ret = {
-            'transformation': {
-                'x': result.effector_camera.translation.x,
-                'y': result.effector_camera.translation.y,
-                'z': result.effector_camera.translation.z,
-                'qx': result.effector_camera.rotation.x,
-                'qy': result.effector_camera.rotation.y,
-                'qz': result.effector_camera.rotation.z,
-                'qw': result.effector_camera.rotation.w
-            }
-        }
-        if self.eye_on_hand:
-            ret['tool_frame'] = self.tool_frame
-            ret['optical_origin_frame'] = self.optical_origin_frame
-            ret['prefix'] = 'tool_to_camera'
-        else:
-            ret['optical_origin_frame'] = self.optical_origin_frame
-            ret['base_link_frame'] = self.base_link_frame
-            ret['prefix'] = 'base_to_camera'
-
-        return ret
 
     def save(self, calibration):
         self._set_parameters(calibration)
