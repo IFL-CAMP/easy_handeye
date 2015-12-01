@@ -1,35 +1,46 @@
 
 import os
+import yaml
 import rospy
-import std_msgs
 import tf
+import tf_conversions
 from tf import transformations as tfs
-
-from geometry_msgs.msg import Vector3, Quaternion, Transform
-from visp_hand2eye_calibration.msg import TransformArray
-from visp_hand2eye_calibration.srv import compute_effector_camera_quick
+from std_msgs.msg import Header
+from geometry_msgs.msg import Vector3, Quaternion, Transform, TransformStamped
 
 
 class HandeyePersistence(object):
 
-    def __init__(self, eye_on_hand=False, base_link_frame=None, tool_frame=None, optical_origin_frame=None, transformation=None):
+    # transformation is tuple ((tx,ty,tz),(rx,ry,rz,rw)) as returned by lookupTransform
+    def __init__(self,
+                 eye_on_hand=False,
+                 base_link_frame=None,
+                 tool_frame=None,
+                 optical_origin_frame=None,
+                 transformation=None):
 
         self.eye_on_hand = eye_on_hand
 
+        self.transformation = TransformStamped(transform=Transform(
+            Vector3(*transformation[0]), Quaternion(*transformation[1])))
+
         # tf names
         if self.eye_on_hand:
-            self.tool_frame = tool_frame
+            self.transformation.header.frame_id = tool_frame
         else:
-            self.base_link_frame = base_link_frame
-        self.optical_origin_frame = optical_origin_frame
+            self.transformation.header.frame_id = base_link_frame
+        self.transformation.child_frame_id = optical_origin_frame
 
-        self.transformation = transformation
+    def to_dict(self):
 
-    def to_yaml(self):
+        a = tf.TransformerROS()
+        tf_conversions.fromTf()
 
         ret = {
+            'eye_on_hand': self.eye_on_hand,
+            'optical_origin_frame': self.optical_origin_frame,
             'transformation': {
-                'x': self.transformation.translation.x,
+                'x': self.transformation[0][0],
                 'y': self.transformation.translation.y,
                 'z': self.transformation.translation.z,
                 'qx': self.transformation.rotation.x,
@@ -38,29 +49,46 @@ class HandeyePersistence(object):
                 'qw': self.transformation.rotation.w
             }
         }
+
         if self.eye_on_hand:
             ret['tool_frame'] = self.tool_frame
-            ret['optical_origin_frame'] = self.optical_origin_frame
-            ret['prefix'] = 'tool_to_camera'
         else:
-            ret['optical_origin_frame'] = self.optical_origin_frame
             ret['base_link_frame'] = self.base_link_frame
-            ret['prefix'] = 'base_to_camera'
 
         return ret
 
-    def from_yaml(self):
-        raise NotImplementedError
+    def from_dict(self, in_dict):
+        self.eye_on_hand = in_dict['']
+
+    def from_parameters(self, namespace, eye_on_hand):
+        prefix = namespace
+
+        if self.eye_on_hand:
+            rospy.get_param('tool_frame', self.tool_frame)
+            rospy.get_param('optical_origin_frame', self.optical_origin_frame)
+            prefix = 'tool_to_camera'
+        else:
+            rospy.get_param('optical_origin_frame', self.optical_origin_frame)
+            rospy.get_param('base_link_frame', self.base_link_frame)
+            prefix = 'base_to_camera'
+
+        rospy.get_param(prefix + '_x')
+        rospy.get_param(prefix + '_y')
+        rospy.get_param(prefix + '_z')
+        rospy.get_param(prefix + '_qx')
+        rospy.get_param(prefix + '_qy')
+        rospy.get_param(prefix + '_qz')
+        rospy.get_param(prefix + '_qw')
 
     def to_parameters(self, namespace, calibration):
         prefix = namespace
 
+        rospy.set_param('optical_origin_frame', self.optical_origin_frame)
+
         if self.eye_on_hand:
             rospy.set_param('tool_frame', self.tool_frame)
-            rospy.set_param('optical_origin_frame', self.optical_origin_frame)
             prefix = 'tool_to_camera'
         else:
-            rospy.set_param('optical_origin_frame', self.optical_origin_frame)
             rospy.set_param('base_link_frame', self.base_link_frame)
             prefix = 'base_to_camera'
 
@@ -79,9 +107,7 @@ class HandeyePersistence(object):
             os.makedirs(directory)
         filename = rospy.get_namespace()+'.yaml'
 
-        raise NotImplementedError
-
-        with open(filename) as calib_file:
+        with open(filename, 'w') as calib_file:
             calib_file.write(yaml.dump(calibration))
 
     def from_file(self, namespace):
