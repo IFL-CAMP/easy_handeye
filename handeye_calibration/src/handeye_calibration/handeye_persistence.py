@@ -81,7 +81,7 @@ class HandeyePersistence(object):
     def from_yaml(self, in_yaml):
         self.from_dict(yaml.load(in_yaml))
 
-    def to_file(self, namespace, calibration):
+    def to_file(self):
         # TODO: save as yaml file
 
         if not os.path.exists(HandeyePersistence.DIRECTORY):
@@ -89,13 +89,13 @@ class HandeyePersistence(object):
         filename = HandeyePersistence.DIRECTORY + rospy.get_namespace() + '.yaml'
 
         with open(filename, 'w') as calib_file:
-            calib_file.write(yaml.dump(calibration))
+            calib_file.write(self.to_yaml())
 
-    def from_file(self, namespace):
+    def from_file(self):
         filename = HandeyePersistence.DIRECTORY + rospy.get_namespace() + '.yaml'
 
         with open(filename) as calib_file:
-            self.from_yaml(calib_file.readall())
+            self.from_yaml(calib_file.read())
 
     def from_parameters(self):
         calib_dict = {}
