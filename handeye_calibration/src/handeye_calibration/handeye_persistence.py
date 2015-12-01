@@ -1,4 +1,3 @@
-
 import os
 import yaml
 import rospy
@@ -10,7 +9,6 @@ from geometry_msgs.msg import Vector3, Quaternion, Transform, TransformStamped
 
 
 class HandeyePersistence(object):
-
     # transformation is tuple ((tx,ty,tz),(rx,ry,rz,rw)) as returned by lookupTransform
     def __init__(self,
                  eye_on_hand=False,
@@ -18,6 +16,9 @@ class HandeyePersistence(object):
                  tool_frame=None,
                  optical_origin_frame=None,
                  transformation=None):
+
+        if transformation is None:
+            transformation = ((0, 0, 0), (0, 0, 0, 1))
 
         self.eye_on_hand = eye_on_hand
 
@@ -33,32 +34,44 @@ class HandeyePersistence(object):
 
     def to_dict(self):
 
-        a = tf.TransformerROS()
-        tf_conversions.fromTf()
-
         ret = {
             'eye_on_hand': self.eye_on_hand,
-            'optical_origin_frame': self.optical_origin_frame,
+            'optical_origin_frame': self.transformation.child_frame_id,
             'transformation': {
-                'x': self.transformation[0][0],
-                'y': self.transformation.translation.y,
-                'z': self.transformation.translation.z,
-                'qx': self.transformation.rotation.x,
-                'qy': self.transformation.rotation.y,
-                'qz': self.transformation.rotation.z,
-                'qw': self.transformation.rotation.w
+                'x': self.transformation.transform.translation.x,
+                'y': self.transformation.transform.translation.y,
+                'z': self.transformation.transform.translation.z,
+                'qx': self.transformation.transform.rotation.x,
+                'qy': self.transformation.transform.rotation.y,
+                'qz': self.transformation.transform.rotation.z,
+                'qw': self.transformation.transform.rotation.w
             }
         }
-
         if self.eye_on_hand:
-            ret['tool_frame'] = self.tool_frame
+            ret['tool_frame'] = self.transformation.header.frame_id
         else:
-            ret['base_link_frame'] = self.base_link_frame
+            ret['base_link_frame'] = self.transformation.header.frame_id
 
         return ret
 
     def from_dict(self, in_dict):
-        self.eye_on_hand = in_dict['']
+        self.eye_on_hand = in_dict['eye_on_hand']
+        self.transformation = TransformStamped(
+            child_frame_id=in_dict['optical_origin_frame'],
+            transform=Transform(
+                Vector3(in_dict['transformation']['x'],
+                        in_dict['transformation']['y'],
+                        in_dict['transformation']['z']),
+                Quaternion(in_dict['transformation']['qx'],
+                           in_dict['transformation']['qy'],
+                           in_dict['transformation']['qz'],
+                           in_dict['transformation']['qw'])
+            )
+        )
+        if self.eye_on_hand:
+            self.transformation.header.frame_id = in_dict['tool_frame']
+        else:
+            self.transformation.header.frame_id = in_dict['base_link_frame']
 
     def from_parameters(self, namespace, eye_on_hand):
         prefix = namespace
@@ -105,7 +118,7 @@ class HandeyePersistence(object):
         directory = '~/.ros/handeye_calibration'
         if not os.path.exists(directory):
             os.makedirs(directory)
-        filename = rospy.get_namespace()+'.yaml'
+        filename = rospy.get_namespace() + '.yaml'
 
         with open(filename, 'w') as calib_file:
             calib_file.write(yaml.dump(calibration))
