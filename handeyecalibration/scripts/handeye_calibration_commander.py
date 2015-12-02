@@ -60,6 +60,18 @@ def main():
         pass
 
     cmder = HandeyeCalibrationCommander()
+
+    print('Handeye Calibration Commander')
+    print(rospy.get_namespace())
+    if cmder.client.eye_on_hand:
+        print('eye-on-hand calibration')
+        print('tool frame: {}'.format(cmder.client.tool_frame))
+    else:
+        print('eye-on-base calibration')
+        print('base link frame: {}'.format(cmder.client.base_link_frame))
+    print('optical origin frame: {}'.format(cmder.client.optical_origin_frame))
+    print('optical target frame: {}'.format(cmder.client.optical_target_frame))
+
     cmder.spin_interactive()
 
 

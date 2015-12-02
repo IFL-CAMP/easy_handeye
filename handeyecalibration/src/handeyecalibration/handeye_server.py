@@ -3,6 +3,7 @@ import std_srvs
 from std_srvs import srv
 import handeyecalibration as hec
 from handeyecalibration import srv
+from handeyecalibration.msg import SampleList
 from handeyecalibration.handeye_calibrator import HandeyeCalibrator
 
 
@@ -11,7 +12,7 @@ class HandeyeServer:
         self.calibrator = HandeyeCalibrator()
 
         self.get_sample_list_service = rospy.Service(hec.GET_SAMPLE_LIST_TOPIC,
-                                                 hec.srv.TakeSample, self.get_sample_lists())
+                                                 hec.srv.TakeSample, self.get_sample_lists)
         self.take_sample_service = rospy.Service(hec.TAKE_SAMPLE_TOPIC,
                                                  hec.srv.TakeSample, self.take_sample)
         self.remove_sample_service = rospy.Service(hec.REMOVE_SAMPLE_TOPIC,
@@ -23,20 +24,19 @@ class HandeyeServer:
 
         self.last_calibration = None
 
-    def get_sample_lists(self):
-        hand_world_samples, camera_marker_samples = self.calibrator.get_visp_samples()
-        return hand_world_samples, camera_marker_samples
+    def get_sample_lists(self, req):
+        return hec.srv.TakeSampleResponse(SampleList(*self.calibrator.get_visp_samples()))
 
-    def take_sample(self):
+    def take_sample(self, req):
         self.calibrator.take_sample()
-        return hec.srv.TakeSampleResponse(*self.get_sample_lists())
+        return hec.srv.TakeSampleResponse(self.calibrator.get_visp_samples())
 
     def remove_sample(self, req):
         try:
             self.calibrator.remove_sample(req.sample_index)
         except IndexError:
             rospy.logerr('Invalid index '+req.sample_index)
-        return hec.srv.RemoveSampleResponse(*self.get_sample_lists())
+        return hec.srv.TakeSampleResponse(self.calibrator.get_visp_samples())
 
     def compute_calibration(self, req):
         self.last_calibration = self.calibrator.compute_calibration()
