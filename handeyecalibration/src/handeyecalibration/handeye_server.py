@@ -1,8 +1,8 @@
 import rospy
 import std_srvs
-from geometry_msgs.msg import TransformStamped
-
-import handeyecalibration as Hec
+from std_srvs import srv
+import handeyecalibration as hec
+from handeyecalibration import srv
 from handeyecalibration.handeye_calibrator import HandeyeCalibrator
 
 
@@ -10,13 +10,15 @@ class HandeyeServer:
     def __init__(self):
         self.calibrator = HandeyeCalibrator()
 
-        self.take_sample_service = rospy.Service(Hec.TAKE_SAMPLE_TOPIC,
-                                                 Hec.srv.TakeSample, self.take_sample)
-        self.remove_sample_service = rospy.Service(Hec.REMOVE_SAMPLE_TOPIC,
-                                                   Hec.srv.RemoveSample, self.remove_sample)
-        self.compute_calibration_service = rospy.Service(Hec.COMPUTE_CALIBRATION_TOPIC,
-                                                         Hec.srv.ComputeCalibration, self.compute_calibration)
-        self.save_calibration_service = rospy.Service(Hec.SAVE_CALIBRATION_TOPIC,
+        self.get_sample_list_service = rospy.Service(hec.GET_SAMPLE_LIST_TOPIC,
+                                                 hec.srv.TakeSample, self.get_sample_lists())
+        self.take_sample_service = rospy.Service(hec.TAKE_SAMPLE_TOPIC,
+                                                 hec.srv.TakeSample, self.take_sample)
+        self.remove_sample_service = rospy.Service(hec.REMOVE_SAMPLE_TOPIC,
+                                                   hec.srv.RemoveSample, self.remove_sample)
+        self.compute_calibration_service = rospy.Service(hec.COMPUTE_CALIBRATION_TOPIC,
+                                                         hec.srv.ComputeCalibration, self.compute_calibration)
+        self.save_calibration_service = rospy.Service(hec.SAVE_CALIBRATION_TOPIC,
                                                       std_srvs.srv.Empty, self.save_calibration)
 
         self.last_calibration = None
@@ -27,18 +29,18 @@ class HandeyeServer:
 
     def take_sample(self):
         self.calibrator.take_sample()
-        return Hec.srv.TakeSampleResponse(*self.get_sample_lists())
+        return hec.srv.TakeSampleResponse(*self.get_sample_lists())
 
     def remove_sample(self, req):
         try:
             self.calibrator.remove_sample(req.sample_index)
         except IndexError:
             rospy.logerr('Invalid index '+req.sample_index)
-        return Hec.srv.RemoveSampleResponse(*self.get_sample_lists())
+        return hec.srv.RemoveSampleResponse(*self.get_sample_lists())
 
     def compute_calibration(self, req):
         self.last_calibration = self.calibrator.compute_calibration()
-        return Hec.srv.ComputeCalibrationResponse(self.last_calibration)
+        return hec.srv.ComputeCalibrationResponse(self.last_calibration)
 
     def save_calibration(self, req):
         self.last_calibration.to_param()

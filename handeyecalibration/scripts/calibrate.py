@@ -2,7 +2,7 @@
 
 import rospy
 
-from handeye_calibration.handeye_server import HandeyeServer
+from handeyecalibration.handeye_server import HandeyeServer
 
 
 def main():

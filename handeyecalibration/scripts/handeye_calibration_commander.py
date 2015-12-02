@@ -2,7 +2,8 @@
 
 import rospy
 import std_srvs
-from handeye_calibration.handeye_client import HandeyeClient
+from std_srvs import srv
+from handeyecalibration.handeye_client import HandeyeClient
 
 
 # for reading single character without hitting RETURN (unless it's ipython!)
