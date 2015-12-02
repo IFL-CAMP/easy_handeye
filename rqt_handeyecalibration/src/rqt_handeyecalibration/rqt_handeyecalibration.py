@@ -85,7 +85,7 @@ class RqtHandeyeCalibration(Plugin):
     def _display_sample_list(self, sample_list):
         self._widget.sampleListWidget.clear()
         for sample in sample_list:
-            self._widget.sampleListWidget.addItem(QListWidgetItem(str(sample))
+            self._widget.sampleListWidget.addItem(QListWidgetItem(str(sample)))
 
     def handle_take_sample(self):
         sample_list = self.client.take_sample()
