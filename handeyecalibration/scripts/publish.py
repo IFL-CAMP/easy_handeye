@@ -16,6 +16,8 @@ inverse = rospy.get_param('inverse')
 orig = None
 dest = None 
 
+# TODO: use HandeyeCalibration class
+
 if eye_on_hand:
     orig = rospy.get_param('tool_frame')
     dest = rospy.get_param('optical_origin_frame')

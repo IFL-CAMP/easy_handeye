@@ -5,7 +5,7 @@ from geometry_msgs.msg import Vector3, Quaternion, Transform, TransformStamped
 
 
 class HandeyeCalibration(object):
-    DIRECTORY = os.path.expanduser('~/.ros/handeye_calibration')
+    DIRECTORY = os.path.expanduser('~/.ros/handeyecalibration')
 
     # transformation is tuple ((tx,ty,tz),(rx,ry,rz,rw)) as returned by lookupTransform
     def __init__(self,

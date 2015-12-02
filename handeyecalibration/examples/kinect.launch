@@ -11,7 +11,7 @@
   </include>
 
   <!-- Calibrate the extrinsics for a kinect mounted to a robot base -->
-  <include file="$(find handeye_calibration)/launch/handeye_calibration.launch">
+  <include file="$(find handeyecalibration)/launch/calibrate.launch">
     <arg name="markerid"   value="582"/>
     <arg name="markersize" value="0.141"/>
     <arg name="publish_tf" value="true"/>

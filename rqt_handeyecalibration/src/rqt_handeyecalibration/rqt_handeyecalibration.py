@@ -3,12 +3,13 @@ from __future__ import division
 import os
 import rospy
 import rospkg
-
+import std_srvs
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtGui import QWidget, QListWidgetItem
 
-from handeye_calibration.handeye_calibrator import HandeyeCalibrator
+from handeyecalibration.handeye_client import HandeyeClient
+
 
 class RqtHandeyeCalibration(Plugin):
 
@@ -47,10 +48,9 @@ class RqtHandeyeCalibration(Plugin):
         # Add widget to the user interface
         context.add_widget(self._widget)
 
-        self.hec = HandeyeCalibrator()
-        self.hec.initialize()
+        self.client = HandeyeClient()
 
-        self._widget.calibNameLineEdit.setText(self.hec.prefix)
+        self._widget.calibNameLineEdit.setText(rospy.get_namespace())
         self._widget.opticalFrameLineEdit.setText(self.hec.optical_origin_frame)
         if self.hec.eye_on_hand:
             self._widget.calibTypeLineEdit.setText("eye on hand")
@@ -82,19 +82,23 @@ class RqtHandeyeCalibration(Plugin):
         # Comment in to signal that the plugin has a way to configure
         # This will enable a setting button (gear icon) in each dock widget title bar
         # Usually used to open a modal configuration dialog
+    def _display_sample_list(self, sample_list):
+        self._widget.sampleListWidget.clear()
+        for sample in sample_list:
+            self._widget.sampleListWidget.addItem(QListWidgetItem(str(sample))
 
     def handle_take_sample(self):
-        self.hec.take_sample()
-        self._widget.sampleListWidget.addItem(QListWidgetItem(str(self.hec.samples[-1])))
+        sample_list = self.client.take_sample()
+        self._display_sample_list(sample_list)
 
     def handle_remove_sample(self):
         index = self._widget.sampleListWidget.currentRow()
-        self.hec.remove_sample(index)
+        sample_list = self.client.remove_sample(index)
+        self._display_sample_list(sample_list)
 
     def handle_compute_calibration(self):
-        result = self.hec.compute_calibration()
+        result = self.client.compute_calibration()
         self._widget.outputBox.setText(str(result))
 
     def handle_save_calibration(self):
-        self.hec.set_parameters()
-        self.hec.dump_parameters()
+        self.client.save()

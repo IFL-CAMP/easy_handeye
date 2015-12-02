@@ -11,7 +11,7 @@
     
     <arg name="load_handeye" default="true" />
 
-    <include if="$(arg load_handeye)" file="$(find handeye_calibration)/launch/load.launch">
+    <include if="$(arg load_handeye)" file="$(find handeyecalibration)/launch/load.launch">
         <arg name="namespace" value="$(arg namespace)" />
     </include>
 
@@ -21,6 +21,6 @@
         <param if="$(arg eye_on_hand)" name="tool_frame" value="$(arg tool_frame)" />
         <param name="optical_origin_frame" value="$(arg optical_origin_frame)" />
         <param name="inverse" value="$(arg inverse)" />
-        <node name="$(anon handeye_publisher)" pkg="handeye_calibration" type="publish.py" output="screen"/>
+        <node name="$(anon handeye_publisher)" pkg="handeyecalibration" type="publish.py" output="screen"/>
     </group>
 </launch>

@@ -31,7 +31,7 @@
     <!-- Connect the tracker to the solver -->
     <node name="hand_eye_connector"
           ns="$(arg namespace)"
-          pkg="handeye_calibration"
+          pkg="handeyecalibration"
           type="calibrate.py"
           output="screen" />
 

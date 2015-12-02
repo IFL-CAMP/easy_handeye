@@ -26,7 +26,7 @@ overridden to specify the correct tf reference frames.
 
 ### Calibration
 
-For both use cases, you can either launch the `handeye_calibration.launch`
+For both use cases, you can either launch the `calibrate.launch`
 launchfile, or you can include it in another launchfile as shown below. Either
 way, the launchfile will bring up the `visp_hand2eye_calibration` solver, along with an
 integration script. By default, the integration script will interactively ask you
@@ -36,7 +36,7 @@ to accept or discard each sample.
 
 ```xml
 <launch>
-  <include file="$(find handeye_calibration)/launch/handeye_calibration.launch">
+  <include file="$(find handeyecalibration)/launch/calibrate.launch">
     <arg name="marker_parent_frame" value="/base_link"/>
     <arg name="camera_parent_frame" value="/ee_link"/>
 
@@ -50,7 +50,7 @@ to accept or discard each sample.
 
 ```xml
 <launch>
-  <include file="$(find handeye_calibration)/launch/handeye_calibration.launch">
+  <include file="$(find handeyecalibration)/launch/calibrate.launch">
     <arg name="marker_parent_frame" value="/ee_link"/>
     <arg name="camera_parent_frame" value="/base_link"/>
 
@@ -86,7 +86,7 @@ argument of the launch file).
 
 ### Save to file
 The `save.launch` file saves the parameters in the specified namespace to a file with the same
-name as the namespace in the `~/.ros/handeye_calibration/` directory.
+name as the namespace in the `~/.ros/handeyecalibration/` directory.
 
 ### Load from file
 The `load.launch` does the opposite as `save.launch`: it loads data about a calibration from a file

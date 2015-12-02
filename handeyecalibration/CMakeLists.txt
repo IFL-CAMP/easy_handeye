@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(handeye_calibration)
+project(handeyecalibration)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -88,7 +88,7 @@ install(PROGRAMS
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 install(FILES
-    launch/handeye_calibration.launch
+    launch/calibrate.launch
     launch/load.launch
     launch/publish.launch
     launch/save.launch

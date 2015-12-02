@@ -2,11 +2,13 @@ import rospy
 import std_srvs
 from geometry_msgs.msg import TransformStamped
 
-from handeye_calibration import HandeyeCalibration as Hec
+import handeyecalibration as Hec
+from handeyecalibration.handeye_calibrator import HandeyeCalibrator
+
 
 class HandeyeServer:
     def __init__(self):
-        self.calibrator = Hec.HandeyeCalibrator()
+        self.calibrator = HandeyeCalibrator()
 
         self.take_sample_service = rospy.Service(Hec.TAKE_SAMPLE_TOPIC,
                                                  Hec.srv.TakeSample, self.take_sample)
@@ -16,8 +18,6 @@ class HandeyeServer:
                                                          Hec.srv.ComputeCalibration, self.compute_calibration)
         self.save_calibration_service = rospy.Service(Hec.SAVE_CALIBRATION_TOPIC,
                                                       std_srvs.srv.Empty, self.save_calibration)
-
-        self.calibration_result_publisher = rospy.Publisher(Hec.CALIBRATION_RESULT_TOPIC, TransformStamped)
 
         self.last_calibration = None
 

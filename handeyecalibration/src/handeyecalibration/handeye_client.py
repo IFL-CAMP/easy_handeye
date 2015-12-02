@@ -1,7 +1,7 @@
 import rospy
 import std_srvs
 
-from handeye_calibration import HandeyeCalibration as Hec
+import handeyecalibration as hec
 
 
 class HandeyeClient(object):
@@ -20,11 +20,11 @@ class HandeyeClient(object):
         self.optical_origin_frame = rospy.get_param('optical_origin_frame', 'optical_origin')
         self.optical_target_frame = rospy.get_param('optical_target_frame', 'optical_target')
 
-        self.get_sample_proxy = rospy.ServiceProxy(Hec.GET_SAMPLE_LIST_TOPIC, Hec.srv.TakeSample)
-        self.take_sample_proxy = rospy.ServiceProxy(Hec.TAKE_SAMPLE_TOPIC, Hec.srv.TakeSample)
-        self.remove_sample_proxy = rospy.ServiceProxy(Hec.REMOVE_SAMPLE_TOPIC, Hec.srv.RemoveSample)
-        self.compute_calibration_proxy = rospy.ServiceProxy(Hec.COMPUTE_CALIBRATION_TOPIC, Hec.srv.ComputeCalibration)
-        self.save_calibration_proxy = rospy.ServiceProxy(Hec.SAVE_CALIBRATION_TOPIC, std_srvs.srv.Empty)
+        self.get_sample_proxy = rospy.ServiceProxy(hec.GET_SAMPLE_LIST_TOPIC, hec.srv.TakeSample)
+        self.take_sample_proxy = rospy.ServiceProxy(hec.TAKE_SAMPLE_TOPIC, hec.srv.TakeSample)
+        self.remove_sample_proxy = rospy.ServiceProxy(hec.REMOVE_SAMPLE_TOPIC, hec.srv.RemoveSample)
+        self.compute_calibration_proxy = rospy.ServiceProxy(hec.COMPUTE_CALIBRATION_TOPIC, hec.srv.ComputeCalibration)
+        self.save_calibration_proxy = rospy.ServiceProxy(hec.SAVE_CALIBRATION_TOPIC, std_srvs.srv.Empty)
 
     def get_sample_list(self):
         return self.get_sample_proxy()

@@ -1,15 +1,9 @@
-
-import os
 import rospy
-import std_msgs
 import tf
-from tf import transformations as tfs
-
 from geometry_msgs.msg import Vector3, Quaternion, Transform
 from visp_hand2eye_calibration.msg import TransformArray
 from visp_hand2eye_calibration.srv import compute_effector_camera_quick
-
-from handeye_calibration import HandeyeCalibration
+from handeyecalibration.handeye_calibration import HandeyeCalibration
 
 
 class HandeyeCalibrator(object):
@@ -40,7 +34,7 @@ class HandeyeCalibrator(object):
         # VISP input data
         self.hand_world_samples = TransformArray()
         self.camera_marker_samples = TransformArray()
-        
+
         # calibration service
         rospy.wait_for_service('compute_effector_camera_quick')
         self.calibrate = rospy.ServiceProxy(
@@ -65,10 +59,10 @@ class HandeyeCalibrator(object):
         rob = None
         if self.eye_on_hand:
             rob = self.listener.lookupTransform(self.base_link_frame, self.tool_frame,
-                                            time)
+                                                time)
         else:
             rob = self.listener.lookupTransform(self.tool_frame, self.base_link_frame,
-                                            time)
+                                                time)
         opt = self.listener.lookupTransform(self.optical_origin_frame, self.optical_target_frame, time)
         return {'robot': rob, 'optical': opt}
 
@@ -140,7 +134,3 @@ class HandeyeCalibrator(object):
         except rospy.ServiceException as ex:
             rospy.logerr("Calibration failed: " + str(ex))
             return None
-
-    def save(self, calibration):
-        self._set_parameters(calibration)
-        self._write_to_file(calibration)

@@ -54,7 +54,7 @@ class HandeyeCalibrationCommander:
 
 
 def main():
-    rospy.init_node('handeye_calibration')
+    rospy.init_node('handeyecalibration')
     while rospy.get_time() == 0.0:
         pass
 
