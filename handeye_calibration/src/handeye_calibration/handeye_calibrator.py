@@ -9,7 +9,7 @@ from geometry_msgs.msg import Vector3, Quaternion, Transform
 from visp_hand2eye_calibration.msg import TransformArray
 from visp_hand2eye_calibration.srv import compute_effector_camera_quick
 
-from handeye_persistence import HandeyePersistence
+from handeye_calibration import HandeyeCalibration
 
 
 class HandeyeCalibrator(object):
@@ -130,7 +130,7 @@ class HandeyeCalibrator(object):
                                    rot.z,
                                    rot.w))
 
-            ret = HandeyePersistence(self.eye_on_hand,
+            ret = HandeyeCalibration(self.eye_on_hand,
                                      self.base_link_frame,
                                      self.tool_frame,
                                      self.optical_origin_frame,

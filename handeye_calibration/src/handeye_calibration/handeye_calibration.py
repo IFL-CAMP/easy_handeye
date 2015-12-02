@@ -4,7 +4,7 @@ import rospy
 from geometry_msgs.msg import Vector3, Quaternion, Transform, TransformStamped
 
 
-class HandeyePersistence(object):
+class HandeyeCalibration(object):
     DIRECTORY = os.path.expanduser('~/.ros/handeye_calibration')
 
     # transformation is tuple ((tx,ty,tz),(rx,ry,rz,rw)) as returned by lookupTransform
@@ -78,15 +78,15 @@ class HandeyePersistence(object):
         self.from_dict(yaml.load(in_yaml))
 
     def to_file(self):
-        if not os.path.exists(HandeyePersistence.DIRECTORY):
-            os.makedirs(HandeyePersistence.DIRECTORY)
-        filename = HandeyePersistence.DIRECTORY + rospy.get_namespace() + '.yaml'
+        if not os.path.exists(HandeyeCalibration.DIRECTORY):
+            os.makedirs(HandeyeCalibration.DIRECTORY)
+        filename = HandeyeCalibration.DIRECTORY + rospy.get_namespace() + '.yaml'
 
         with open(filename, 'w') as calib_file:
             calib_file.write(self.to_yaml())
 
     def from_file(self):
-        filename = HandeyePersistence.DIRECTORY + rospy.get_namespace() + '.yaml'
+        filename = HandeyeCalibration.DIRECTORY + rospy.get_namespace() + '.yaml'
 
         with open(filename) as calib_file:
             self.from_yaml(calib_file.read())
