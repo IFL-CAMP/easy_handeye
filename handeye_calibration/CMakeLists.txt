@@ -7,6 +7,10 @@ project(handeye_calibration)
 find_package(catkin REQUIRED COMPONENTS
   visp_hand2eye_calibration
   tf
+  std_msgs
+  geometry_msgs
+  std_srvs
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -17,6 +21,30 @@ find_package(catkin REQUIRED COMPONENTS
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
 catkin_python_setup()
+
+########################
+## Message generation ##
+########################
+
+add_message_files(
+  FILES
+  HandeyeCalibration.msg
+  SampleList.msg
+)
+
+add_service_files(
+  FILES
+  TakeSample.srv
+  ComputeCalibration.srv
+  RemoveSample.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  geometry_msgs
+  visp_hand2eye_calibration
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -31,9 +59,8 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES aruco_hand_eye
 #  CATKIN_DEPENDS aruco_ros visp_hand2eye_calibration
-#  DEPENDS system_lib
+   DEPENDS message_runtime
 )
-
 
 #############
 ## Install ##
