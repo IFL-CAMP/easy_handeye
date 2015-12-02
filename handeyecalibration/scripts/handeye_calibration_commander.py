@@ -23,16 +23,28 @@ class HandeyeCalibrationCommander:
     def __init__(self):
         self.client = HandeyeClient()
 
+    def _take_menu(self):
+        print('Press SPACE to take a sample or ENTER to continue\n')
+        i = getchar()
+        if i == ' ':
+            self.client.take_sample()
+
+    def _display_sample_list(self, sample_list):
+        for i in range(len(sample_list.hand_world_samples.transforms)):
+            print('{}) {}, {}\n'.format((i,
+                                       sample_list.hand_world_samples.transforms[i],
+                                       sample_list.camera_marker_samples.transforms[i])))
+
     def _edit_menu(self):
         sample_list = self.client.get_sample_list()
-        sample_to_delete = None
-        while sample_to_delete != '':
-            prompt_str = 'Press a number and ENTER to delete the respective sample, or ENTER to continue:\n'
-            for i in range(len(sample_list)):
-                prompt_str += str(i + 1) + ' ' + str(sample_list[i]) + '\n'
-            sample_to_delete = raw_input(prompt_str)
-            if sample_to_delete.isdigit():
-                self.client.remove_sample(sample_to_delete)
+        if len(sample_list.hand_world_samples.transforms) > 0:
+            sample_to_delete = None
+            while sample_to_delete != '':
+                prompt_str = 'Press a number and ENTER to delete the respective sample, or ENTER to continue:\n'
+                self._display_sample_list(sample_list)
+                sample_to_delete = raw_input(prompt_str)
+                if sample_to_delete.isdigit():
+                    self.client.remove_sample(sample_to_delete)
 
     def _save_menu(self):
         print('Press c to compute the calibration or ENTER to continue\n')
@@ -40,12 +52,13 @@ class HandeyeCalibrationCommander:
         if i == 'c':
             cal = self.compute_calibration_proxy()
             print(cal)
-        print('Press q+ENTER to quit or ENTER to continue\n')
+        print('Press q to quit or ENTER to continue\n')
         i = getchar()
         if i == 'q':
             quit()
 
     def _interactive_menu(self):
+        self._take_menu()
         self._edit_menu()
         self._save_menu()
 
