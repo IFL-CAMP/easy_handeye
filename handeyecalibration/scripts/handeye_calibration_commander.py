@@ -31,26 +31,25 @@ class HandeyeCalibrationCommander:
 
     def _display_sample_list(self, sample_list):
         for i in range(len(sample_list.hand_world_samples.transforms)):
-            print('{}) {}, {}\n'.format((i,
+            print('{}) \n hand->world {} \n camera->marker {}\n'.format(i,
                                        sample_list.hand_world_samples.transforms[i],
-                                       sample_list.camera_marker_samples.transforms[i])))
+                                       sample_list.camera_marker_samples.transforms[i]))
 
     def _edit_menu(self):
-        sample_list = self.client.get_sample_list()
-        if len(sample_list.hand_world_samples.transforms) > 0:
-            sample_to_delete = None
-            while sample_to_delete != '':
-                prompt_str = 'Press a number and ENTER to delete the respective sample, or ENTER to continue:\n'
-                self._display_sample_list(sample_list)
-                sample_to_delete = raw_input(prompt_str)
-                if sample_to_delete.isdigit():
-                    self.client.remove_sample(sample_to_delete)
+        while len(self.client.get_sample_list().hand_world_samples.transforms) > 0:
+            prompt_str = 'Press a number and ENTER to delete the respective sample, or ENTER to continue:\n'
+            self._display_sample_list(self.client.get_sample_list())
+            sample_to_delete = raw_input(prompt_str)
+            if sample_to_delete.isdigit():
+                self.client.remove_sample(int(sample_to_delete))
+            else:
+                break
 
     def _save_menu(self):
         print('Press c to compute the calibration or ENTER to continue\n')
         i = getchar()
         if i == 'c':
-            cal = self.compute_calibration_proxy()
+            cal = self.client.compute_calibration()
             print(cal)
         print('Press q to quit or ENTER to continue\n')
         i = getchar()
@@ -63,6 +62,7 @@ class HandeyeCalibrationCommander:
         self._save_menu()
 
     def spin_interactive(self):
+        self._edit_menu()  # the sample list might not be empty when we start the commander
         while not rospy.is_shutdown():
             self._interactive_menu()
 
@@ -72,10 +72,11 @@ def main():
     while rospy.get_time() == 0.0:
         pass
 
+    print('Handeye Calibration Commander')
+    print('connecting to: {}'.format((rospy.get_namespace().strip('/'))))
+
     cmder = HandeyeCalibrationCommander()
 
-    print('Handeye Calibration Commander')
-    print(rospy.get_namespace())
     if cmder.client.eye_on_hand:
         print('eye-on-hand calibration')
         print('tool frame: {}'.format(cmder.client.tool_frame))

@@ -38,7 +38,7 @@ class HandeyeClient(object):
         return self.take_sample_proxy().samples
 
     def remove_sample(self, index):
-        return self.remove_sample_proxy(index).samples
+        return self.remove_sample_proxy(hec.srv.RemoveSampleRequest(sample_index=index)).samples
 
     def compute_calibration(self):
         return self.compute_calibration_proxy()

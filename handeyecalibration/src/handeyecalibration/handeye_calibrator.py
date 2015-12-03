@@ -24,23 +24,21 @@ class HandeyeCalibrator(object):
 
         self.base_link_frame = None
         """
-        needed only for eye-on-base calibrations: robot base tf name
+        robot base tf name
 
         :type: string
         """
 
         self.tool_frame = None
         """
-        needed only for eye-on-hand calibrations: robot tool tf name
+        robot tool tf name
 
         :type: string
         """
 
         # tf names
-        if self.eye_on_hand:
-            self.tool_frame = rospy.get_param('tool_frame', 'tool0')
-        else:
-            self.base_link_frame = rospy.get_param('base_link_frame', 'base_link')
+        self.tool_frame = rospy.get_param('tool_frame', 'tool0')
+        self.base_link_frame = rospy.get_param('base_link_frame', 'base_link')
 
         self.optical_origin_frame = rospy.get_param('optical_origin_frame', 'optical_origin')
         self.optical_target_frame = rospy.get_param('optical_target_frame', 'optical_target')

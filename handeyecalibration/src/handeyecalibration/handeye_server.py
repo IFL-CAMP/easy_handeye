@@ -29,14 +29,14 @@ class HandeyeServer:
 
     def take_sample(self, req):
         self.calibrator.take_sample()
-        return hec.srv.TakeSampleResponse(self.calibrator.get_visp_samples())
+        return hec.srv.TakeSampleResponse(SampleList(*self.calibrator.get_visp_samples()))
 
     def remove_sample(self, req):
         try:
             self.calibrator.remove_sample(req.sample_index)
         except IndexError:
             rospy.logerr('Invalid index '+req.sample_index)
-        return hec.srv.TakeSampleResponse(self.calibrator.get_visp_samples())
+        return hec.srv.RemoveSampleResponse(SampleList(*self.calibrator.get_visp_samples()))
 
     def compute_calibration(self, req):
         self.last_calibration = self.calibrator.compute_calibration()
