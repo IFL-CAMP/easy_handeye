@@ -1,7 +1,0 @@
-<launch>
-    <arg name="namespace" default="handeyecalibration" doc="The namespace containing the parameters to be saved" />
-    <arg name="filename" default="$(arg namespace)" />
-
-    <node name="mkdir_calibration" pkg="handeyecalibration" type="mkdir_calibration.sh" />
-    <rosparam command="dump" ns="$(arg namespace)" file="$(env HOME)/.ros/handeyecalibration/$(arg filename).yaml" />
-</launch>

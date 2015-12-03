@@ -1,49 +1,34 @@
 #!/usr/bin/env python2
 
-__author__ = 'marco'
-
 import rospy
 from tf import TransformBroadcaster, TransformerROS, transformations as tfs
 from geometry_msgs.msg import Transform
+from handeyecalibration.handeye_calibration import HandeyeCalibration
 
 rospy.init_node('handeye_calibration_publisher')
 while rospy.get_time() == 0.0:
     pass
 
-eye_on_hand = rospy.get_param('eye_on_hand')
 inverse = rospy.get_param('inverse')
 
-orig = None
-dest = None 
+calib = HandeyeCalibration()
+calib.from_file()
+rospy.loginfo('loading calibration parameters into namespace {}'.format(rospy.get_namespace()))
+calib.to_parameters()
 
-# TODO: use HandeyeCalibration class
+orig = calib.transformation.header.frame_id
+dest = calib.transformation.child_frame_id
 
-if eye_on_hand:
-    orig = rospy.get_param('tool_frame')
-    dest = rospy.get_param('optical_origin_frame')
-    prefix = 'tool_to_camera'
-else:
-    orig = rospy.get_param('base_link_frame')
-    dest = rospy.get_param('optical_origin_frame')
-    prefix = 'base_to_camera'
-
-translation = (rospy.get_param(prefix + '_x'),
-               rospy.get_param(prefix + '_y'),
-               rospy.get_param(prefix + '_z'))
-rotation = (rospy.get_param(prefix + '_qx'),
-            rospy.get_param(prefix + '_qy'),
-            rospy.get_param(prefix + '_qz'),
-            rospy.get_param(prefix + '_qw'))
-
+transformer = TransformerROS()
+result_tf = calib.transformation.transform
+transl = result_tf.translation.x, result_tf.translation.y, result_tf.translation.z
+rot = result_tf.rotation.x, result_tf.rotation.y, result_tf.rotation.z, result_tf.rotation.z
+cal_mat = transformer.fromTranslationRotation(transl, rot)
 if inverse:
-    transformer = TransformerROS()
-    result_tf = Transform(translation, rotation)
-    cal_mat = transformer.fromTranslationRotation(result_tf.translation, result_tf.rotation)
-    cal_mat_inv = tfs.inverse_matrix(cal_mat)
-    translation = tfs.translation_from_matrix(cal_mat_inv)
-    rotation = tfs.quaternion_from_matrix(cal_mat_inv)
-
+    cal_mat = tfs.inverse_matrix(cal_mat)
     orig, dest = dest, orig
+translation = tfs.translation_from_matrix(cal_mat)
+rotation = tfs.quaternion_from_matrix(cal_mat)
 
 rospy.loginfo('publishing transformation ' + orig + ' -> ' + dest + ':\n' + str((translation, rotation)))
 

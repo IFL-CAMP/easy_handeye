@@ -8,12 +8,6 @@
     <arg name="optical_origin_frame" default="optical_origin" />
     
     <arg name="inverse" default="false" />
-    
-    <arg name="load_handeye" default="true" />
-
-    <include if="$(arg load_handeye)" file="$(find handeyecalibration)/launch/load.launch">
-        <arg name="namespace" value="$(arg namespace)" />
-    </include>
 
     <group ns="$(arg namespace)">
         <param name="eye_on_hand" value="$(arg eye_on_hand)" />
