@@ -1,18 +1,14 @@
-
 from __future__ import division
 import os
 import rospy
 import rospkg
-import std_srvs
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtGui import QWidget, QListWidgetItem
-
 from handeyecalibration.handeye_client import HandeyeClient
 
 
 class RqtHandeyeCalibration(Plugin):
-
     def __init__(self, context):
         super(RqtHandeyeCalibration, self).__init__(context)
         # Give QObjects reasonable names
@@ -51,13 +47,13 @@ class RqtHandeyeCalibration(Plugin):
         self.client = HandeyeClient()
 
         self._widget.calibNameLineEdit.setText(rospy.get_namespace())
-        self._widget.opticalFrameLineEdit.setText(self.hec.optical_origin_frame)
-        if self.hec.eye_on_hand:
+        self._widget.opticalFrameLineEdit.setText(self.client.optical_origin_frame)
+        if self.client.eye_on_hand:
             self._widget.calibTypeLineEdit.setText("eye on hand")
-            self._widget.robotFrameLineEdit.setText(self.hec.tool_frame)
+            self._widget.robotFrameLineEdit.setText(self.client.tool_frame)
         else:
             self._widget.calibTypeLineEdit.setText("eye on base")
-            self._widget.robotFrameLineEdit.setText(self.hec.base_link_frame)
+            self._widget.robotFrameLineEdit.setText(self.client.base_link_frame)
 
         self._widget.takeButton.clicked[bool].connect(self.handle_take_sample)
         self._widget.removeButton.clicked[bool].connect(self.handle_remove_sample)
@@ -78,14 +74,21 @@ class RqtHandeyeCalibration(Plugin):
         # v = instance_settings.value(k)
         pass
 
-        #def trigger_configuration(self):
+        # def trigger_configuration(self):
         # Comment in to signal that the plugin has a way to configure
         # This will enable a setting button (gear icon) in each dock widget title bar
         # Usually used to open a modal configuration dialog
+
     def _display_sample_list(self, sample_list):
         self._widget.sampleListWidget.clear()
-        for sample in sample_list:
-            self._widget.sampleListWidget.addItem(QListWidgetItem(str(sample)))
+
+        for i in range(len(sample_list.hand_world_samples.transforms)):
+            self._widget.sampleListWidget.addItem(
+                '{}) \n hand->world {} \n camera->marker {}\n'.format(i,
+                                                                      sample_list.hand_world_samples.transforms[
+                                                                          i],
+                                                                      sample_list.camera_marker_samples.transforms[
+                                                                          i]))
 
     def handle_take_sample(self):
         sample_list = self.client.take_sample()
@@ -98,7 +101,7 @@ class RqtHandeyeCalibration(Plugin):
 
     def handle_compute_calibration(self):
         result = self.client.compute_calibration()
-        self._widget.outputBox.setText(str(result))
+        self._widget.outputBox.setPlainText(str(result.calibration.transform.transform))
 
     def handle_save_calibration(self):
         self.client.save()
