@@ -136,19 +136,14 @@ class HandeyeCalibrator(object):
             result = self.calibrate(camera_marker_samples, hand_world_samples)
             transl = result.effector_camera.translation
             rot = result.effector_camera.rotation
-            result_tf = Transform((transl.x,
-                                   transl.y,
-                                   transl.z),
-                                  (rot.x,
-                                   rot.y,
-                                   rot.z,
-                                   rot.w))
+            result_tuple = ((transl.x, transl.y, transl.z),
+                            (rot.x, rot.y, rot.z, rot.w))
 
             ret = HandeyeCalibration(self.eye_on_hand,
                                      self.base_link_frame,
                                      self.tool_frame,
                                      self.optical_origin_frame,
-                                     result_tf)
+                                     result_tuple)
             return ret
 
         except rospy.ServiceException as ex:

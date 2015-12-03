@@ -11,7 +11,7 @@ class HandeyeCalibration(object):
     DIRECTORY = os.path.expanduser('~/.ros/handeyecalibration')
     """Default directory for calibration yaml files."""
 
-    # TODO: use the HandeyeCalibration message as back end
+    # TODO: use the HandeyeCalibration message instead, this should be HandeyeCalibrationConversions
     def __init__(self,
                  eye_on_hand=False,
                  base_link_frame=None,
