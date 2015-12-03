@@ -61,6 +61,8 @@ class HandeyeCalibration(object):
             self.transformation.header.frame_id = base_link_frame
         self.transformation.child_frame_id = optical_origin_frame
 
+        self.filename = HandeyeCalibration.DIRECTORY + '/' + rospy.get_namespace().strip('/') + '.yaml'
+
     def to_dict(self):
         """
         Returns a dictionary representing this calibration.
@@ -145,9 +147,8 @@ class HandeyeCalibration(object):
         """
         if not os.path.exists(HandeyeCalibration.DIRECTORY):
             os.makedirs(HandeyeCalibration.DIRECTORY)
-        filename = HandeyeCalibration.DIRECTORY + rospy.get_namespace() + '.yaml'
 
-        with open(filename, 'w') as calib_file:
+        with open(self.filename, 'w') as calib_file:
             calib_file.write(self.to_yaml())
 
     def from_file(self):
@@ -158,9 +159,8 @@ class HandeyeCalibration(object):
 
         :rtype: None
         """
-        filename = HandeyeCalibration.DIRECTORY + rospy.get_namespace() + '.yaml'
 
-        with open(filename) as calib_file:
+        with open(self.filename) as calib_file:
             self.from_yaml(calib_file.read())
 
     def from_parameters(self):

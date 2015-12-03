@@ -51,9 +51,11 @@ class HandeyeCalibrationCommander:
         if i == 'c':
             cal = self.client.compute_calibration()
             print(cal)
-        print('Press q to quit or ENTER to continue\n')
+        print('Press s to save the calibration to parameters and namespace, q to quit or ENTER to continue\n')
         i = getchar()
-        if i == 'q':
+        if i == 's':
+            self.client.save()
+        elif i == 'q':
             quit()
 
     def _interactive_menu(self):

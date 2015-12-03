@@ -42,11 +42,14 @@ class HandeyeServer:
         self.last_calibration = self.calibrator.compute_calibration()
         # TODO: avoid confusion class/msg, change class into HandeyeCalibrationConversions
         ret = hec.srv.ComputeCalibrationResponse()
+        if self.last_calibration is None:
+            rospy.logwarn('No valid calibration computed, returning null')
+            return ret
         ret.calibration.eye_on_hand = self.last_calibration.eye_on_hand
         ret.calibration.transform = self.last_calibration.transformation
         return ret
 
     def save_calibration(self, req):
-        self.last_calibration.to_param()
+        self.last_calibration.to_parameters()
         self.last_calibration.to_file()
         return std_srvs.srv.EmptyResponse()
