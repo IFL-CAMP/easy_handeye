@@ -11,6 +11,7 @@ class HandeyeCalibration(object):
     DIRECTORY = os.path.expanduser('~/.ros/handeyecalibration')
     """Default directory for calibration yaml files."""
 
+    # TODO: use the HandeyeCalibration message as back end
     def __init__(self,
                  eye_on_hand=False,
                  base_link_frame=None,
@@ -39,9 +40,19 @@ class HandeyeCalibration(object):
             transformation = ((0, 0, 0), (0, 0, 0, 1))
 
         self.eye_on_hand = eye_on_hand
+        """
+        if false, it is a eye-on-base calibration
+
+        :type: bool
+        """
 
         self.transformation = TransformStamped(transform=Transform(
             Vector3(*transformation[0]), Quaternion(*transformation[1])))
+        """
+        transformation between optical origin and base/tool robot frame
+
+        :type: geometry_msgs.msg.TransformedStamped
+        """
 
         # tf names
         if self.eye_on_hand:

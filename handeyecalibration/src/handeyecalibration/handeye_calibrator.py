@@ -7,17 +7,39 @@ from handeyecalibration.handeye_calibration import HandeyeCalibration
 
 
 class HandeyeCalibrator(object):
-    MIN_SAMPLES = 2  # TODO: correct?
+    """
+    Connects tf and ViSP hand2eye to provide an interactive mean of calibration.
+    """
+
+    MIN_SAMPLES = 2  # TODO: correct? this is what is stated in the paper, but sounds strange
+    """Minimum samples required for a successful calibration."""
 
     def __init__(self):
         self.eye_on_hand = rospy.get_param('eye_on_hand', False)
+        """
+        if false, it is a eye-on-base calibration
+
+        :type: bool
+        """
+
+        self.base_link_frame = None
+        """
+        needed only for eye-on-base calibrations: robot base tf name
+
+        :type: string
+        """
+
+        self.tool_frame = None
+        """
+        needed only for eye-on-hand calibrations: robot tool tf name
+
+        :type: string
+        """
 
         # tf names
         if self.eye_on_hand:
             self.tool_frame = rospy.get_param('tool_frame', 'tool0')
-            self.base_link_frame = None
         else:
-            self.tool_frame = None
             self.base_link_frame = rospy.get_param('base_link_frame', 'base_link')
 
         self.optical_origin_frame = rospy.get_param('optical_origin_frame', 'optical_origin')
