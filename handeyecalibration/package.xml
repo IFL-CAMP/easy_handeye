@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
     <name>handeyecalibration</name>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <description>
         This package uses visp_hand2eye_calibration to determine the
         extrinsic parameters of cameras.
