@@ -1,5 +1,4 @@
 <launch>
-    <!-- TODO bring over rviz from ur5_rviz.launch; create launch file with just static_transform_publisher to be killed after calibration -->
     <arg name="eye_on_hand" default="false" doc="eye-on-hand instead of eye_on_base" />
     <arg name="namespace_prefix" default="handeyecalibration" />
     <arg if="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_hand" />
@@ -14,7 +13,7 @@
     <!-- Publish frames while calibrating -->
     <arg name="publish_tf" default="true"/>
 
-    <!-- Run the VISP solver to determine the extrinsic parameters -->
+    <!-- Run the ViSP solver to determine the extrinsic parameters -->
     <node ns="$(arg namespace)" name="hand_eye_solver"
           pkg="visp_hand2eye_calibration"
           type="visp_hand2eye_calibration_calibrator">
@@ -22,7 +21,7 @@
     </node>
 
     <group ns="$(arg namespace)" >
-        <param name="eye_on_hand" value="$(arg eye_on_hand)"/>
+        <param name="eye_on_hand"           value="$(arg eye_on_hand)"/>
         <param name="base_link_frame"       value="$(arg base_link_frame)" />
         <param name="tool_frame"            value="$(arg tool_frame)" />
         <param name="optical_origin_frame"  value="$(arg optical_origin_frame)" />
