@@ -29,8 +29,8 @@ if overriding_optical_origin_frame != "":
 rospy.loginfo('loading calibration parameters into namespace {}'.format(rospy.get_namespace()))
 calib.to_parameters()
 
-orig = calib.transformation.header.frame_id
-dest = calib.transformation.child_frame_id
+orig = calib.transformation.header.frame_id  # tool or base link
+dest = calib.transformation.child_frame_id  # optical_origin_frame
 
 transformer = TransformerROS()
 result_tf = calib.transformation.transform
@@ -50,5 +50,5 @@ broad = TransformBroadcaster()
 rate = rospy.Rate(50)
 
 while not rospy.is_shutdown():
-    broad.sendTransform(translation, rotation, rospy.Time.now(), dest, orig)
+    broad.sendTransform(translation, rotation, rospy.Time.now(), dest, orig)  # takes ..., child, parent
     rate.sleep()
