@@ -13,6 +13,19 @@ inverse = rospy.get_param('inverse')
 
 calib = HandeyeCalibration()
 calib.from_file()
+
+if calib.eye_on_hand:
+    overriding_tool_frame = rospy.get_param('tool_frame')
+    if overriding_tool_frame != "":
+        calib.transformation.header.frame_id = overriding_tool_frame
+else:
+    overriding_base_link_frame = rospy.get_param('base_link_frame')
+    if overriding_base_link_frame != "":
+        calib.transformation.header.frame_id = overriding_base_link_frame
+overriding_optical_origin_frame = rospy.get_param('optical_origin_frame')
+if overriding_optical_origin_frame != "":
+    calib.transformation.child_frame_id = overriding_optical_origin_frame
+
 rospy.loginfo('loading calibration parameters into namespace {}'.format(rospy.get_namespace()))
 calib.to_parameters()
 
