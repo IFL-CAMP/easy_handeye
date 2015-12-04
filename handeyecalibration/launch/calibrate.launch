@@ -2,7 +2,7 @@
     <arg name="eye_on_hand" default="false" doc="eye-on-hand instead of eye_on_base" />
     <arg name="namespace_prefix" default="handeyecalibration" />
     <arg if="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_hand" />
-    <arg unless="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_hand" />
+    <arg unless="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_base" />
 
     <!-- The input reference frames -->
     <arg name="base_link_frame"       default="base_link" />
