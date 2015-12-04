@@ -4,9 +4,10 @@
     <arg if="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_hand" />
     <arg unless="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_base" />
 
-    <arg if="$(arg eye_on_hand)" name="tool_frame" default="tool0" />
-    <arg unless="$(arg eye_on_hand)" name="base_link_frame" default="base_link" />
-    <arg name="optical_origin_frame" default="optical_origin" />
+    <!--it is possible to override the link names saved in the yaml file in case of name clashes, for example-->
+    <arg if="$(arg eye_on_hand)" name="tool_frame" default="" />
+    <arg unless="$(arg eye_on_hand)" name="base_link_frame" default="" />
+    <arg name="optical_origin_frame" default="" />
     
     <arg name="inverse" default="false" />
     
