@@ -1,5 +1,6 @@
 import rospy
 import tf
+from tf import  transformations as tfs
 from geometry_msgs.msg import Vector3, Quaternion, Transform
 from visp_hand2eye_calibration.msg import TransformArray
 from visp_hand2eye_calibration.srv import compute_effector_camera_quick
@@ -123,7 +124,11 @@ class HandeyeCalibrator(object):
         if time is None:
             time = self._wait_for_transforms()
 
-        rob = self.listener.lookupTransform(self.base_link_frame, self.tool_frame, time)
+        # TODO: figure out this black magic (part 1)
+        if self.eye_on_hand:
+            rob = self.listener.lookupTransform(self.base_link_frame, self.tool_frame, time)
+        else:
+            rob = self.listener.lookupTransform(self.tool_frame, self.base_link_frame, time)
         opt = self.listener.lookupTransform(self.optical_origin_frame, self.optical_target_frame, time)
         return {'robot': rob, 'optical': opt}
 
@@ -167,7 +172,7 @@ class HandeyeCalibrator(object):
         :rtype: visp_hand2eye_calibration.msg.TransformArray
         """
         hand_world_samples = TransformArray()
-        # hand_world_samples.header.frame_id = self.optical_origin_frame  # TODO: why was it like this???
+        # hand_world_samples.header.frame_id = self.optical_origin_frame  # TODO: figure out this black magic (part 2)
         hand_world_samples.header.frame_id = self.base_link_frame
 
         camera_marker_samples = TransformArray()
@@ -213,6 +218,29 @@ class HandeyeCalibrator(object):
                                      self.tool_frame,
                                      self.optical_origin_frame,
                                      result_tuple)
+
+            # TODO: figure out this black magic (part 3)
+            transl = result.effector_camera.translation
+            rot = result.effector_camera.rotation
+            result_tf = Transform((transl.x,
+                                   transl.y,
+                                   transl.z),
+                                  (rot.x,
+                                   rot.y,
+                                   rot.z,
+                                   rot.w))
+
+            cal_mat = self.transformer.fromTranslationRotation(result_tf.translation,
+                                                               result_tf.rotation)
+            cal_mat_inv = tfs.inverse_matrix(cal_mat)
+            transl = tfs.translation_from_matrix(cal_mat_inv)
+            rot = tfs.quaternion_from_matrix(cal_mat_inv)
+            ret = HandeyeCalibration(self.eye_on_hand,
+                                     self.base_link_frame,
+                                     self.tool_frame,
+                                     self.optical_origin_frame,
+                                     (transl, rot))
+
             return ret
 
         except rospy.ServiceException as ex:
