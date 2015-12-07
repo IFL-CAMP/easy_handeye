@@ -35,7 +35,7 @@ dest = calib.transformation.child_frame_id  # optical_origin_frame
 transformer = TransformerROS()
 result_tf = calib.transformation.transform
 transl = result_tf.translation.x, result_tf.translation.y, result_tf.translation.z
-rot = result_tf.rotation.x, result_tf.rotation.y, result_tf.rotation.z, result_tf.rotation.z
+rot = result_tf.rotation.x, result_tf.rotation.y, result_tf.rotation.z, result_tf.rotation.w
 cal_mat = transformer.fromTranslationRotation(transl, rot)
 if inverse:
     cal_mat = tfs.inverse_matrix(cal_mat)
