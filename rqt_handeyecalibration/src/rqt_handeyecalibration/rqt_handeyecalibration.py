@@ -84,11 +84,12 @@ class RqtHandeyeCalibration(Plugin):
 
         for i in range(len(sample_list.hand_world_samples.transforms)):
             self._widget.sampleListWidget.addItem(
-                '{}) \n hand->world {} \n camera->marker {}\n'.format(i,
+                '{}) \n hand->world {} \n camera->marker {}\n'.format(i+1,
                                                                       sample_list.hand_world_samples.transforms[
                                                                           i],
                                                                       sample_list.camera_marker_samples.transforms[
                                                                           i]))
+        self._widget.sampleListWidget.setCurrentRow(len(sample_list.hand_world_samples.transforms)-1)
 
     def handle_take_sample(self):
         sample_list = self.client.take_sample()
