@@ -1,21 +1,22 @@
 <?xml version="1.0"?>
-<package>
-  <name>rqt_handeyecalibration</name>
-  <version>0.2.0</version>
-  <description>The rqt_handeyecalibration package</description>
+<package format="2">
+    <name>rqt_handeyecalibration</name>
+    <version>0.2.0</version>
+    <description>rqt GUI for interactive handeyecalibration package</description>
 
-  <maintainer email="marco.esposito@tum.de">Marco Esposito</maintainer>
+    <maintainer email="marco.esposito@tum.de">Marco Esposito</maintainer>
 
-  <license>GPLv3</license>
+    <license>GPLv3</license>
 
-  <author email="marco.esposito@tum.de">Marco Esposito</author>
+    <author email="marco.esposito@tum.de">Marco Esposito</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>rqt_gui</run_depend>
-  <run_depend>rqt_gui_py</run_depend>
+    <buildtool_depend>catkin</buildtool_depend>
+    <exec_depend>rospy</exec_depend>
+    <exec_depend>rqt_gui</exec_depend>
+    <exec_depend>rqt_gui_py</exec_depend>
+    <exec_depend>handeyecalibration</exec_depend>
 
-  <export>
-    <rqt_gui plugin="${prefix}/plugin.xml" />
-  </export>
+    <export>
+        <rqt_gui plugin="${prefix}/plugin.xml"/>
+    </export>
 </package>
