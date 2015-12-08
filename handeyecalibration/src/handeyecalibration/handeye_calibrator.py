@@ -170,8 +170,7 @@ class HandeyeCalibrator(object):
         :rtype: visp_hand2eye_calibration.msg.TransformArray
         """
         hand_world_samples = TransformArray()
-        hand_world_samples.header.frame_id = self.optical_origin_frame  # TODO: figure out this black magic (part 2)
-        # hand_world_samples.header.frame_id = self.base_link_frame
+        hand_world_samples.header.frame_id = self.base_link_frame
 
         camera_marker_samples = TransformArray()
         camera_marker_samples.header.frame_id = self.optical_origin_frame
@@ -207,38 +206,16 @@ class HandeyeCalibrator(object):
         try:
             result = self.calibrate(camera_marker_samples, hand_world_samples)
             rospy.loginfo("Computed calibration: {}".format(str(result)))
-            # transl = result.effector_camera.translation
-            # rot = result.effector_camera.rotation
-            # result_tuple = ((transl.x, transl.y, transl.z),
-            #                 (rot.x, rot.y, rot.z, rot.w))
-
-            # ret = HandeyeCalibration(self.eye_on_hand,
-            #                          self.base_link_frame,
-            #                          self.tool_frame,
-            #                          self.optical_origin_frame,
-            #                          result_tuple)
-
-            # TODO: figure out this black magic (part 3)
             transl = result.effector_camera.translation
             rot = result.effector_camera.rotation
-            result_tf = Transform((transl.x,
-                                   transl.y,
-                                   transl.z),
-                                  (rot.x,
-                                   rot.y,
-                                   rot.z,
-                                   rot.w))
+            result_tuple = ((transl.x, transl.y, transl.z),
+                            (rot.x, rot.y, rot.z, rot.w))
 
-            cal_mat = self.transformer.fromTranslationRotation(result_tf.translation,
-                                                               result_tf.rotation)
-            cal_mat_inv = tfs.inverse_matrix(cal_mat)
-            transl_inv = [float(x) for x in tfs.translation_from_matrix(cal_mat_inv)]
-            rot_inv = [float(x) for x in tfs.quaternion_from_matrix(cal_mat_inv)]
             ret = HandeyeCalibration(self.eye_on_hand,
                                      self.base_link_frame,
                                      self.tool_frame,
                                      self.optical_origin_frame,
-                                     (transl_inv, rot_inv))
+                                     result_tuple)
 
             return ret
 
