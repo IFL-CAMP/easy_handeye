@@ -1,6 +1,6 @@
 import rospy
 import tf
-from tf import  transformations as tfs
+from tf import transformations as tfs
 from geometry_msgs.msg import Vector3, Quaternion, Transform
 from visp_hand2eye_calibration.msg import TransformArray
 from visp_hand2eye_calibration.srv import compute_effector_camera_quick
@@ -87,9 +87,7 @@ class HandeyeCalibrator(object):
         """
         proxy to a ViSP hand2eye calibration service
 
-        Each sample is a dictionary going from 'rob' and 'opt' to the relative sampled transform in tf tuple format.
-
-        :type: list[dict[str, ((float, float, float), (float, float, float, float))]]
+        :type: rospy.ServiceProxy
         """
 
     def _wait_for_tf_init(self):
