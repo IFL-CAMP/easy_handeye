@@ -18,6 +18,7 @@ class CalibrationMovements:
     def __init__(self, move_group_name):
         #self.client = HandeyeClient()  # TODO: move around marker when eye_on_hand
         self.mgc = MoveGroupCommander(move_group_name)
+        self.mgc.set_planner_id("RRTConnectkConfigDefault")
         self.start_pose = self.mgc.get_current_pose()
         self.poses = []
         self.fallback_joint_limits = [math.radians(90)]*4+[math.radians(90)]+[math.radians(180)]+[math.radians(350)]
@@ -140,8 +141,9 @@ class CalibrationMovementsGUI(QtGui.QWidget):
 
     def handle_next_pose(self):
         self.guide_lbl.setText('Going to center position')
-        plan = self.local_mover.plan_to_start_pose()
-        self.local_mover.execute_plan(plan)
+        if self.current_pose != -1:
+            plan = self.local_mover.plan_to_start_pose()
+            self.local_mover.execute_plan(plan)
         if self.current_pose < len(self.local_mover.poses)-1:
             self.current_pose += 1
         self.pose_number_lbl.setText('{}/6'.format(self.current_pose))
@@ -241,7 +243,7 @@ if __name__ == '__main__':
 
     lm.compute_poses_around_current_state(angle_delta)
 
-    joint_limits = [math.radians(25)]*4+[math.radians(90)]+[math.radians(180)]+[math.radians(350)]  # TODO: make param
+    joint_limits = [math.radians(90)]*4+[math.radians(90)]+[math.radians(180)]+[math.radians(350)]  # TODO: make param
     lm.check_poses(joint_limits)
 
     qapp = QtGui.QApplication(sys.argv)
