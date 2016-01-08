@@ -46,6 +46,14 @@ class CalibrationMovements:
             fp.pose.orientation = Quaternion(*combined_rot)
             final_poses.append(fp)
 
+        fp = deepcopy(self.start_pose)
+        fp.pose.position.z -= 0.05
+        final_poses.append(fp)
+
+        fp = deepcopy(self.start_pose)
+        fp.pose.position.y -= 0.05
+        final_poses.append(fp)
+
         self.poses = final_poses
         self.current_pose_index = -1
 
