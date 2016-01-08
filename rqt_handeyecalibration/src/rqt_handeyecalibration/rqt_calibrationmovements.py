@@ -204,7 +204,7 @@ class RqtCalibrationMovements(Plugin):
 
         lm.compute_poses_around_current_state(angle_delta)
 
-        joint_limits = [math.radians(25)]*4+[math.radians(90)]+[math.radians(180)]+[math.radians(350)]  # TODO: make param
+        joint_limits = [math.radians(90)]*4+[math.radians(90)]+[math.radians(180)]+[math.radians(350)]  # TODO: make param
         lm.check_poses(joint_limits)
 
     def shutdown_plugin(self):
