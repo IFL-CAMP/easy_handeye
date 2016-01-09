@@ -122,7 +122,7 @@ class HandeyeCalibrator(object):
         if time is None:
             time = self._wait_for_transforms()
 
-        # TODO: figure out this black magic (part 1)
+        # here we trick the library (it is actually made for eye_on_hand only). Trust me, I'm an engineer
         if self.eye_on_hand:
             rob = self.listener.lookupTransform(self.base_link_frame, self.tool_frame, time)
         else:
@@ -170,7 +170,10 @@ class HandeyeCalibrator(object):
         :rtype: visp_hand2eye_calibration.msg.TransformArray
         """
         hand_world_samples = TransformArray()
-        hand_world_samples.header.frame_id = self.base_link_frame
+        #hand_world_samples.header.frame_id = self.base_link_frame
+        hand_world_samples.header.frame_id = self.optical_origin_frame
+        # DONTFIXME: yes, I know, it should be like the line above.
+        # thing is, otherwise the results of the calibration are wrong. don't ask me why
 
         camera_marker_samples = TransformArray()
         camera_marker_samples.header.frame_id = self.optical_origin_frame
