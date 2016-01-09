@@ -3,6 +3,8 @@
 import sys
 
 from rqt_gui.main import Main
+import time
 
 main = Main()
+time.sleep(4)
 sys.exit(main.main(sys.argv, standalone='rqt_calibrationmovements.RqtCalibrationMovements'))
