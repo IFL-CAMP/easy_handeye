@@ -47,11 +47,15 @@ class CalibrationMovements:
             final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
-        fp.pose.position.z -= 0.05
+        fp.pose.position.x -= 0.1
         final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
-        fp.pose.position.y -= 0.05
+        fp.pose.position.y -= 0.1
+        final_poses.append(fp)
+
+        fp = deepcopy(self.start_pose)
+        fp.pose.position.z -= 0.1
         final_poses.append(fp)
 
         self.poses = final_poses
@@ -115,7 +119,7 @@ class CalibrationMovementsGUI(QtGui.QWidget):
         self.labels_layout = QtGui.QHBoxLayout()
         self.buttons_layout = QtGui.QHBoxLayout()
 
-        self.pose_number_lbl = QtGui.QLabel('0/6')
+        self.pose_number_lbl = QtGui.QLabel('0/8')
         self.bad_plan_lbl = QtGui.QLabel('No plan yet')
         self.guide_lbl = QtGui.QLabel('Should be able to calibrate from here. Press next pose to start')
 
@@ -154,7 +158,7 @@ class CalibrationMovementsGUI(QtGui.QWidget):
             self.local_mover.execute_plan(plan)
         if self.current_pose < len(self.local_mover.poses)-1:
             self.current_pose += 1
-        self.pose_number_lbl.setText('{}/6'.format(self.current_pose))
+        self.pose_number_lbl.setText('{}/{}'.format(self.current_pose+1, len(self.local_mover.poses)))
         self.plan_btn.setEnabled(True)
         self.execute_btn.setEnabled(False)
         self.bad_plan_lbl.setText('No plan yet')
