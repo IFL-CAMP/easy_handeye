@@ -24,10 +24,10 @@ class HandeyeServer:
                                                       std_srvs.srv.Empty, self.save_calibration)
 
         # Useful for secondary input sources (e.g. programmable buttons on robot)
-        self.get_sample_list_topic = rospy.Subscriber(hec.GET_SAMPLE_LIST_TOPIC,
-                                                      std_msgs.msg.Empty, self.get_sample_lists)
-        self.compute_calibration_topic = rospy.Subscriber(hec.COMPUTE_CALIBRATION_TOPIC,
-                                                          std_msgs.msg.Empty, self.compute_calibration)
+        self.take_sample_topic = rospy.Subscriber(hec.TAKE_SAMPLE_TOPIC,
+                                                  std_msgs.msg.Empty, self.take_sample)
+        self.compute_calibration_topic = rospy.Subscriber(hec.REMOVE_SAMPLE_TOPIC,
+                                                          std_msgs.msg.Empty, self.remove_last_sample)  # TODO: normalize
 
         self.last_calibration = None
 
@@ -37,6 +37,9 @@ class HandeyeServer:
     def take_sample(self, _):
         self.calibrator.take_sample()
         return hec.srv.TakeSampleResponse(SampleList(*self.calibrator.get_visp_samples()))
+
+    def remove_last_sample(self):
+        self.calibrator.remove_sample(len(self.calibrator.samples)-1)
 
     def remove_sample(self, req):
         try:
