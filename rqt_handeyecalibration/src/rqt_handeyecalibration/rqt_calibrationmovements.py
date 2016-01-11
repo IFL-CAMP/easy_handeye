@@ -25,7 +25,7 @@ class CalibrationMovements:
         if len(self.mgc.get_active_joints()) == 6:
             self.fallback_joint_limits = self.fallback_joint_limits[1:]
 
-    def compute_poses_around_current_state(self, angle_delta):
+    def compute_poses_around_current_state(self, angle_delta, translation_delta):
         self.start_pose = self.mgc.get_current_pose()
         basis = np.eye(3)
 
@@ -47,15 +47,15 @@ class CalibrationMovements:
             final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
-        fp.pose.position.x -= 0.1
+        fp.pose.position.x -= translation_delta
         final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
-        fp.pose.position.y -= 0.1
+        fp.pose.position.y -= translation_delta
         final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
-        fp.pose.position.z -= 0.1
+        fp.pose.position.z -= translation_delta
         final_poses.append(fp)
 
         self.poses = final_poses
@@ -68,8 +68,8 @@ class CalibrationMovements:
             self.mgc.set_pose_target(fp)
             plan = self.mgc.plan()
             if len(plan.joint_trajectory.points) == 0 or CalibrationMovements.is_crazy_plan(plan, joint_limits):
-                # TODO: handle failure better? must restart anyway...
-                raise RuntimeError('Cannot do calibration from this starting pose!')
+                return False
+        return True
 
     def plan_to_start_pose(self):
         return self.plan_to_pose(self.start_pose)
@@ -107,21 +107,36 @@ class CalibrationMovements:
 
 
 class CalibrationMovementsGUI(QtGui.QWidget):
-    def __init__(self, local_mover):
+    NOT_INITED_YET = 0
+    BAD_PLAN = 1
+    GOOD_PLAN = 2
+    MOVED_TO_POSE = 3
+    BAD_STARTING_POSITION = 4
+    GOOD_STARTING_POSITION = 5
+
+    def __init__(self):
         super(CalibrationMovementsGUI, self).__init__()
-        self.local_mover = local_mover
-        self.initUI()
+        move_group_name = rospy.get_param('~move_group', 'manipulator')
+        self.angle_delta = rospy.get_param('~angle_delta', math.radians(25))
+        self.translation_delta = rospy.get_param('~translation_delta', 0.1)
+        self.local_mover = CalibrationMovements(move_group_name)
         self.current_pose = -1
         self.current_plan = None
+        self.initUI()
+        self.state = CalibrationMovementsGUI.NOT_INITED_YET
 
     def initUI(self):
         self.layout = QtGui.QVBoxLayout()
         self.labels_layout = QtGui.QHBoxLayout()
         self.buttons_layout = QtGui.QHBoxLayout()
 
+        self.progress_bar = QtGui.QProgressBar()
         self.pose_number_lbl = QtGui.QLabel('0/8')
         self.bad_plan_lbl = QtGui.QLabel('No plan yet')
-        self.guide_lbl = QtGui.QLabel('Should be able to calibrate from here. Press next pose to start')
+        self.guide_lbl = QtGui.QLabel('Hello')
+
+        self.check_start_pose_btn = QtGui.QPushButton('Check starting pose')
+        self.check_start_pose_btn.clicked.connect(self.handle_check_current_state)
 
         self.next_pose_btn = QtGui.QPushButton('Next Pose')
         self.next_pose_btn.clicked.connect(self.handle_next_pose)
@@ -135,10 +150,12 @@ class CalibrationMovementsGUI(QtGui.QWidget):
         self.labels_layout.addWidget(self.pose_number_lbl)
         self.labels_layout.addWidget(self.bad_plan_lbl)
 
+        self.buttons_layout.addWidget(self.check_start_pose_btn)
         self.buttons_layout.addWidget(self.next_pose_btn)
         self.buttons_layout.addWidget(self.plan_btn)
         self.buttons_layout.addWidget(self.execute_btn)
 
+        self.layout.addWidget(self.progress_bar)
         self.layout.addLayout(self.labels_layout)
         self.layout.addWidget(self.guide_lbl)
         self.layout.addLayout(self.buttons_layout)
@@ -151,6 +168,52 @@ class CalibrationMovementsGUI(QtGui.QWidget):
         self.setWindowTitle('Local Mover')
         self.show()
 
+    def updateUI(self):
+        self.progress_bar.setMaximum(len(self.local_mover.poses))
+        self.progress_bar.setValue(self.current_pose + 1)
+        self.pose_number_lbl.setText('{}/{}'.format(self.current_pose+1, len(self.local_mover.poses)))
+
+        if self.state == CalibrationMovementsGUI.BAD_PLAN:
+            self.bad_plan_lbl.setText('BAD plan!! Don\'t do it!!!!')
+            self.bad_plan_lbl.setStyleSheet('QLabel { background-color : red}')
+        elif self.state == CalibrationMovementsGUI.GOOD_PLAN:
+            self.bad_plan_lbl.setText('Good plan')
+            self.bad_plan_lbl.setStyleSheet('QLabel { background-color : green}')
+        else:
+            self.bad_plan_lbl.setText('No plan yet')
+            self.bad_plan_lbl.setStyleSheet('')
+
+        if self.state == CalibrationMovementsGUI.NOT_INITED_YET:
+            self.guide_lbl.setText('Bring the robot to a plausible position and check if it is a suitable starting pose')
+        elif self.state == CalibrationMovementsGUI.BAD_STARTING_POSITION:
+            self.guide_lbl.setText('Cannot calibrate from current position')
+        elif self.state == CalibrationMovementsGUI.GOOD_STARTING_POSITION:
+            self.guide_lbl.setText('Ready to start: click on next pose')
+        elif self.state == CalibrationMovementsGUI.GOOD_PLAN:
+            self.guide_lbl.setText('The plan seems good: press execute to move the robot')
+        elif self.state == CalibrationMovementsGUI.BAD_PLAN:
+            self.guide_lbl.setText('Planning failed: try again')
+        elif self.state == CalibrationMovementsGUI.MOVED_TO_POSE:
+            self.guide_lbl.setText('Pose reached: take a sample and go on to next pose')
+
+        can_plan = self.state == CalibrationMovementsGUI.GOOD_STARTING_POSITION
+        self.plan_btn.setEnabled(can_plan)
+        can_move = self.state == CalibrationMovementsGUI.GOOD_PLAN
+        self.execute_btn.setEnabled(can_move)
+
+
+    def handle_check_current_state(self):
+        self.local_mover.compute_poses_around_current_state(self.angle_delta, self.translation_delta)
+
+        joint_limits = [math.radians(90)]*5+[math.radians(180)]+[math.radians(350)]  # TODO: make param
+        if self.local_mover.check_poses(joint_limits):
+            self.state = CalibrationMovementsGUI.GOOD_STARTING_POSITION
+        else:
+            self.state = CalibrationMovementsGUI.BAD_STARTING_POSITION
+        self.current_pose = -1
+
+        self.updateUI()
+
     def handle_next_pose(self):
         self.guide_lbl.setText('Going to center position')
         if self.current_pose != -1:
@@ -158,31 +221,25 @@ class CalibrationMovementsGUI(QtGui.QWidget):
             self.local_mover.execute_plan(plan)
         if self.current_pose < len(self.local_mover.poses)-1:
             self.current_pose += 1
-        self.pose_number_lbl.setText('{}/{}'.format(self.current_pose+1, len(self.local_mover.poses)))
-        self.plan_btn.setEnabled(True)
-        self.execute_btn.setEnabled(False)
-        self.bad_plan_lbl.setText('No plan yet')
-        self.bad_plan_lbl.setStyleSheet('')
-        self.guide_lbl.setText('Click Plan to find a trajectory to the next pose')
+        self.state = CalibrationMovementsGUI.GOOD_STARTING_POSITION
+        self.updateUI()
 
     def handle_plan(self):
         self.guide_lbl.setText('Planning to the next position. Click on execute when a good one was found')
         if self.current_pose >= 0:
             self.current_plan = self.local_mover.plan_to_pose(self.local_mover.poses[self.current_pose])
             if CalibrationMovements.is_crazy_plan(self.current_plan, self.local_mover.fallback_joint_limits):  #TODO: sort out this limits story
-                self.bad_plan_lbl.setText('BAD plan!! Don\'t do it!!!!')
-                self.bad_plan_lbl.setStyleSheet('QLabel { background-color : red}')
-                self.execute_btn.setEnabled(False)
+                self.state = CalibrationMovementsGUI.BAD_PLAN
             else:
-                self.bad_plan_lbl.setText('Good plan')
-                self.bad_plan_lbl.setStyleSheet('QLabel { background-color : green}')
-                self.execute_btn.setEnabled(True)
+                self.state = CalibrationMovementsGUI.GOOD_PLAN
+        self.updateUI()
 
     def handle_execute(self):
         if self.current_plan != None:
             self.guide_lbl.setText('Going to the selected pose')
             self.local_mover.execute_plan(self.current_plan)
-            self.guide_lbl.setText('Take a sample and then click on Next pose; the robot will then go back to the start pose')
+            self.state = CalibrationMovementsGUI.MOVED_TO_POSE
+            self.updateUI()
 
 
 class RqtCalibrationMovements(Plugin):
@@ -191,10 +248,6 @@ class RqtCalibrationMovements(Plugin):
         # Give QObjects reasonable names
         self.setObjectName('LocalMover')
 
-        move_group_name = rospy.get_param('~move_group', 'manipulator')
-        angle_delta = rospy.get_param('~angle_delta', math.radians(25))
-
-        lm = CalibrationMovements(move_group_name)
         rospy.sleep(1.0)
 
         # Process standalone plugin command-line arguments
@@ -210,16 +263,11 @@ class RqtCalibrationMovements(Plugin):
             print 'unknowns: ', unknowns
 
         # Create QWidget
-        self._widget = CalibrationMovementsGUI(lm)
+        self._widget = CalibrationMovementsGUI()
         if context.serial_number() > 1:
             self._widget.setWindowTitle(self._widget.windowTitle() + (' (%d)' % context.serial_number()))
         # Add widget to the user interface
         context.add_widget(self._widget)
-
-        lm.compute_poses_around_current_state(angle_delta)
-
-        joint_limits = [math.radians(90)]*4+[math.radians(90)]+[math.radians(180)]+[math.radians(350)]  # TODO: make param
-        lm.check_poses(joint_limits)
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
@@ -245,18 +293,11 @@ if __name__ == '__main__':
     NODE_NAME = 'handeyecalibration_mover'
 
     rospy.init_node(NODE_NAME)
-    while rospy.get_time() == 0.0: pass
+    while rospy.get_time() == 0.0:
+        pass
 
-    move_group_name = rospy.get_param('~move_group', 'manipulator')
-    angle_delta = rospy.get_param('~angle_delta', math.radians(25))
-
-    lm = CalibrationMovements(move_group_name)
+    lm = CalibrationMovements()
     rospy.sleep(1.0)
-
-    lm.compute_poses_around_current_state(angle_delta)
-
-    joint_limits = [math.radians(90)]*4+[math.radians(90)]+[math.radians(180)]+[math.radians(350)]  # TODO: make param
-    lm.check_poses(joint_limits)
 
     qapp = QtGui.QApplication(sys.argv)
     lmg = CalibrationMovementsGUI(lm)
