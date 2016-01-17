@@ -13,10 +13,44 @@ from copy import deepcopy
 import math
 import sys
 
+import tf
+import tf.transformations as tfs
+from geometry_msgs.msg import Pose, Point, PoseStamped
+def msgPoseToTfTransf(pose):
+    transl = pose.position.x, pose.position.y, pose.position.z
+    rot = pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w
+    return transl, rot
+
+def tfTransfToMsgPose(transf):
+    (x,y,z), (tx, ty, tz, tw) = transf
+    return Pose(Point(x,y,z), Quaternion(tx, ty, tz, tw))
+
+def tfSendPoseStamped(name, pose, br):
+    tfp = msgPoseToTfTransf(pose.pose)
+    br.sendTransform(tfp[0], tfp[1],rospy.Time.now(), name, pose.header.frame_id)
+
+def rotateEndEffectorAroundPoint(transf, angle, axis):
+    end_effector_to_center_point = (0, 0, -0.2), (0, 0, 0, 1)
+    dest_end_effector_to_center_point = rotateAroundPoint(end_effector_to_center_point, angle, axis)
+
+
+
+# transf is transformation from center of rotation to object
+# returns new transformation from center of rotation to object
+def rotateAroundPoint(transf, angle, axis):
+    rot_axis = np.eye(3)[axis]
+    transl_mat = tfs.translation_matrix(transf[0])
+    rot_mat = tfs.quaternion_matrix(transf[1])
+    addrot_mat = tfs.euler_matrix(*(rot_axis*angle))
+    final_mat = np.dot(addrot_mat, np.dot(rot_mat, transl_mat))
+    return tfs.translation_from_matrix(final_mat), tfs.quaternion_from_matrix(final_mat)
+
+
+transl, rot = rotateAroundPoint(((0,0,1),(0,0,0,1)), 0.3, 2)
+b.sendTransform(transl, rot, rospy.Time.now(), 'blah', 'world')
 
 class CalibrationMovements:
     def __init__(self, move_group_name):
-        #self.client = HandeyeClient()  # TODO: move around marker when eye_on_hand
         self.mgc = MoveGroupCommander(move_group_name)
         self.mgc.set_planner_id("RRTConnectkConfigDefault")
         self.start_pose = self.mgc.get_current_pose()
@@ -25,7 +59,7 @@ class CalibrationMovements:
         if len(self.mgc.get_active_joints()) == 6:
             self.fallback_joint_limits = self.fallback_joint_limits[1:]
 
-    def compute_poses_around_current_state(self, angle_delta, translation_delta):
+    def compute_poses_around_current_state(self, angle_delta, translation_delta, look_at_center):
         self.start_pose = self.mgc.get_current_pose()
         basis = np.eye(3)
 
@@ -48,18 +82,26 @@ class CalibrationMovements:
 
         fp = deepcopy(self.start_pose)
         fp.pose.position.x -= translation_delta
+        ori = fp.pose.orientation
+        combined_rot = quaternion_multiply([ori.x, ori.y, ori.z, ori.w], pos_deltas[0])
+        fp.pose.orientation = Quaternion(*combined_rot)
         final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
         fp.pose.position.y -= translation_delta
+        ori = fp.pose.orientation
+        combined_rot = quaternion_multiply([ori.x, ori.y, ori.z, ori.w], pos_deltas[1])
+        fp.pose.orientation = Quaternion(*combined_rot)
         final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
         fp.pose.position.z -= translation_delta
+        ori = fp.pose.orientation
+        combined_rot = quaternion_multiply([ori.x, ori.y, ori.z, ori.w], pos_deltas[2])
+        fp.pose.orientation = Quaternion(*combined_rot)
         final_poses.append(fp)
 
         self.poses = final_poses
-        self.current_pose_index = -1
 
     def check_poses(self, joint_limits):
         if len(self.fallback_joint_limits) == 6:
@@ -296,7 +338,7 @@ if __name__ == '__main__':
     while rospy.get_time() == 0.0:
         pass
 
-    lm = CalibrationMovements()
+    lm = CalibrationMovements('manipulator')
     rospy.sleep(1.0)
 
     qapp = QtGui.QApplication(sys.argv)
