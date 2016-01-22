@@ -16,7 +16,7 @@ import sys
 
 class CalibrationMovements:
     def __init__(self, move_group_name):
-        #self.client = HandeyeClient()  # TODO: move around marker when eye_on_hand
+        #self.client = HandeyeClient()  # TODO: move around marker when eye_on_hand, automatically take samples via trigger topic
         self.mgc = MoveGroupCommander(move_group_name)
         self.mgc.set_planner_id("RRTConnectkConfigDefault")
         self.start_pose = self.mgc.get_current_pose()
@@ -218,7 +218,10 @@ class CalibrationMovementsGUI(QtGui.QWidget):
         self.guide_lbl.setText('Going to center position')
         if self.current_pose != -1:
             plan = self.local_mover.plan_to_start_pose()
-            self.local_mover.execute_plan(plan)
+            if plan is None:
+                self.guide_lbl.setText('Failed planning to center position: try again')
+            else:
+                self.local_mover.execute_plan(plan)
         if self.current_pose < len(self.local_mover.poses)-1:
             self.current_pose += 1
         self.state = CalibrationMovementsGUI.GOOD_STARTING_POSITION
@@ -235,7 +238,7 @@ class CalibrationMovementsGUI(QtGui.QWidget):
         self.updateUI()
 
     def handle_execute(self):
-        if self.current_plan != None:
+        if self.current_plan is not None:
             self.guide_lbl.setText('Going to the selected pose')
             self.local_mover.execute_plan(self.current_plan)
             self.state = CalibrationMovementsGUI.MOVED_TO_POSE
