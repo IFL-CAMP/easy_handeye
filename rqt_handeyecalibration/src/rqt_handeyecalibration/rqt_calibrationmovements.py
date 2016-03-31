@@ -38,6 +38,15 @@ class CalibrationMovements:
         for qd in quaternion_deltas:
             final_rots.append(list(qd))
 
+        # TODO: clean up
+
+        pos_deltas = [quaternion_from_euler(*rot_axis*angle_delta/2) for rot_axis in basis]
+        neg_deltas = [quaternion_from_euler(*rot_axis*(-angle_delta/2)) for rot_axis in basis]
+
+        quaternion_deltas = list(chain.from_iterable(izip(pos_deltas, neg_deltas)))  # interleave
+        for qd in quaternion_deltas:
+            final_rots.append(list(qd))
+
         final_poses = []
         for rot in final_rots:
             fp = deepcopy(self.start_pose)
@@ -47,7 +56,15 @@ class CalibrationMovements:
             final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
-        fp.pose.position.x -= translation_delta
+        fp.pose.position.x += translation_delta/2
+        final_poses.append(fp)
+
+        fp = deepcopy(self.start_pose)
+        fp.pose.position.x -= translation_delta/2
+        final_poses.append(fp)
+
+        fp = deepcopy(self.start_pose)
+        fp.pose.position.y += translation_delta
         final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
@@ -55,7 +72,7 @@ class CalibrationMovements:
         final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
-        fp.pose.position.z -= translation_delta
+        fp.pose.position.z += translation_delta/3
         final_poses.append(fp)
 
         self.poses = final_poses
