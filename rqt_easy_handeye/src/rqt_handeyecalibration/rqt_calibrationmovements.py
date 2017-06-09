@@ -15,10 +15,12 @@ import sys
 
 
 class CalibrationMovements:
-    def __init__(self, move_group_name):
+    def __init__(self, move_group_name, max_velocity_scaling=0.5, max_acceleration_scaling=0.5):
         #self.client = HandeyeClient()  # TODO: move around marker when eye_on_hand, automatically take samples via trigger topic
         self.mgc = MoveGroupCommander(move_group_name)
         self.mgc.set_planner_id("RRTConnectkConfigDefault")
+        self.mgc.set_max_velocity_scaling_factor(max_velocity_scaling)
+        self.mgc.set_max_acceleration_scaling_factor(max_acceleration_scaling)
         self.start_pose = self.mgc.get_current_pose()
         self.poses = []
         self.fallback_joint_limits = [math.radians(90)]*4+[math.radians(90)]+[math.radians(180)]+[math.radians(350)]
@@ -136,7 +138,9 @@ class CalibrationMovementsGUI(QtGui.QWidget):
         move_group_name = rospy.get_param('~move_group', 'manipulator')
         self.angle_delta = rospy.get_param('~angle_delta', math.radians(25))
         self.translation_delta = rospy.get_param('~translation_delta', 0.1)
-        self.local_mover = CalibrationMovements(move_group_name)
+        max_velocity_scaling = rospy.get_param('~max_velocity_scaling', 0.5)
+        max_acceleration_scaling = rospy.get_param('~max_acceleration_scaling', 0.5)
+        self.local_mover = CalibrationMovements(move_group_name, max_velocity_scaling, max_acceleration_scaling)
         self.current_pose = -1
         self.current_plan = None
         self.initUI()
