@@ -5,7 +5,13 @@ from tf.transformations import quaternion_multiply, quaternion_from_euler
 from geometry_msgs.msg import Quaternion
 from moveit_commander import MoveGroupCommander
 from qt_gui.plugin import Plugin
-from python_qt_binding import QtGui
+try:
+    from python_qt_binding.QtGui import QWidget, QApplication, QVBoxLayout, QHBoxLayout, QProgressBar, QLabel, QPushButton
+except ImportError:
+    try:
+        from python_qt_binding.QtWidgets import QWidget, QApplication, QVBoxLayout, QHBoxLayout, QProgressBar, QLabel, QPushButton
+    except:
+        raise ImportError('Could not import QWidgets')
 import rospy
 import numpy as np
 from itertools import chain, izip
@@ -125,7 +131,7 @@ class CalibrationMovements:
             return False
 
 
-class CalibrationMovementsGUI(QtGui.QWidget):
+class CalibrationMovementsGUI(QWidget):
     NOT_INITED_YET = 0
     BAD_PLAN = 1
     GOOD_PLAN = 2
@@ -147,25 +153,25 @@ class CalibrationMovementsGUI(QtGui.QWidget):
         self.state = CalibrationMovementsGUI.NOT_INITED_YET
 
     def initUI(self):
-        self.layout = QtGui.QVBoxLayout()
-        self.labels_layout = QtGui.QHBoxLayout()
-        self.buttons_layout = QtGui.QHBoxLayout()
+        self.layout = QVBoxLayout()
+        self.labels_layout = QHBoxLayout()
+        self.buttons_layout = QHBoxLayout()
 
-        self.progress_bar = QtGui.QProgressBar()
-        self.pose_number_lbl = QtGui.QLabel('0/8')
-        self.bad_plan_lbl = QtGui.QLabel('No plan yet')
-        self.guide_lbl = QtGui.QLabel('Hello')
+        self.progress_bar = QProgressBar()
+        self.pose_number_lbl = QLabel('0/8')
+        self.bad_plan_lbl = QLabel('No plan yet')
+        self.guide_lbl = QLabel('Hello')
 
-        self.check_start_pose_btn = QtGui.QPushButton('Check starting pose')
+        self.check_start_pose_btn = QPushButton('Check starting pose')
         self.check_start_pose_btn.clicked.connect(self.handle_check_current_state)
 
-        self.next_pose_btn = QtGui.QPushButton('Next Pose')
+        self.next_pose_btn = QPushButton('Next Pose')
         self.next_pose_btn.clicked.connect(self.handle_next_pose)
 
-        self.plan_btn = QtGui.QPushButton('Plan')
+        self.plan_btn = QPushButton('Plan')
         self.plan_btn.clicked.connect(self.handle_plan)
 
-        self.execute_btn = QtGui.QPushButton('Execute')
+        self.execute_btn = QPushButton('Execute')
         self.execute_btn.clicked.connect(self.handle_execute)
 
         self.labels_layout.addWidget(self.pose_number_lbl)
@@ -323,7 +329,7 @@ if __name__ == '__main__':
     lm = CalibrationMovements()
     rospy.sleep(1.0)
 
-    qapp = QtGui.QApplication(sys.argv)
+    qapp = QApplication(sys.argv)
     lmg = CalibrationMovementsGUI(lm)
     lmg.show()
     sys.exit(qapp.exec_())

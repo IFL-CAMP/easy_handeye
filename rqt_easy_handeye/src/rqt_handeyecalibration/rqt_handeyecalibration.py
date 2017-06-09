@@ -4,8 +4,14 @@ import rospy
 import rospkg
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
-from python_qt_binding.QtGui import QWidget, QListWidgetItem
 from easy_handeye.handeye_client import HandeyeClient
+try:
+    from python_qt_binding.QtGui import QWidget, QListWidgetItem
+except ImportError:
+    try:
+        from python_qt_binding.QtWidgets import QWidget, QListWidgetItem
+    except:
+        raise ImportError('Could not import QWidgets')
 
 
 class RqtHandeyeCalibration(Plugin):
