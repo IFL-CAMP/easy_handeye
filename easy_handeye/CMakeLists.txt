@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(handeyecalibration)
+project(easy_handeye)
 
 find_package(catkin REQUIRED COMPONENTS
     visp_hand2eye_calibration

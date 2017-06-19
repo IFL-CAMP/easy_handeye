@@ -4,7 +4,7 @@ from tf import transformations as tfs
 from geometry_msgs.msg import Vector3, Quaternion, Transform
 from visp_hand2eye_calibration.msg import TransformArray
 from visp_hand2eye_calibration.srv import compute_effector_camera_quick
-from handeyecalibration.handeye_calibration import HandeyeCalibration
+from easy_handeye.handeye_calibration import HandeyeCalibration
 
 
 class HandeyeCalibrator(object):
@@ -190,7 +190,7 @@ class HandeyeCalibrator(object):
         """
         Computes the calibration through the ViSP service and returns it.
 
-        :rtype: handeyecalibration.handeye_calibration.HandeyeCalibration
+        :rtype: easy_handeye.handeye_calibration.HandeyeCalibration
         """
         if len(self.samples) < HandeyeCalibrator.MIN_SAMPLES:
             rospy.logwarn("{} more samples needed! Not computing the calibration".format(

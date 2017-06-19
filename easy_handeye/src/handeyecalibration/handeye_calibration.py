@@ -8,7 +8,7 @@ class HandeyeCalibration(object):
     """
     Stores parameters and transformation of a hand-eye calibration for publishing.
     """
-    DIRECTORY = os.path.expanduser('~/.ros/handeyecalibration')
+    DIRECTORY = os.path.expanduser('~/.ros/easy_handeye')
     """Default directory for calibration yaml files."""
 
     # TODO: use the HandeyeCalibration message instead, this should be HandeyeCalibrationConversions
@@ -33,7 +33,7 @@ class HandeyeCalibration(object):
         :type transformation: ((float, float, float), (float, float, float, float))
         :return: a HandeyeCalibration object
 
-        :rtype: handeyecalibration.handeye_calibration.HandeyeCalibration
+        :rtype: easy_handeye.handeye_calibration.HandeyeCalibration
         """
 
         if transformation is None:

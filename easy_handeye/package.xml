@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-    <name>handeyecalibration</name>
+    <name>easy_handeye</name>
     <version>0.2.0</version>
     <description>
         This package uses visp_hand2eye_calibration to determine the

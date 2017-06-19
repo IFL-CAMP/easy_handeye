@@ -2,11 +2,11 @@
 
 import rospy
 
-from handeyecalibration.handeye_server import HandeyeServer
+from easy_handeye.handeye_server import HandeyeServer
 
 
 def main():
-    rospy.init_node('handeyecalibration')
+    rospy.init_node('easy_handeye')
     while rospy.get_time() == 0.0:
         pass
 

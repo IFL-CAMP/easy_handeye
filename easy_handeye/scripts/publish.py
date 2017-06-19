@@ -3,7 +3,7 @@
 import rospy
 from tf import TransformBroadcaster, TransformerROS, transformations as tfs
 from geometry_msgs.msg import Transform
-from handeyecalibration.handeye_calibration import HandeyeCalibration
+from easy_handeye.handeye_calibration import HandeyeCalibration
 
 rospy.init_node('handeye_calibration_publisher')
 while rospy.get_time() == 0.0:

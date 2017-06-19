@@ -3,7 +3,7 @@
 import rospy
 import std_srvs
 from std_srvs import srv
-from handeyecalibration.handeye_client import HandeyeClient
+from easy_handeye.handeye_client import HandeyeClient
 
 
 # for reading single character without hitting RETURN (unless it's ipython!)
@@ -70,7 +70,7 @@ class HandeyeCalibrationCommander:
 
 
 def main():
-    rospy.init_node('handeyecalibration')
+    rospy.init_node('easy_handeye')
     while rospy.get_time() == 0.0:
         pass
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <launch>
     <arg name="eye_on_hand" doc="eye-on-hand instead of eye-on-base" />
-    <arg name="namespace_prefix" default="handeyecalibration" />
+    <arg name="namespace_prefix" default="easy_handeye" />
     <arg if="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_hand" />
     <arg unless="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_base" />
 
@@ -32,7 +32,7 @@
     <!-- Connect the tracker to the solver -->
     <node name="hand_eye_connector"
           ns="$(arg namespace)"
-          pkg="handeyecalibration"
+          pkg="easy_handeye"
           type="calibrate.py"
           output="screen" />
 

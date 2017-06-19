@@ -36,7 +36,7 @@ to accept or discard each sample. At the end, the parameters will be saved in a 
 
 ```xml
 <launch>
-  <include file="$(find handeyecalibration)/launch/calibrate.launch">
+  <include file="$(find easy_handeye)/launch/calibrate.launch">
     <arg name="marker_parent_frame" value="/base_link"/>
     <arg name="camera_parent_frame" value="/ee_link"/>
 
@@ -50,7 +50,7 @@ to accept or discard each sample. At the end, the parameters will be saved in a 
 
 ```xml
 <launch>
-  <include file="$(find handeyecalibration)/launch/calibrate.launch">
+  <include file="$(find easy_handeye)/launch/calibrate.launch">
     <arg name="marker_parent_frame" value="/ee_link"/>
     <arg name="camera_parent_frame" value="/base_link"/>
 

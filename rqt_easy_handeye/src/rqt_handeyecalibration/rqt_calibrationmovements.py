@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 from __future__ import division
-from handeyecalibration.handeye_client import HandeyeClient
+from easy_handeye.handeye_client import HandeyeClient
 from tf.transformations import quaternion_multiply, quaternion_from_euler
 from geometry_msgs.msg import Quaternion
 from moveit_commander import MoveGroupCommander
@@ -310,7 +310,7 @@ class RqtCalibrationMovements(Plugin):
 
 if __name__ == '__main__':
 
-    NODE_NAME = 'handeyecalibration_mover'
+    NODE_NAME = 'easy_handeye_mover'
 
     rospy.init_node(NODE_NAME)
     while rospy.get_time() == 0.0:

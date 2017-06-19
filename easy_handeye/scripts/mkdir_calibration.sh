@@ -1,3 +1,3 @@
 #!/bin/bash
 
-mkdir -p ~/.ros/handeyecalibration
+mkdir -p ~/.ros/easy_handeye

@@ -2,10 +2,10 @@ import rospy
 import std_msgs
 import std_srvs
 from std_srvs import srv
-import handeyecalibration as hec
-from handeyecalibration import srv
-from handeyecalibration.msg import SampleList
-from handeyecalibration.handeye_calibrator import HandeyeCalibrator
+import easy_handeye as hec
+from easy_handeye import srv
+from easy_handeye.msg import SampleList
+from easy_handeye.handeye_calibrator import HandeyeCalibrator
 
 
 class HandeyeServer:
