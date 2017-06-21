@@ -14,21 +14,21 @@ class HandeyeCalibration(object):
     # TODO: use the HandeyeCalibration message instead, this should be HandeyeCalibrationConversions
     def __init__(self,
                  eye_on_hand=False,
-                 base_link_frame=None,
-                 tool_frame=None,
-                 optical_origin_frame=None,
+                 robot_base_frame=None,
+                 robot_effector_frame=None,
+                 tracking_base_frame=None,
                  transformation=None):
         """
         Creates a HandeyeCalibration object.
 
         :param eye_on_hand: if false, it is a eye-on-base calibration
         :type eye_on_hand: bool
-        :param base_link_frame: needed only for eye-on-base calibrations: robot base link tf name
-        :type base_link_frame: string
-        :param tool_frame: needed only for eye-on-hand calibrations: robot tool tf name
-        :type tool_frame: string
-        :param optical_origin_frame: tracking system tf name
-        :type optical_origin_frame: string
+        :param robot_base_frame: needed only for eye-on-base calibrations: robot base link tf name
+        :type robot_base_frame: string
+        :param robot_effector_frame: needed only for eye-on-hand calibrations: robot tool tf name
+        :type robot_effector_frame: string
+        :param tracking_base_frame: tracking system tf name
+        :type tracking_base_frame: string
         :param transformation: transformation between optical origin and base/tool robot frame as tf tuple
         :type transformation: ((float, float, float), (float, float, float, float))
         :return: a HandeyeCalibration object
@@ -56,10 +56,10 @@ class HandeyeCalibration(object):
 
         # tf names
         if self.eye_on_hand:
-            self.transformation.header.frame_id = tool_frame
+            self.transformation.header.frame_id = robot_effector_frame
         else:
-            self.transformation.header.frame_id = base_link_frame
-        self.transformation.child_frame_id = optical_origin_frame
+            self.transformation.header.frame_id = robot_base_frame
+        self.transformation.child_frame_id = tracking_base_frame
 
         self.filename = HandeyeCalibration.DIRECTORY + '/' + rospy.get_namespace().strip('/') + '.yaml'
 
@@ -73,7 +73,7 @@ class HandeyeCalibration(object):
         """
         ret = {
             'eye_on_hand': self.eye_on_hand,
-            'optical_origin_frame': self.transformation.child_frame_id,
+            'tracking_base_frame': self.transformation.child_frame_id,
             'transformation': {
                 'x': self.transformation.transform.translation.x,
                 'y': self.transformation.transform.translation.y,
@@ -85,9 +85,9 @@ class HandeyeCalibration(object):
             }
         }
         if self.eye_on_hand:
-            ret['tool_frame'] = self.transformation.header.frame_id
+            ret['robot_effector_frame'] = self.transformation.header.frame_id
         else:
-            ret['base_link_frame'] = self.transformation.header.frame_id
+            ret['robot_base_frame'] = self.transformation.header.frame_id
 
         return ret
 
@@ -102,7 +102,7 @@ class HandeyeCalibration(object):
         """
         self.eye_on_hand = in_dict['eye_on_hand']
         self.transformation = TransformStamped(
-            child_frame_id=in_dict['optical_origin_frame'],
+            child_frame_id=in_dict['tracking_base_frame'],
             transform=Transform(
                 Vector3(in_dict['transformation']['x'],
                         in_dict['transformation']['y'],
@@ -114,9 +114,9 @@ class HandeyeCalibration(object):
             )
         )
         if self.eye_on_hand:
-            self.transformation.header.frame_id = in_dict['tool_frame']
+            self.transformation.header.frame_id = in_dict['robot_effector_frame']
         else:
-            self.transformation.header.frame_id = in_dict['base_link_frame']
+            self.transformation.header.frame_id = in_dict['robot_base_frame']
 
     def to_yaml(self):
         """
@@ -171,14 +171,14 @@ class HandeyeCalibration(object):
         """
         calib_dict = {}
 
-        root_params = ['eye_on_hand', 'optical_origin_frame']
+        root_params = ['eye_on_hand', 'tracking_base_frame']
         for rp in root_params:
             calib_dict[rp] = rospy.get_param(rp)
 
         if calib_dict['eye_on_hand']:
-            calib_dict['tool_frame'] = rospy.get_param('tool_frame')
+            calib_dict['robot_effector_frame'] = rospy.get_param('robot_effector_frame')
         else:
-            calib_dict['base_link_frame'] = rospy.get_param('base_link_frame')
+            calib_dict['robot_base_frame'] = rospy.get_param('robot_base_frame')
 
         transf_params = 'x', 'y', 'z', 'qx', 'qy', 'qz', 'qw'
         calib_dict['transformation'] = {}
@@ -195,11 +195,11 @@ class HandeyeCalibration(object):
         """
         calib_dict = self.to_dict()
 
-        root_params = ['eye_on_hand', 'optical_origin_frame']
+        root_params = ['eye_on_hand', 'tracking_base_frame']
         if calib_dict['eye_on_hand']:
-            root_params.append('tool_frame')
+            root_params.append('robot_effector_frame')
         else:
-            root_params.append('base_link_frame')
+            root_params.append('robot_base_frame')
 
         for rp in root_params:
             rospy.set_param(rp, calib_dict[rp])

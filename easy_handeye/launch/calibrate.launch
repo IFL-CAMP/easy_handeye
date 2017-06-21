@@ -6,10 +6,10 @@
     <arg unless="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_base" />
 
     <!-- The input reference frames -->
-    <arg name="base_link_frame"       default="base_link" />
-    <arg name="tool_frame"            default="tool0" />
-    <arg name="optical_origin_frame"  default="optical_origin" />
-    <arg name="optical_target_frame"  default="optical_target" />
+    <arg name="robot_base_frame" default="base_link" />
+    <arg name="robot_effector_frame" default="tool0" />
+    <arg name="tracking_base_frame" default="optical_origin" />
+    <arg name="tracking_marker_frame" default="optical_target" />
 
     <!-- Publish frames while calibrating -->
     <arg name="publish_tf" default="true"/>
@@ -22,11 +22,11 @@
     </node>
 
     <group ns="$(arg namespace)" >
-        <param name="eye_on_hand"           value="$(arg eye_on_hand)"/>
-        <param name="base_link_frame"       value="$(arg base_link_frame)" />
-        <param name="tool_frame"            value="$(arg tool_frame)" />
-        <param name="optical_origin_frame"  value="$(arg optical_origin_frame)" />
-        <param name="optical_target_frame"  value="$(arg optical_target_frame)" />
+        <param name="eye_on_hand" value="$(arg eye_on_hand)"/>
+        <param name="robot_base_frame" value="$(arg robot_base_frame)" />
+        <param name="robot_effector_frame" value="$(arg robot_effector_frame)" />
+        <param name="tracking_base_frame" value="$(arg tracking_base_frame)" />
+        <param name="tracking_marker_frame" value="$(arg tracking_marker_frame)" />
     </group>
 
     <!-- Connect the tracker to the solver -->

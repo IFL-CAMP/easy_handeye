@@ -1,6 +1,6 @@
 
-TF / VISP Hand-Eye Calibration
-=================================
+easy_handeye: TF / VISP Hand-Eye Calibration
+============================================
 
 ## Use Cases
 
@@ -8,12 +8,12 @@ This package uses the VISP
 hand-eye calibration from `visp_hand2eye_calibration` to provide a simple
 camera pose estimation package. Input is expected as transformations published in TF.
 
-If you're unfamiliar with Tsai's hand-eye calibration [1], it can be used in two ways:
+If you are unfamiliar with Tsai's hand-eye calibration [1], it can be used in two ways:
 
 - **eye-in-hand** -- To compute the static transform from a robot's
-  end-effector to the optical frame of a camera. In this case, the camera is
+  end-effector to the e.g. optical frame of a camera. In this case, the camera is
   mounted on the end-effector, and you place the visual target so that it is
-  fixed relative to the base of the rboot.
+  fixed relative to the base of the robot.
 - **eye-on-base** -- To compute the static transform from a robot's base to the
   optical frame of a camera. In this case, the camera is mounted to the base of
   the robot (or kinematic chain), and you place the visual target so that it is
@@ -102,9 +102,10 @@ All following topics and parameters live in the namespace specified by the top-l
 ### Parameters
 
 - `eye_on_hand`: if true, this is an eye-on-hand calibration, else eye-on-base.
-- `base_link_frame`: contains the tf id of the robot's base link
-- `optical_origin_frame`: contains the tf id of the robot's base link
-- `base_link_frame`: contains the tf id of the robot's base link
+- `tracking_base_frame`: contains the tf id of the tracking system coordinate origin frame
+- `tracking_marker_frame`: contains the tf id of the tracking system target
+- `robot_base_frame`: contains the tf id of the robot's base link
+- `robot_effector_frame`: contains the tf id of the robot's end effector link
 
 ## References
 

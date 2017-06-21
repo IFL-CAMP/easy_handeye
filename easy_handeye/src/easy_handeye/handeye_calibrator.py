@@ -24,25 +24,25 @@ class HandeyeCalibrator(object):
         """
 
         # tf names
-        self.tool_frame = rospy.get_param('tool_frame', 'tool0')
+        self.robot_effector_frame = rospy.get_param('robot_effector_frame', 'tool0')
         """
         robot tool tf name
 
         :type: string
         """
-        self.base_link_frame = rospy.get_param('base_link_frame', 'base_link')
+        self.robot_base_frame = rospy.get_param('robot_base_frame', 'base_link')
         """
         robot base tf name
 
         :type: str
         """
-        self.optical_origin_frame = rospy.get_param('optical_origin_frame', 'optical_origin')
+        self.tracking_base_frame = rospy.get_param('tracking_base_frame', 'optical_origin')
         """
         tracking system tf name
 
         :type: str
         """
-        self.optical_target_frame = rospy.get_param('optical_target_frame', 'optical_target')
+        self.tracking_marker_frame = rospy.get_param('tracking_marker_frame', 'optical_target')
         """
         tracked object tf name
 
@@ -96,8 +96,8 @@ class HandeyeCalibrator(object):
 
         :rtype: None
         """
-        self.listener.waitForTransform(self.base_link_frame, self.tool_frame, rospy.Time(0), rospy.Duration(10))
-        self.listener.waitForTransform(self.optical_origin_frame, self.optical_target_frame, rospy.Time(0),
+        self.listener.waitForTransform(self.robot_base_frame, self.robot_effector_frame, rospy.Time(0), rospy.Duration(10))
+        self.listener.waitForTransform(self.tracking_base_frame, self.tracking_marker_frame, rospy.Time(0),
                                        rospy.Duration(60))
 
     def _wait_for_transforms(self):
@@ -107,8 +107,8 @@ class HandeyeCalibrator(object):
         :rtype: rospy.Time
         """
         now = rospy.Time.now()
-        self.listener.waitForTransform(self.base_link_frame, self.tool_frame, now, rospy.Duration(10))
-        self.listener.waitForTransform(self.optical_origin_frame, self.optical_target_frame, now, rospy.Duration(10))
+        self.listener.waitForTransform(self.robot_base_frame, self.robot_effector_frame, now, rospy.Duration(10))
+        self.listener.waitForTransform(self.tracking_base_frame, self.tracking_marker_frame, now, rospy.Duration(10))
         return now
 
     def _get_transforms(self, time=None):
@@ -124,10 +124,10 @@ class HandeyeCalibrator(object):
 
         # here we trick the library (it is actually made for eye_on_hand only). Trust me, I'm an engineer
         if self.eye_on_hand:
-            rob = self.listener.lookupTransform(self.base_link_frame, self.tool_frame, time)
+            rob = self.listener.lookupTransform(self.robot_base_frame, self.robot_effector_frame, time)
         else:
-            rob = self.listener.lookupTransform(self.tool_frame, self.base_link_frame, time)
-        opt = self.listener.lookupTransform(self.optical_origin_frame, self.optical_target_frame, time)
+            rob = self.listener.lookupTransform(self.robot_effector_frame, self.robot_base_frame, time)
+        opt = self.listener.lookupTransform(self.tracking_base_frame, self.tracking_marker_frame, time)
         return {'robot': rob, 'optical': opt}
 
     def take_sample(self):
@@ -170,13 +170,13 @@ class HandeyeCalibrator(object):
         :rtype: visp_hand2eye_calibration.msg.TransformArray
         """
         hand_world_samples = TransformArray()
-        #hand_world_samples.header.frame_id = self.base_link_frame
-        hand_world_samples.header.frame_id = self.optical_origin_frame
+        #hand_world_samples.header.frame_id = self.robot_base_frame
+        hand_world_samples.header.frame_id = self.tracking_base_frame
         # DONTFIXME: yes, I know, it should be like the line above.
         # thing is, otherwise the results of the calibration are wrong. don't ask me why
 
         camera_marker_samples = TransformArray()
-        camera_marker_samples.header.frame_id = self.optical_origin_frame
+        camera_marker_samples.header.frame_id = self.tracking_base_frame
 
         for s in self.samples:
             to = HandeyeCalibrator._tuple_to_msg_transform(s['optical'])
@@ -215,9 +215,9 @@ class HandeyeCalibrator(object):
                             (rot.x, rot.y, rot.z, rot.w))
 
             ret = HandeyeCalibration(self.eye_on_hand,
-                                     self.base_link_frame,
-                                     self.tool_frame,
-                                     self.optical_origin_frame,
+                                     self.robot_base_frame,
+                                     self.robot_effector_frame,
+                                     self.tracking_base_frame,
                                      result_tuple)
 
             return ret

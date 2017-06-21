@@ -6,18 +6,18 @@
     <arg unless="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_base" />
 
     <!--it is possible to override the link names saved in the yaml file in case of name clashes, for example-->
-    <arg if="$(arg eye_on_hand)" name="tool_frame" default="" />
-    <arg unless="$(arg eye_on_hand)" name="base_link_frame" default="" />
-    <arg name="optical_origin_frame" default="" />
+    <arg if="$(arg eye_on_hand)" name="robot_effector_frame" default="" />
+    <arg unless="$(arg eye_on_hand)" name="robot_base_frame" default="" />
+    <arg name="tracking_base_frame" default="" />
     
     <arg name="inverse" default="false" />
     
     <!--publish hand-eye calibration-->
     <group ns="$(arg namespace)">
         <param name="eye_on_hand" value="$(arg eye_on_hand)" />
-        <param unless="$(arg eye_on_hand)" name="base_link_frame" value="$(arg base_link_frame)" />
-        <param if="$(arg eye_on_hand)" name="tool_frame" value="$(arg tool_frame)" />
-        <param name="optical_origin_frame" value="$(arg optical_origin_frame)" />
+        <param unless="$(arg eye_on_hand)" name="robot_base_frame" value="$(arg robot_base_frame)" />
+        <param if="$(arg eye_on_hand)" name="robot_effector_frame" value="$(arg robot_effector_frame)" />
+        <param name="tracking_base_frame" value="$(arg tracking_base_frame)" />
         <param name="inverse" value="$(arg inverse)" />
         <node name="$(anon handeye_publisher)" pkg="easy_handeye" type="publish.py" output="screen"/>
     </group>

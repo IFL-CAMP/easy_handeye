@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>430</width>
-    <height>563</height>
+    <width>649</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,45 +22,65 @@
         <string>Info</string>
        </property>
        <layout class="QFormLayout" name="formLayout">
-        <item row="0" column="0">
+        <item row="1" column="0">
          <widget class="QLabel" name="label">
           <property name="text">
            <string>Name:</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="calibNameLineEdit"/>
-        </item>
-        <item row="1" column="0">
+        <item row="3" column="0">
          <widget class="QLabel" name="label_2">
           <property name="text">
            <string>Type:</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="calibTypeLineEdit"/>
-        </item>
-        <item row="2" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>Optical Frame:</string>
+           <string>Tracking Base Frame:</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="opticalFrameLineEdit"/>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="robotFrameLabel">
+        <item row="7" column="0">
+         <widget class="QLabel" name="trackingMarkerFrameLabel_2">
           <property name="text">
-           <string>Robot Frame:</string>
+           <string>Tracking Marker Frame:</string>
           </property>
          </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="calibNameLineEdit"/>
         </item>
         <item row="3" column="1">
-         <widget class="QLineEdit" name="robotFrameLineEdit"/>
+         <widget class="QLineEdit" name="calibTypeLineEdit"/>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLineEdit" name="trackingBaseFrameLineEdit"/>
+        </item>
+        <item row="7" column="1">
+         <widget class="QLineEdit" name="trackingMarkerFrameLineEdit"/>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="robotFrameLabel_3">
+          <property name="text">
+           <string>Robot Base Frame:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1">
+         <widget class="QLineEdit" name="robotBaseFrameLineEdit"/>
+        </item>
+        <item row="9" column="0">
+         <widget class="QLabel" name="robotFrameLabel">
+          <property name="text">
+           <string>Robot Effector Frame:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QLineEdit" name="robotEffectorFrameLineEdit"/>
         </item>
        </layout>
       </widget>
@@ -68,7 +88,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox_3">
        <property name="title">
-        <string>GroupBox</string>
+        <string>Actions</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>

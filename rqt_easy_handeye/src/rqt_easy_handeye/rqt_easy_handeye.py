@@ -53,13 +53,16 @@ class RqtHandeyeCalibration(Plugin):
         self.client = HandeyeClient()
 
         self._widget.calibNameLineEdit.setText(rospy.get_namespace())
-        self._widget.opticalFrameLineEdit.setText(self.client.optical_origin_frame)
+        self._widget.trackingBaseFrameLineEdit.setText(self.client.tracking_base_frame)
+        self._widget.trackingMarkerFrameLineEdit.setText(self.client.tracking_marker_frame)
+        self._widget.robotBaseFrameLineEdit.setText(self.client.robot_base_frame)
+        self._widget.robotEffectorFrameLineEdit.setText(self.client.robot_effector_frame)
         if self.client.eye_on_hand:
             self._widget.calibTypeLineEdit.setText("eye on hand")
-            self._widget.robotFrameLineEdit.setText(self.client.tool_frame)
+
         else:
             self._widget.calibTypeLineEdit.setText("eye on base")
-            self._widget.robotFrameLineEdit.setText(self.client.base_link_frame)
+
 
         self._widget.takeButton.clicked[bool].connect(self.handle_take_sample)
         self._widget.removeButton.clicked[bool].connect(self.handle_remove_sample)

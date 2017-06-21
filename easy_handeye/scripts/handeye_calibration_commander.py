@@ -81,12 +81,12 @@ def main():
 
     if cmder.client.eye_on_hand:
         print('eye-on-hand calibration')
-        print('tool frame: {}'.format(cmder.client.tool_frame))
+        print('robot effector frame: {}'.format(cmder.client.robot_effector_frame))
     else:
         print('eye-on-base calibration')
-        print('base link frame: {}'.format(cmder.client.base_link_frame))
-    print('optical origin frame: {}'.format(cmder.client.optical_origin_frame))
-    print('optical target frame: {}'.format(cmder.client.optical_target_frame))
+        print('robot base frame: {}'.format(cmder.client.robot_base_frame))
+    print('tracking base frame: {}'.format(cmder.client.tracking_base_frame))
+    print('tracking target frame: {}'.format(cmder.client.tracking_marker_frame))
 
     cmder.spin_interactive()
 

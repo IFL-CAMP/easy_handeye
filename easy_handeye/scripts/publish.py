@@ -15,22 +15,22 @@ calib = HandeyeCalibration()
 calib.from_file()
 
 if calib.eye_on_hand:
-    overriding_tool_frame = rospy.get_param('tool_frame')
-    if overriding_tool_frame != "":
-        calib.transformation.header.frame_id = overriding_tool_frame
+    overriding_robot_effector_frame = rospy.get_param('robot_effector_frame')
+    if overriding_robot_effector_frame != "":
+        calib.transformation.header.frame_id = overriding_robot_effector_frame
 else:
-    overriding_base_link_frame = rospy.get_param('base_link_frame')
-    if overriding_base_link_frame != "":
-        calib.transformation.header.frame_id = overriding_base_link_frame
-overriding_optical_origin_frame = rospy.get_param('optical_origin_frame')
-if overriding_optical_origin_frame != "":
-    calib.transformation.child_frame_id = overriding_optical_origin_frame
+    overriding_robot_base_frame = rospy.get_param('robot_base_frame')
+    if overriding_robot_base_frame != "":
+        calib.transformation.header.frame_id = overriding_robot_base_frame
+overriding_tracking_base_frame = rospy.get_param('tracking_base_frame')
+if overriding_tracking_base_frame != "":
+    calib.transformation.child_frame_id = overriding_tracking_base_frame
 
 rospy.loginfo('loading calibration parameters into namespace {}'.format(rospy.get_namespace()))
 calib.to_parameters()
 
 orig = calib.transformation.header.frame_id  # tool or base link
-dest = calib.transformation.child_frame_id  # optical_origin_frame
+dest = calib.transformation.child_frame_id  # tracking_base_frame
 
 transformer = TransformerROS()
 result_tf = calib.transformation.transform

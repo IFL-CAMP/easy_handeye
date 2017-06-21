@@ -11,15 +11,10 @@ class HandeyeClient(object):
         self.eye_on_hand = rospy.get_param('eye_on_hand', False)
 
         # tf names
-        if self.eye_on_hand:
-            self.tool_frame = rospy.get_param('tool_frame', 'tool0')
-            self.base_link_frame = None
-        else:
-            self.tool_frame = None
-            self.base_link_frame = rospy.get_param('base_link_frame', 'base_link')
-
-        self.optical_origin_frame = rospy.get_param('optical_origin_frame', 'optical_origin')
-        self.optical_target_frame = rospy.get_param('optical_target_frame', 'optical_target')
+        self.robot_base_frame = rospy.get_param('robot_base_frame', 'base_link')
+        self.robot_effector_frame = rospy.get_param('robot_effector_frame', 'tool0')
+        self.tracking_base_frame = rospy.get_param('tracking_base_frame', 'optical_origin')
+        self.tracking_marker_frame = rospy.get_param('tracking_marker_frame', 'optical_target')
 
         rospy.wait_for_service(hec.GET_SAMPLE_LIST_TOPIC)
         self.get_sample_proxy = rospy.ServiceProxy(hec.GET_SAMPLE_LIST_TOPIC, hec.srv.TakeSample)
