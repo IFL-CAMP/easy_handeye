@@ -1,0 +1,76 @@
+{
+  "keys": {}, 
+  "groups": {
+    "pluginmanager": {
+      "keys": {
+        "running-plugins": {
+          "type": "repr", 
+          "repr": "{u'rqt_easy_handeye/Hand-eye Calibration': [1]}"
+        }
+      }, 
+      "groups": {
+        "plugin__rqt_easy_handeye__Hand-eye Calibration__1": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget__RqtHandeyeCalibrationUI": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "True"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "None"
+                }
+              }, 
+              "groups": {}
+            }
+          }
+        }, 
+        "plugin__rqt_controller_manager__ControllerManagerGUI__1": {
+          "keys": {}, 
+          "groups": {
+            "dock_widget__": {
+              "keys": {
+                "dockable": {
+                  "type": "repr", 
+                  "repr": "u'true'"
+                }, 
+                "parent": {
+                  "type": "repr", 
+                  "repr": "None"
+                }
+              }, 
+              "groups": {}
+            }
+          }
+        }
+      }
+    }, 
+    "mainwindow": {
+      "keys": {
+        "geometry": {
+          "type": "repr(QByteArray.hex)", 
+          "repr(QByteArray.hex)": "QtCore.QByteArray('01d9d0cb00010000000000640000006400000492000003d9000000660000007b00000490000003d5000000000000')", 
+          "pretty-print": "     d d     f {       "
+        }, 
+        "state": {
+          "type": "repr(QByteArray.hex)", 
+          "repr(QByteArray.hex)": "QtCore.QByteArray('000000ff00000000fd00000001000000030000042b00000332fc0100000001fb00000090007200710074005f00680061006e006400650079006500630061006c006900620072006100740069006f006e005f005f00480061006e0064002d006500790065002000430061006c006900620072006100740069006f006e005f005f0031005f005f00520071007400480061006e006400650079006500430061006c006900620072006100740069006f006e0055004901000000000000042b00000126010000050000042b0000000000000004000000040000000800000008fc00000001000000030000000100000036004d0069006e0069006d0069007a006500640044006f0063006b00570069006400670065007400730054006f006f006c0062006100720000000000ffffffff0000000000000000')", 
+          "pretty-print": "                  rqt_easy_handeye__Hand-eye Calibration__1__RqtHandeyeCalibrationUI                            6MinimizedDockWidgetsToolbar        "
+        }
+      }, 
+      "groups": {
+        "toolbar_areas": {
+          "keys": {
+            "MinimizedDockWidgetsToolbar": {
+              "type": "repr", 
+              "repr": "8"
+            }
+          }, 
+          "groups": {}
+        }
+      }
+    }
+  }
+}
