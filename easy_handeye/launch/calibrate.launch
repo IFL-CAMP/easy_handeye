@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <launch>
-    <!--  Setting calibration namespace    -->
+    <!-- Setting calibration namespace -->
     <arg name="eye_on_hand" doc="if true, eye-on-hand instead of eye-on-base" />
     <arg name="namespace_prefix" default="easy_handeye" doc="the prefix of the namespace the node will run in, and of the folder in which the result will be saved" />
     <arg if="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_hand" doc="the namespace the node will run in, and the folder in which the result will be saved" />
@@ -15,7 +15,7 @@
     <!-- Publish dummy frames while calibrating -->
     <arg name="publish_dummy" default="true" doc="if true, a dummy calibration will be published to keep all frames in a single tf tree, hence visualized in RViz" />
     
-    <!--GUI arguments-->
+    <!-- GUI arguments -->
     <arg name="start_rviz" default="true" doc="if true, rviz will be started with the provided config file" />
     <arg name="rviz_config_file" default="$(find easy_handeye)/launch/rviz_easy_handeye.config" doc="the path to the rviz config file to be opened" />
     <arg name="start_rqt" default="true" doc="if true, rqt will be started with the provided perspective" />
@@ -27,7 +27,7 @@
     <arg name="robot_velocity_scaling" default="0.3" doc="the maximum speed the robot should reach, as a factor of the speed declared in the joint_limits.yaml" />
     <arg name="robot_acceleration_scaling" default="0.2" doc="the maximum acceleration the robot should reach, as a factor of the acceleration declared in the joint_limits.yaml" />
     
-    <!--Dummy calibration to have a fully connected TF tree and see all frames-->
+    <!-- Dummy calibration to have a fully connected TF tree and see all frames -->
     <group if="$(arg publish_dummy)">
         <node unless="$(arg eye_on_hand)" name="dummy_handeye" pkg="tf" type="static_transform_publisher"
             args="1 1 1 0 1.5 0 $(arg robot_base_frame) $(arg tracking_base_frame) 10" />
@@ -58,7 +58,7 @@
           output="screen" />
     
     
-    <!--start GUI (Rviz and rqt_easy_handeye)-->
+    <!-- start GUI (Rviz and rqt_easy_handeye) -->
     
     <!--TODO: use this as soon as rviz rqt plugin accepts config parameter-->
     <!--<group ns="$(arg namespace)" >
