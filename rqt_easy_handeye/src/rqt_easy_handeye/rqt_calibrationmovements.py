@@ -142,8 +142,8 @@ class CalibrationMovementsGUI(QWidget):
     def __init__(self):
         super(CalibrationMovementsGUI, self).__init__()
         move_group_name = rospy.get_param('~move_group', 'manipulator')
-        self.angle_delta = rospy.get_param('~angle_delta', math.radians(25))
-        self.translation_delta = rospy.get_param('~translation_delta', 0.1)
+        self.angle_delta = math.radians(rospy.get_param('~rotation_delta_degrees', 25))
+        self.translation_delta = rospy.get_param('~translation_delta_meters', 0.1)
         max_velocity_scaling = rospy.get_param('~max_velocity_scaling', 0.5)
         max_acceleration_scaling = rospy.get_param('~max_acceleration_scaling', 0.5)
         self.local_mover = CalibrationMovements(move_group_name, max_velocity_scaling, max_acceleration_scaling)
