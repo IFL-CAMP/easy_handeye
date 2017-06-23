@@ -18,9 +18,17 @@
     <arg name="start_rqt" default="true" doc="if true, rqt will be started with the provided perspective" />
     <arg name="rqt_perspective_file" default="$(find easy_handeye)/launch/rqt_easy_handeye.perspective" doc="the path to the rqt perspective file to be opened" />
     <arg name="freehand_robot_movement" default="false" doc="if false, the rqt plugin for the automatic robot motion with MoveIt! will be started" />
+    <arg name="robot_velocity_scaling" default="0.3" doc="the maximum speed the robot should reach, as a factor of the speed declared in the joint_limits.yaml" />
+    <arg name="robot_acceleration_scaling" default="0.2" doc="the maximum acceleration the robot should reach, as a factor of the acceleration declared in the joint_limits.yaml" />
 
     <!-- Publish frames while calibrating -->
     <arg name="publish_tf" default="true"/>
+    
+    <!--Dummy calibration to have a fully connected TF tree and see all frames-->
+    <node unless="$(arg eye_on_hand)" name="dummy_handeye" pkg="tf" type="static_transform_publisher"
+          args="1 1 1 0 1.5 0 $(arg robot_base_frame) $(arg tracking_base_frame) 10" />
+    <node if="$(arg eye_on_hand)" name="dummy_handeye" pkg="tf" type="static_transform_publisher"
+          args="0 0 0.05 0 0 0 $(arg robot_effector_frame) $(arg tracking_base_frame) 10" />
 
     <!-- Run the ViSP solver to determine the extrinsic parameters -->
     <node ns="$(arg namespace)" name="hand_eye_solver"
