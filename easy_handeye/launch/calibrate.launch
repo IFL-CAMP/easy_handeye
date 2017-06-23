@@ -62,10 +62,8 @@
     </group>-->
     
     <!--TODO: remove as soon as rviz rqt plugin accepts config parameter-->  
-    <group ns="$(arg namespace)">
-        <node if="$(arg start_rviz)" name="$(anon rviz)" pkg="rviz" type="rviz" respawn="true" 
-              args="-d $(arg rviz_config_file)" output="screen" />
-    </group>
+    <node if="$(arg start_rviz)" name="$(anon rviz)" pkg="rviz" type="rviz" respawn="true" 
+          args="-d $(arg rviz_config_file)" output="screen" />
         
     <node if="$(arg start_rqt)" ns="$(arg namespace)" name="$(anon namespace)_rqt" pkg="rqt_gui" type="rqt_gui" respawn="false" 
             args="--clear-config --perspective-file $(arg rqt_perspective_file)" output="screen" />
