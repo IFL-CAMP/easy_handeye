@@ -21,14 +21,16 @@
     <arg name="robot_velocity_scaling" default="0.3" doc="the maximum speed the robot should reach, as a factor of the speed declared in the joint_limits.yaml" />
     <arg name="robot_acceleration_scaling" default="0.2" doc="the maximum acceleration the robot should reach, as a factor of the acceleration declared in the joint_limits.yaml" />
 
-    <!-- Publish frames while calibrating -->
-    <arg name="publish_tf" default="true"/>
+    <!-- Publish dummy frames while calibrating -->
+    <arg name="publish_dummy" default="true" doc="if true, a dummy calibration will be published to keep all frames in a single tf tree, hence visualized in RViz" />
     
     <!--Dummy calibration to have a fully connected TF tree and see all frames-->
-    <node unless="$(arg eye_on_hand)" name="dummy_handeye" pkg="tf" type="static_transform_publisher"
-          args="1 1 1 0 1.5 0 $(arg robot_base_frame) $(arg tracking_base_frame) 10" />
-    <node if="$(arg eye_on_hand)" name="dummy_handeye" pkg="tf" type="static_transform_publisher"
-          args="0 0 0.05 0 0 0 $(arg robot_effector_frame) $(arg tracking_base_frame) 10" />
+    <group if="$(arg publish_dummy)">
+        <node unless="$(arg eye_on_hand)" name="dummy_handeye" pkg="tf" type="static_transform_publisher"
+            args="1 1 1 0 1.5 0 $(arg robot_base_frame) $(arg tracking_base_frame) 10" />
+        <node if="$(arg eye_on_hand)" name="dummy_handeye" pkg="tf" type="static_transform_publisher"
+            args="0 0 0.05 0 0 0 $(arg robot_effector_frame) $(arg tracking_base_frame) 10" />
+    </group>
 
     <!-- Run the ViSP solver to determine the extrinsic parameters -->
     <node ns="$(arg namespace)" name="hand_eye_solver"
