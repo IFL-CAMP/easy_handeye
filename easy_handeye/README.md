@@ -2,33 +2,44 @@
 easy_handeye: TF / VISP Hand-Eye Calibration
 ============================================
 
-## Use Cases
+This package wraps the hand-eye calibration routine from the ViSP library
+(contained in the `visp_hand2eye_calibration` package) to provide a simple
+camera pose estimation solution. Input is expected as transformations published in TF.
 
-This package uses the VISP
-hand-eye calibration from `visp_hand2eye_calibration` to provide a simple
-camera pose estimation package. Input is expected as transformations published in TF.
+Additionally, a solution for saving and publishing the resulting calibration is provided.
+Computing and using a calibration can be achieved by including/starting a single launch file respectively.
+
+A (optional) GUI for the position sampling and automatic robot movement is provided in the `rqt_easy_handeye` package.
+
+## Use Cases
 
 If you are unfamiliar with Tsai's hand-eye calibration [1], it can be used in two ways:
 
-- **eye-in-hand** -- To compute the static transform from a robot's
-  end-effector to the e.g. optical frame of a camera. In this case, the camera is
+- **eye-in-hand** -- To compute the static transform between the reference frames of
+  a robot's hand effector and that of a tracking system, e.g. the optical frame
+  of an RGB camera used to track AR markers. In this case, the camera is
   mounted on the end-effector, and you place the visual target so that it is
-  fixed relative to the base of the robot.
-- **eye-on-base** -- To compute the static transform from a robot's base to the
-  optical frame of a camera. In this case, the camera is mounted to the base of
-  the robot (or kinematic chain), and you place the visual target so that it is
-  fixed relative to the end-effector of the robot.
+  fixed relative to the base of the robot; for example, you can place an AR marker on a table.
+- **eye-on-base** -- To compute the static transform from a robot's base to a tracking system, e.g. the
+  optical frame of a camera standing on a tripod next to the robot. In this case you can attach a marker,
+  e.g. an AR marker, to the end-effector of the robot.
+
+The (arguably) best part is, that you do not have to care about the placement of the auxiliary marker
+(the one on the table in the eye-in-hand case, or on the robot in the eye-on-base case). The algorithm
+will erase that transformation out, and only return the transformation you are interested in.
 
 ## Usage
 
-Multiple launch files are provided to be included in your own. The default arguments should be
-overridden to specify the correct tf reference frames.
+Two launch files, one for computing and one for publishing the calibration respectively,
+are provided to be included in your own. The default arguments should be
+overridden to specify the correct tf reference frames, and to avoid conflicts when using
+multiple calibrations at once.
 
 ### Calibration
 
 For both use cases, you can either launch the `calibrate.launch`
-launchfile, or you can include it in another launchfile as shown below. Either
-way, the launchfile will bring up the `visp_hand2eye_calibration` solver, along with an
+launch file, or you can include it in another launchfile as shown below. Either
+way, the launch file will bring up the `visp_hand2eye_calibration` solver, along with an
 integration script. By default, the integration script will interactively ask you
 to accept or discard each sample. At the end, the parameters will be saved in a yaml file.
 
@@ -37,11 +48,13 @@ to accept or discard each sample. At the end, the parameters will be saved in a 
 ```xml
 <launch>
   <include file="$(find easy_handeye)/launch/calibrate.launch">
-    <arg name="marker_parent_frame" value="/base_link"/>
-    <arg name="camera_parent_frame" value="/ee_link"/>
+    <arg name="eye_on_hand" value="true"/>
 
-    <arg name="camera" value="/camera/rgb"/>
-    <arg name="camera_frame" value="/camera_rgb_optical_frame"/>
+    <arg name="robot_base_frame" value="/base_link"/>
+    <arg name="robot_effector_frame" value="/ee_link"/>
+
+    <arg name="tracking_base_frame" value="/optical_origin"/>
+    <arg name="tracking_marker_frame" value="/optical_target"/>
   </include>
 </launch>
 ```
@@ -51,11 +64,13 @@ to accept or discard each sample. At the end, the parameters will be saved in a 
 ```xml
 <launch>
   <include file="$(find easy_handeye)/launch/calibrate.launch">
-    <arg name="marker_parent_frame" value="/ee_link"/>
-    <arg name="camera_parent_frame" value="/base_link"/>
+    <arg name="eye_on_hand" value="false"/>
 
-    <arg name="camera" value="/camera/rgb"/>
-    <arg name="camera_frame" value="/camera_rgb_optical_frame"/>
+    <arg name="robot_base_frame" value="/base_link"/>
+    <arg name="robot_effector_frame" value="/ee_link"/>
+
+    <arg name="tracking_base_frame" value="/optical_origin"/>
+    <arg name="tracking_marker_frame" value="/optical_target"/>
   </include>
 </launch>
 ```
