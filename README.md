@@ -3,17 +3,19 @@
 easy_handeye: TF / VISP Hand-Eye Calibration
 ============================================
 
-<img src="docs/img/eye_on_base_ndi_pic.png" height="400" width="600">
-<img src="docs/img/05_calibrated_rviz.png" height="400" width="640">
+<section>
+    <img width="49%" src="docs/img/eye_on_base_ndi_pic.png">
+    <img width="49%" src="docs/img/05_calibrated_rviz.png">
+</section>
 
 This package wraps the hand-eye calibration routine from the ViSP library
 (contained in the `visp_hand2eye_calibration` package) to provide a simple
 camera pose estimation solution. Input is expected as transformations published in TF.
 
-Additionally, a solution for saving and publishing the resulting calibration is provided.
+Additionally, a method for saving and publishing the resulting calibration is provided.
 Computing and using a calibration can be achieved by including/starting a single launch file respectively.
 
-A (optional) GUI for the position sampling and automatic robot movement is provided in the `rqt_easy_handeye` package.
+An (optional) GUI for the position sampling and automatic robot movement is provided in the `rqt_easy_handeye` package.
 
 ## Use Cases
 
@@ -30,10 +32,12 @@ If you are unfamiliar with Tsai's hand-eye calibration [1], it can be used in tw
 
 The (arguably) best part is, that you do not have to care about the placement of the auxiliary marker
 (the one on the table in the eye-in-hand case, or on the robot in the eye-on-base case). The algorithm
-will erase that transformation out, and only return the transformation you are interested in.
+will "erase" that transformation out, and only return the transformation you are interested in.
 
-<img src="docs/img/eye_on_base_ndi_pic.png" height="400" width="600">
-<img src="docs/img/eye_on_hand_aruco_pic.png" height="400" width="640">
+
+eye-on-base             |  eye-on-hand
+:-------------------------:|:-------------------------:
+![](docs/img/eye_on_base_ndi_pic.png)  |  ![](docs/img/eye_on_hand_aruco_pic.png)
 
 ## Usage
 
@@ -85,10 +89,12 @@ to accept or discard each sample. At the end, the parameters will be saved in a 
 
 ### Moving the robot
 
-A GUI for automatic robot movement is provided by the `rqt_easy_handeye` package. Please refer to [its documentation](rqt_easy_handeye/README.md) .
+A GUI for automatic robot movement is provided by the `rqt_easy_handeye` package. Please refer to [its documentation](rqt_easy_handeye/README.md).
 
-<img src="docs/img/02_plan_movements.png" height="400" width="600">
-<img src="docs/img/04_plan_show.png" height="400" width="640">
+<section>
+    <img width="40%" src="docs/img/02_plan_movements.png">
+    <img width="59%" src="docs/img/04_plan_show.png">
+</section>
 
 ### Tips for accuracy
 
