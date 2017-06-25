@@ -9,7 +9,7 @@
 
     <maintainer email="marco.esposito@tum.de">Marco Esposito</maintainer>
 
-    <license>BSD</license>
+    <license>LGPLv3</license>
 
     <author email="marco.esposito@tum.de">Marco Esposito</author>
 
@@ -24,11 +24,5 @@
     <exec_depend>tf</exec_depend>
 
     <export>
-        <rosindex>
-            <tags>
-                <tag>calibration</tag>
-                <tag>extrinsic</tag>
-            </tags>
-        </rosindex>
     </export>
 </package>

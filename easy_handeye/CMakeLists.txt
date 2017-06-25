@@ -11,10 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_python_setup()
 
-########################
-## Message generation ##
-########################
-
 add_message_files(
     FILES
     HandeyeCalibration.msg
@@ -35,20 +31,10 @@ generate_messages(
     visp_hand2eye_calibration
 )
 
-###################################
-## catkin specific configuration ##
-###################################
-
 catkin_package(
     CATKIN_DEPENDS message_runtime geometry_msgs visp_hand2eye_calibration std_msgs geometry_msgs
 )
 
-#############
-## Install ##
-#############
-
-## Mark executable scripts (Python etc.) for installation
-## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
     scripts/calibrate.py
     scripts/handeye_calibration_commander.py
@@ -56,14 +42,6 @@ install(PROGRAMS
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-## Mark executables and/or libraries for installation
-# install(TARGETS aruco_hand_eye aruco_hand_eye_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
-
-## Mark other files for installation (e.g. launch and bag files, etc.)
 install(FILES
     launch/calibrate.launch
     launch/load.launch
