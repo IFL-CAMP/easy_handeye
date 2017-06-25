@@ -53,7 +53,6 @@ install(PROGRAMS
     scripts/calibrate.py
     scripts/handeye_calibration_commander.py
     scripts/publish.py
-    scripts/mkdir_calibration.sh
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
