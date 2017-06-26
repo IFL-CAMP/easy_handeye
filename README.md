@@ -3,10 +3,7 @@
 easy_handeye: TF / VISP Hand-Eye Calibration
 ============================================
 
-<section>
-    <img width="49%" src="docs/img/eye_on_base_ndi_pic.png">
-    <img width="49%" src="docs/img/05_calibrated_rviz.png">
-</section>
+<img src="docs/img/eye_on_base_ndi_pic.png" width="345"/> <img src="docs/img/05_calibrated_rviz.png" width="475"/> 
 
 This package wraps the hand-eye calibration routine from the ViSP library
 (contained in the `visp_hand2eye_calibration` package) to provide a simple
@@ -91,10 +88,8 @@ to accept or discard each sample. At the end, the parameters will be saved in a 
 
 A GUI for automatic robot movement is provided by the `rqt_easy_handeye` package. Please refer to [its documentation](rqt_easy_handeye/README.md).
 
-<section>
-    <img width="40%" src="docs/img/02_plan_movements.png">
-    <img width="59%" src="docs/img/04_plan_show.png">
-</section>
+
+<img src="docs/img/02_plan_movements.png" width="345"/> <img src="docs/img/04_plan_show.png" width="495"/>
 
 ### Tips for accuracy
 
