@@ -34,7 +34,7 @@ will "erase" that transformation out, and only return the transformation you are
 
 eye-on-base             |  eye-on-hand
 :-------------------------:|:-------------------------:
-![](docs/img/eye_on_base_ndi_pic.png)  |  ![](docs/img/eye_on_hand_aruco_pic.png)
+![](docs/img/eye_on_base_aruco_pic.png)  |  ![](docs/img/eye_on_hand_aruco_pic.png)
 
 ## Usage
 
