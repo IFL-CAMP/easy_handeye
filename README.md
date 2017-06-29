@@ -26,6 +26,8 @@ If you are unfamiliar with Tsai's hand-eye calibration [1], it can be used in tw
 - **eye-on-base** -- To compute the static transform from a robot's base to a tracking system, e.g. the
   optical frame of a camera standing on a tripod next to the robot. In this case you can attach a marker,
   e.g. an AR marker, to the end-effector of the robot.
+  
+A relevant example of an eye-on-base calibration is finding the position of an RGBD camera with respect to a robot for object collision avoidance, e.g. [with MoveIt!](http://docs.ros.org/indigo/api/moveit_tutorials/html/doc/pr2_tutorials/planning/src/doc/perception_configuration.html): an [example launch file](docs/example_launch/ur5_kinect_calibration.launch) is provided to perform this common task between an Universal Robot and a Kinect through aruco. eye-on-hand can be used for [vision-guided tasks](https://youtu.be/nBTflbxYGkI?t=24s).
 
 The (arguably) best part is, that you do not have to care about the placement of the auxiliary marker
 (the one on the table in the eye-in-hand case, or on the robot in the eye-on-base case). The algorithm
@@ -105,6 +107,19 @@ The following tips are given in [1], paragraph 1.3.2.
 ### Publishing
 The `publish.launch` starts a node that publishes the transformation found during calibration in tf.
 The parameters are automatically loaded from the yaml file.
+
+### FAQ
+How can I ...
+##### Calibrate an RGBD camera (e.g. Kinect, Xtion, ...) with a robot for automatic object collision avoidance with MoveIt! ?
+This is a perfect example of an eye-on-base calibration. You can take a look at this [example launch file](docs/example_launch/ur5_kinect_calibration.launch) written for an UR5 and a Kinect via aruco_ros.
+##### Disable the automatic robotic movements GUI?
+You can pass the argument `freehand_robot_movement:=true` to `calibrate.launch`.
+##### Calibrate one robot against multiple tracking systems?
+You can just override the `namespace` argument of `calibrate.launch` to be always different, such that they will never collide. Using the same `namespace` as argument to multiple inclusions of `publish.launch` will allow you to publish each calibration in tf.
+##### Find the transformation between the bases of two robots?
+You could perform the eye-on-base calibration against the same tracking system, and concatenate the results.
+##### Find the transformation between two tracking systems?
+You could perform the eye-on-base calibration against the same robot, and concatenate the results. This will work also if the tracking systems are completely different and do not use the same markers.
 
 ## References
 
