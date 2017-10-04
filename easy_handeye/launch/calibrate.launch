@@ -22,6 +22,7 @@
     <arg name="rqt_perspective_file" default="$(find easy_handeye)/launch/rqt_easy_handeye.perspective" doc="the path to the rqt perspective file to be opened" />
     
     <arg name="freehand_robot_movement" default="false" doc="if false, the rqt plugin for the automatic robot motion with MoveIt! will be started" />
+    <arg name="move_group" default="manipulator" doc="the name of move_group for the automatic robot motion with MoveIt!" />
     <arg name="translation_delta_meters" default="0.1" doc="the maximum movement that the robot should perform in the translation phase" />
     <arg name="rotation_delta_degrees" default="25" doc="the maximum rotation that the robot should perform" />
     <arg name="robot_velocity_scaling" default="0.3" doc="the maximum speed the robot should reach, as a factor of the speed declared in the joint_limits.yaml" />
@@ -73,7 +74,7 @@
     <node if="$(arg start_rqt)" ns="$(arg namespace)" name="$(anon namespace)_rqt" pkg="rqt_gui" type="rqt_gui" respawn="false" 
             args="--clear-config --perspective-file $(arg rqt_perspective_file)" output="screen" />
     <node unless="$(arg freehand_robot_movement)" name="calibration_mover" pkg="rqt_easy_handeye" type="rqt_calibrationmovements" respawn="false" >
-        <param name="move_group" value="manipulator" />
+        <param name="move_group" value="$(arg move_group)" />
         <param name="translation_delta_meters" value="$(arg translation_delta_meters)" />
         <param name="rotation_delta_degrees" value="$(arg rotation_delta_degrees)" />
         <param name="max_velocity_scaling" value="$(arg robot_velocity_scaling)" />
