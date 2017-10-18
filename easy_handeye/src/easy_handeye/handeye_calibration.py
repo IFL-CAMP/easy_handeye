@@ -61,7 +61,7 @@ class HandeyeCalibration(object):
             self.transformation.header.frame_id = robot_base_frame
         self.transformation.child_frame_id = tracking_base_frame
 
-        self.filename = HandeyeCalibration.DIRECTORY + '/' + rospy.get_namespace().strip('/') + '.yaml'
+        self.filename = HandeyeCalibration.DIRECTORY + '/' + rospy.get_namespace().rstrip('/').split('/')[-1] + '.yaml'
 
     def to_dict(self):
         """
