@@ -44,8 +44,6 @@ install(PROGRAMS
 
 install(FILES
     launch/calibrate.launch
-    launch/load.launch
     launch/publish.launch
-    launch/save.launch
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
