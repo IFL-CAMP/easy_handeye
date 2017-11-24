@@ -45,5 +45,7 @@ install(PROGRAMS
 install(FILES
     launch/calibrate.launch
     launch/publish.launch
-    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    launch/rqt_easy_handeye.perspective
+    launch/rviz_easy_handeye.config
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )
