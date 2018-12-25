@@ -150,7 +150,10 @@ the publisher will automatically fetch the latest information. You can also manu
 nodes, if you don't want to shut down the whole system
 
 ### FAQ
-How can I ...
+#### Why is the calibration wrong?
+Please check the [troubleshooting](docs/troubleshooting.md)
+
+#### How can I ...
 ##### Calibrate an RGBD camera (e.g. Kinect, Xtion, ...) with a robot for automatic object collision avoidance with MoveIt! ?
 This is a perfect example of an eye-on-base calibration. You can take a look at this [example launch file](docs/example_launch/ur5_kinect_calibration.launch) written for an UR5 and a Kinect via aruco_ros.
 ##### Disable the automatic robotic movements GUI?
