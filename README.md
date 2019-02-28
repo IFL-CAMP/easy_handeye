@@ -38,6 +38,34 @@ eye-on-base             |  eye-on-hand
 :-------------------------:|:-------------------------:
 ![](docs/img/eye_on_base_aruco_pic.png)  |  ![](docs/img/eye_on_hand_aruco_pic.png)
 
+## Getting started
+
+- clone this repository into your catkin workspace:
+```
+cd ~/catkin_ws/src  # replace with path to your workspace
+git clone https://github.com/IFL-CAMP/easy_handeye
+```
+
+- fix for melodic:
+at the time of writing, [vision_visp](http://wiki.ros.org/vision_visp) has not been yet released into ROS melodic. In order to satisfy this dependency, you can 
+build it from source
+```
+cd src
+git clone https://github.com/lagadic/vision_visp.git
+sudo apt install libvisp-dev
+```
+
+- satisfy dependencies
+```
+cd ..  # now we are inside ~/catkin_ws
+rosdep install -iyr --from-paths src
+```
+
+- build
+```
+catkin build
+```
+
 ## Usage
 
 Two launch files, one for computing and one for publishing the calibration respectively,
