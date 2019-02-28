@@ -87,6 +87,7 @@ to accept or discard each sample. At the end, the parameters will be saved in a 
 <launch>
   <include file="$(find easy_handeye)/launch/calibrate.launch">
     <arg name="eye_on_hand" value="true"/>
+    <arg name="namespace" value="my_eih_calib"/>
 
     <arg name="robot_base_frame" value="/base_link"/>
     <arg name="robot_effector_frame" value="/ee_link"/>
@@ -103,6 +104,7 @@ to accept or discard each sample. At the end, the parameters will be saved in a 
 <launch>
   <include file="$(find easy_handeye)/launch/calibrate.launch">
     <arg name="eye_on_hand" value="false"/>
+    <arg name="namespace" value="my_eob_calib"/>
 
     <arg name="robot_base_frame" value="/base_link"/>
     <arg name="robot_effector_frame" value="/ee_link"/>
@@ -134,7 +136,25 @@ The following tips are given in [1], paragraph 1.3.2.
 
 ### Publishing
 The `publish.launch` starts a node that publishes the transformation found during calibration in tf.
-The parameters are automatically loaded from the yaml file.
+The parameters are automatically loaded from the yaml file, according to the specified namespace.
+For convenience, you can include this file within your own launch script. The following example publishes 
+two different calibrations concurrently:
+```
+<launch>
+  <!-- your nodes -->
+
+  <include file="$(find easy_handeye)/launch/publish.launch">
+    <arg name="namespace" value="my_eob_calib"/>
+  </include>
+  <include file="$(find easy_handeye)/launch/publish.launch">
+    <arg name="namespace" value="my_eih_calib"/>
+  </include>
+</launch>
+```
+You can have any number of calibrations at once (provided you specify distinct namespaces). 
+If you perform again any calibration, you do not need to do anything: the next time you start the system, 
+the publisher will automatically fetch the latest information. You can also manually restart the publisher 
+nodes, if you don't want to shut down the whole system
 
 ### FAQ
 How can I ...
