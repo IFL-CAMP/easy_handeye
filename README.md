@@ -139,7 +139,7 @@ The `publish.launch` starts a node that publishes the transformation found durin
 The parameters are automatically loaded from the yaml file, according to the specified namespace.
 For convenience, you can include this file within your own launch script. The following example publishes 
 two different calibrations concurrently:
-```
+```xml
 <launch>
   <!-- your nodes -->
 
