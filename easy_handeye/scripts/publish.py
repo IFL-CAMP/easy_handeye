@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 
 import rospy
-from tf import TransformBroadcaster, TransformerROS, transformations as tfs
-from geometry_msgs.msg import Transform
+import tf2_ros
+import geometry_msgs.msg
 from easy_handeye.handeye_calibration import HandeyeCalibration
 
 rospy.init_node('handeye_calibration_publisher')
@@ -26,29 +26,21 @@ overriding_tracking_base_frame = rospy.get_param('tracking_base_frame')
 if overriding_tracking_base_frame != "":
     calib.transformation.child_frame_id = overriding_tracking_base_frame
 
-rospy.loginfo('loading calibration parameters into namespace {}'.format(rospy.get_namespace()))
+rospy.loginfo('loading calibration parameters into namespace {}'.format(
+    rospy.get_namespace()))
 calib.to_parameters()
 
 orig = calib.transformation.header.frame_id  # tool or base link
 dest = calib.transformation.child_frame_id  # tracking_base_frame
 
-transformer = TransformerROS()
-result_tf = calib.transformation.transform
-transl = result_tf.translation.x, result_tf.translation.y, result_tf.translation.z
-rot = result_tf.rotation.x, result_tf.rotation.y, result_tf.rotation.z, result_tf.rotation.w
-cal_mat = transformer.fromTranslationRotation(transl, rot)
-if inverse:
-    cal_mat = tfs.inverse_matrix(cal_mat)
-    orig, dest = dest, orig
-translation = tfs.translation_from_matrix(cal_mat)
-rotation = tfs.quaternion_from_matrix(cal_mat)
+broadcaster = tf2_ros.StaticTransformBroadcaster()
+static_transformStamped = geometry_msgs.msg.TransformStamped()
 
-rospy.loginfo('publishing transformation ' + orig + ' -> ' + dest + ':\n' + str((translation, rotation)))
+static_transformStamped.header.stamp = rospy.Time.now()
+static_transformStamped.header.frame_id = orig
+static_transformStamped.child_frame_id = dest
 
-broad = TransformBroadcaster()
+static_transformStamped.transform = calib.transformation.transform
 
-rate = rospy.Rate(50)
-
-while not rospy.is_shutdown():
-    broad.sendTransform(translation, rotation, rospy.Time.now(), dest, orig)  # takes ..., child, parent
-    rate.sleep()
+broadcaster.sendTransform(static_transformStamped)
+rospy.spin()
