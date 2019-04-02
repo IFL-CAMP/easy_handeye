@@ -14,6 +14,8 @@ Computing and using a calibration can be achieved by including/starting a single
 
 An (optional) GUI for the position sampling and automatic robot movement is provided in the `rqt_easy_handeye` package.
 
+You can try out this software in a simulator, through the [easy_handeye_demo package](https://github.com/marcoesposito1988/easy_handeye_demo).
+
 ## Use Cases
 
 If you are unfamiliar with Tsai's hand-eye calibration [1], it can be used in two ways:
