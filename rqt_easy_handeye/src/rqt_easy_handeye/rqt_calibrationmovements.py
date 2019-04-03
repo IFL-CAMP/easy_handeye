@@ -29,6 +29,7 @@ class CalibrationMovements:
         self.mgc.set_max_acceleration_scaling_factor(max_acceleration_scaling)
         self.start_pose = self.mgc.get_current_pose()
         self.poses = []
+        self.current_pose_index = -1
         self.fallback_joint_limits = [math.radians(90)]*4+[math.radians(90)]+[math.radians(180)]+[math.radians(350)]
         if len(self.mgc.get_active_joints()) == 6:
             self.fallback_joint_limits = self.fallback_joint_limits[1:]
@@ -228,7 +229,6 @@ class CalibrationMovementsGUI(QWidget):
         can_move = self.state == CalibrationMovementsGUI.GOOD_PLAN
         self.execute_btn.setEnabled(can_move)
 
-
     def handle_check_current_state(self):
         self.local_mover.compute_poses_around_current_state(self.angle_delta, self.translation_delta)
 
@@ -317,6 +317,7 @@ class RqtCalibrationMovements(Plugin):
     # Comment in to signal that the plugin has a way to configure
     # This will enable a setting button (gear icon) in each dock widget title bar
     # Usually used to open a modal configuration dialog
+
 
 if __name__ == '__main__':
 
