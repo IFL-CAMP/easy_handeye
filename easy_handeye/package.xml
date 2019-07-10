@@ -3,8 +3,8 @@
     <name>easy_handeye</name>
     <version>0.2.0</version>
     <description>
-        This package uses visp_hand2eye_calibration to determine the
-        extrinsic parameters of cameras.
+        Use visp_hand2eye_calibration to determine the extrinsic parameters
+        of cameras.
     </description>
 
     <maintainer email="marco.esposito@tum.de">Marco Esposito</maintainer>
@@ -14,16 +14,14 @@
     <author email="marco.esposito@tum.de">Marco Esposito</author>
 
     <buildtool_depend>catkin</buildtool_depend>
+
     <build_depend>message_generation</build_depend>
-    <exec_depend>message_runtime</exec_depend>
-    <depend>std_msgs</depend>
+
     <depend>geometry_msgs</depend>
+    <depend>std_msgs</depend>
     <depend>std_srvs</depend>
     <depend>visp_hand2eye_calibration</depend>
 
-    <exec_depend>tf</exec_depend>
+    <exec_depend>message_runtime</exec_depend>
     <exec_depend>tf2_ros</exec_depend>
-    
-    <export>
-    </export>
 </package>
