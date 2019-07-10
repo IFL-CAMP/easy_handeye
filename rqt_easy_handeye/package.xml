@@ -11,6 +11,7 @@
     <author email="marco.esposito@tum.de">Marco Esposito</author>
 
     <buildtool_depend>catkin</buildtool_depend>
+
     <exec_depend>rospy</exec_depend>
     <exec_depend>rqt_gui</exec_depend>
     <exec_depend>rqt_gui_py</exec_depend>
