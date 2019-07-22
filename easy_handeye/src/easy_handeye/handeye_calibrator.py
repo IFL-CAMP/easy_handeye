@@ -1,6 +1,6 @@
 import rospy
-import tf
-from tf import transformations as tfs
+import tf2_py
+import tf2_ros
 from geometry_msgs.msg import Vector3, Quaternion, Transform
 from visp_hand2eye_calibration.msg import TransformArray
 from visp_hand2eye_calibration.srv import compute_effector_camera_quick
@@ -50,23 +50,24 @@ class HandeyeCalibrator(object):
         """
 
         # tf structures
-        self.listener = tf.TransformListener()
+        self.buffer = tf2_ros.Buffer()
+        """
+        used to propagate changes to when tf info updates
+        
+        :type: tf2_ros.Buffer
+        """
+
+        self.listener = tf2_ros.TransformListener(self.buffer)
         """
         used to get transforms to build each sample
 
-        :type: tf.TransformListener
+        :type: tf2_ros.TransformListener
         """
-        self.broadcaster = tf.TransformBroadcaster()
+        self.broadcaster = tf2_ros.TransformBroadcaster()
         """
         used to publish the calibration after saving it
 
-        :type: tf.TransformBroadcaster
-        """
-        self.transformer = tf.TransformerROS()
-        """
-        used to convert between transform message types
-
-        :type: tf.TransformerROS
+        :type: tf2_ros.TransformBroadcaster
         """
 
         # internal input data
@@ -90,44 +91,40 @@ class HandeyeCalibrator(object):
         :type: rospy.ServiceProxy
         """
 
-    def _wait_for_tf_init(self):
+    def _wait_for_transforms(self, rate=rospy.Duration(1)):
         """
-        Waits until all needed frames are present in tf.
+        Waits until the needed transformations are available in tf.
 
-        :rtype: None
-        """
-        self.listener.waitForTransform(self.robot_base_frame, self.robot_effector_frame, rospy.Time(0), rospy.Duration(10))
-        self.listener.waitForTransform(self.tracking_base_frame, self.tracking_marker_frame, rospy.Time(0),
-                                       rospy.Duration(60))
-
-    def _wait_for_transforms(self):
-        """
-        Waits until the needed transformations are recent in tf.
-
-        :rtype: rospy.Time
-        """
-        now = rospy.Time.now()
-        self.listener.waitForTransform(self.robot_base_frame, self.robot_effector_frame, now, rospy.Duration(10))
-        self.listener.waitForTransform(self.tracking_base_frame, self.tracking_marker_frame, now, rospy.Duration(10))
-        return now
-
-    def _get_transforms(self, time=None):
-        """
-        Samples the transforms at the given time.
-
-        :param time: sampling time (now if None)
-        :type time: None|rospy.Time
+        :param rate: sampling rate
+        :type rate: rospy.Duration
         :rtype: dict[str, ((float, float, float), (float, float, float, float))]
         """
-        if time is None:
-            time = self._wait_for_transforms()
+        while not rospy.is_shutdown():
+            try:
+                return self._get_transforms(rate)
 
+            except (tf2_py.LookupException, tf2_py.ConnectivityException, tf2_py.ExtrapolationException):
+                rospy.sleep(rate)
+                continue
+
+    def _get_transforms(self, rate):
+        """
+        Tries to sample the transforms at the given rate.
+
+        :param rate: sampling rate
+        :type rate: rospy.Duration
+        :rtype: dict[str, ((float, float, float), (float, float, float, float))]
+        """
         # here we trick the library (it is actually made for eye_on_hand only). Trust me, I'm an engineer
         if self.eye_on_hand:
-            rob = self.listener.lookupTransform(self.robot_base_frame, self.robot_effector_frame, time)
+            rob = self.buffer.lookup_transform(self.robot_base_frame, self.robot_effector_frame,
+                                               rospy.Time.now(), rate).transform
         else:
-            rob = self.listener.lookupTransform(self.robot_effector_frame, self.robot_base_frame, time)
-        opt = self.listener.lookupTransform(self.tracking_base_frame, self.tracking_marker_frame, time)
+            rob = self.buffer.lookup_transform(self.robot_effector_frame, self.robot_base_frame,
+                                               rospy.Time.now(), rate).transform
+        opt = self.buffer.lookup_transform(self.tracking_base_frame, self.tracking_marker_frame,
+                                           rospy.Time.now(), rate).transform
+
         return {'robot': rob, 'optical': opt}
 
     def take_sample(self):
@@ -137,7 +134,7 @@ class HandeyeCalibrator(object):
         :rtype: None
         """
         rospy.loginfo("Taking a sample...")
-        transforms = self._get_transforms()
+        transforms = self._wait_for_transforms()
         rospy.loginfo("Got a sample")
         self.samples.append(transforms)
 
@@ -151,18 +148,6 @@ class HandeyeCalibrator(object):
         if 0 <= index < len(self.samples):
             del self.samples[index]
 
-    @staticmethod
-    def _tuple_to_msg_transform(tf_t):
-        """
-        Converts a tf tuple into a geometry_msgs/Transform message
-
-        :type tf_t: ((float, float, float), (float, float, float, float))
-        :rtype: geometry_msgs.msg.Transform
-        """
-        transl = Vector3(*tf_t[0])
-        rot = Quaternion(*tf_t[1])
-        return Transform(transl, rot)
-
     def get_visp_samples(self):
         """
         Returns the sample list as a TransformArray.
@@ -170,7 +155,7 @@ class HandeyeCalibrator(object):
         :rtype: visp_hand2eye_calibration.msg.TransformArray
         """
         hand_world_samples = TransformArray()
-        #hand_world_samples.header.frame_id = self.robot_base_frame
+        # hand_world_samples.header.frame_id = self.robot_base_frame
         hand_world_samples.header.frame_id = self.tracking_base_frame
         # DONTFIXME: yes, I know, it should be like the line above.
         # thing is, otherwise the results of the calibration are wrong. don't ask me why
@@ -179,9 +164,9 @@ class HandeyeCalibrator(object):
         camera_marker_samples.header.frame_id = self.tracking_base_frame
 
         for s in self.samples:
-            to = HandeyeCalibrator._tuple_to_msg_transform(s['optical'])
+            to = tf2_ros.convert(s['optical'], Transform)
             camera_marker_samples.transforms.append(to)
-            tr = HandeyeCalibrator._tuple_to_msg_transform(s['robot'])
+            tr = tf2_ros.convert(s['robot'], Transform)
             hand_world_samples.transforms.append(tr)
 
         return hand_world_samples, camera_marker_samples
