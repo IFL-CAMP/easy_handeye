@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 from __future__ import division
-from easy_handeye.handeye_client import HandeyeClient
+# from easy_handeye.handeye_client import HandeyeClient
 from tf.transformations import quaternion_multiply, quaternion_from_euler
 from geometry_msgs.msg import Quaternion
 from moveit_commander import MoveGroupCommander
@@ -22,7 +22,8 @@ import sys
 
 class CalibrationMovements:
     def __init__(self, move_group_name, max_velocity_scaling=0.5, max_acceleration_scaling=0.5):
-        #self.client = HandeyeClient()  # TODO: move around marker when eye_on_hand, automatically take samples via trigger topic
+        # self.client = HandeyeClient()
+        # TODO: move around marker when eye_on_hand, automatically take samples via trigger topic
         self.mgc = MoveGroupCommander(move_group_name)
         self.mgc.set_planner_id("RRTConnectkConfigDefault")
         self.mgc.set_max_velocity_scaling_factor(max_velocity_scaling)
@@ -228,7 +229,6 @@ class CalibrationMovementsGUI(QWidget):
         can_move = self.state == CalibrationMovementsGUI.GOOD_PLAN
         self.execute_btn.setEnabled(can_move)
 
-
     def handle_check_current_state(self):
         self.local_mover.compute_poses_around_current_state(self.angle_delta, self.translation_delta)
 
@@ -258,7 +258,8 @@ class CalibrationMovementsGUI(QWidget):
         self.guide_lbl.setText('Planning to the next position. Click on execute when a good one was found')
         if self.current_pose >= 0:
             self.current_plan = self.local_mover.plan_to_pose(self.local_mover.poses[self.current_pose])
-            if CalibrationMovements.is_crazy_plan(self.current_plan, self.local_mover.fallback_joint_limits):  #TODO: sort out this limits story
+            if CalibrationMovements.is_crazy_plan(self.current_plan, self.local_mover.fallback_joint_limits):
+                # TODO: sort out this limits story
                 self.state = CalibrationMovementsGUI.BAD_PLAN
             else:
                 self.state = CalibrationMovementsGUI.GOOD_PLAN
@@ -317,6 +318,7 @@ class RqtCalibrationMovements(Plugin):
     # Comment in to signal that the plugin has a way to configure
     # This will enable a setting button (gear icon) in each dock widget title bar
     # Usually used to open a modal configuration dialog
+
 
 if __name__ == '__main__':
 

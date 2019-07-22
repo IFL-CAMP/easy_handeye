@@ -208,4 +208,3 @@ class HandeyeCalibration(object):
 
         for tp in transf_params:
             rospy.set_param('transformation/'+tp, calib_dict['transformation'][tp])
-

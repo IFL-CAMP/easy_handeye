@@ -28,7 +28,7 @@
     <arg name="robot_velocity_scaling" default="0.3" doc="the maximum speed the robot should reach, as a factor of the speed declared in the joint_limits.yaml" />
     <arg name="robot_acceleration_scaling" default="0.2" doc="the maximum acceleration the robot should reach, as a factor of the acceleration declared in the joint_limits.yaml" />
     
-    <!-- Dummy calibration to have a fully connected tf tree and see all frames -->
+    <!-- Dummy calibration to have a fully connected TF tree and see all frames -->
     <group if="$(arg publish_dummy)">
         <node unless="$(arg eye_on_hand)" name="dummy_handeye" pkg="tf2_ros" type="static_transform_publisher"
             args="1 1 1 0 1.5 0 $(arg robot_base_frame) $(arg tracking_base_frame)" />
