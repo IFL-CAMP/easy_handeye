@@ -48,15 +48,6 @@ cd ~/catkin_ws/src  # replace with path to your workspace
 git clone https://github.com/IFL-CAMP/easy_handeye
 ```
 
-- fix for melodic:
-at the time of writing, [vision_visp](http://wiki.ros.org/vision_visp) has not been yet released into ROS melodic. In order to satisfy this dependency, you can 
-build it from source
-```
-cd src
-git clone https://github.com/lagadic/vision_visp.git
-sudo apt install libvisp-dev
-```
-
 - satisfy dependencies
 ```
 cd ..  # now we are inside ~/catkin_ws
