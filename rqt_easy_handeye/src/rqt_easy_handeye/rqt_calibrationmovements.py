@@ -1,17 +1,14 @@
 #!/usr/bin/env python2
 from __future__ import division
-from easy_handeye.handeye_client import HandeyeClient
 from tf.transformations import quaternion_multiply, quaternion_from_euler
 from geometry_msgs.msg import Quaternion
 from moveit_commander import MoveGroupCommander
 from qt_gui.plugin import Plugin
+from python_qt_binding.QtCore import QCoreApplication
 try:
     from python_qt_binding.QtGui import QWidget, QApplication, QVBoxLayout, QHBoxLayout, QProgressBar, QLabel, QPushButton
 except ImportError:
-    try:
-        from python_qt_binding.QtWidgets import QWidget, QApplication, QVBoxLayout, QHBoxLayout, QProgressBar, QLabel, QPushButton
-    except:
-        raise ImportError('Could not import QWidgets')
+    from python_qt_binding.QtWidgets import QWidget, QApplication, QVBoxLayout, QHBoxLayout, QProgressBar, QLabel, QPushButton
 import rospy
 import numpy as np
 from itertools import chain, izip
@@ -139,6 +136,7 @@ class CalibrationMovementsGUI(QWidget):
     MOVED_TO_POSE = 3
     BAD_STARTING_POSITION = 4
     GOOD_STARTING_POSITION = 5
+    CHECKING_STARTING_POSITION = 6
 
     def __init__(self):
         super(CalibrationMovementsGUI, self).__init__()
@@ -162,6 +160,7 @@ class CalibrationMovementsGUI(QWidget):
         self.pose_number_lbl = QLabel('0/8')
         self.bad_plan_lbl = QLabel('No plan yet')
         self.guide_lbl = QLabel('Hello')
+        self.guide_lbl.setWordWrap(True)
 
         self.check_start_pose_btn = QPushButton('Check starting pose')
         self.check_start_pose_btn.clicked.connect(self.handle_check_current_state)
@@ -213,6 +212,8 @@ class CalibrationMovementsGUI(QWidget):
 
         if self.state == CalibrationMovementsGUI.NOT_INITED_YET:
             self.guide_lbl.setText('Bring the robot to a plausible position and check if it is a suitable starting pose')
+        elif self.state == CalibrationMovementsGUI.CHECKING_STARTING_POSITION:
+            self.guide_lbl.setText('Checking if the robot can translate and rotate in all directions from the current pose')
         elif self.state == CalibrationMovementsGUI.BAD_STARTING_POSITION:
             self.guide_lbl.setText('Cannot calibrate from current position')
         elif self.state == CalibrationMovementsGUI.GOOD_STARTING_POSITION:
@@ -228,8 +229,12 @@ class CalibrationMovementsGUI(QWidget):
         self.plan_btn.setEnabled(can_plan)
         can_move = self.state == CalibrationMovementsGUI.GOOD_PLAN
         self.execute_btn.setEnabled(can_move)
+        QCoreApplication.processEvents()
 
     def handle_check_current_state(self):
+        self.state = CalibrationMovementsGUI.CHECKING_STARTING_POSITION
+        self.updateUI()
+
         self.local_mover.compute_poses_around_current_state(self.angle_delta, self.translation_delta)
 
         joint_limits = [math.radians(90)]*5+[math.radians(180)]+[math.radians(350)]  # TODO: make param
