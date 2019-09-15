@@ -126,7 +126,7 @@ class HandeyeCalibration(object):
 
         :rtype: string
         """
-        return yaml.dump(self.to_dict())
+        return yaml.dump(self.to_dict(), default_flow_style=False)
 
     def from_yaml(self, in_yaml):
         """

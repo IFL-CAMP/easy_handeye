@@ -69,6 +69,10 @@ class RqtHandeyeCalibration(Plugin):
         self._widget.computeButton.clicked[bool].connect(self.handle_compute_calibration)
         self._widget.saveButton.clicked[bool].connect(self.handle_save_calibration)
 
+        self._widget.removeButton.setEnabled(False)
+        self._widget.computeButton.setEnabled(False)
+        self._widget.saveButton.setEnabled(False)
+
     def shutdown_plugin(self):
         # TODO unregister all publishers here
         pass
@@ -99,19 +103,31 @@ class RqtHandeyeCalibration(Plugin):
                                                                       sample_list.camera_marker_samples.transforms[
                                                                           i]))
         self._widget.sampleListWidget.setCurrentRow(len(sample_list.hand_world_samples.transforms)-1)
+        self._widget.removeButton.setEnabled(len(sample_list.hand_world_samples.transforms) > 0)
 
     def handle_take_sample(self):
         sample_list = self.client.take_sample()
         self._display_sample_list(sample_list)
+        self._widget.computeButton.setEnabled(len(sample_list.hand_world_samples.transforms) > 1)
+        self._widget.saveButton.setEnabled(False)
 
     def handle_remove_sample(self):
         index = self._widget.sampleListWidget.currentRow()
         sample_list = self.client.remove_sample(index)
         self._display_sample_list(sample_list)
+        self._widget.computeButton.setEnabled(len(sample_list.hand_world_samples.transforms) > 1)
+        self._widget.saveButton.setEnabled(False)
 
     def handle_compute_calibration(self):
         result = self.client.compute_calibration()
-        self._widget.outputBox.setPlainText(str(result.calibration.transform.transform))
+        self._widget.computeButton.setEnabled(False)
+        if result.valid:
+            self._widget.outputBox.setPlainText(str(result.calibration.transform.transform))
+            self._widget.saveButton.setEnabled(True)
+        else:
+            self._widget.outputBox.setPlainText('The calibration could not be computed')
+            self._widget.saveButton.setEnabled(False)
 
     def handle_save_calibration(self):
         self.client.save()
+        self._widget.saveButton.setEnabled(False)
