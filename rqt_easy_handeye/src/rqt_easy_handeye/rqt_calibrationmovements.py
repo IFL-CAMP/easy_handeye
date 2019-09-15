@@ -5,10 +5,13 @@ from geometry_msgs.msg import Quaternion
 from moveit_commander import MoveGroupCommander
 from qt_gui.plugin import Plugin
 from python_qt_binding.QtCore import QCoreApplication
+
 try:
-    from python_qt_binding.QtGui import QWidget, QApplication, QVBoxLayout, QHBoxLayout, QProgressBar, QLabel, QPushButton
+    from python_qt_binding.QtGui import QWidget, QApplication, QVBoxLayout, QHBoxLayout, QProgressBar, QLabel, \
+        QPushButton
 except ImportError:
-    from python_qt_binding.QtWidgets import QWidget, QApplication, QVBoxLayout, QHBoxLayout, QProgressBar, QLabel, QPushButton
+    from python_qt_binding.QtWidgets import QWidget, QApplication, QVBoxLayout, QHBoxLayout, QProgressBar, QLabel, \
+        QPushButton
 import rospy
 import numpy as np
 from itertools import chain, izip
@@ -19,7 +22,7 @@ import sys
 
 class CalibrationMovements:
     def __init__(self, move_group_name, max_velocity_scaling=0.5, max_acceleration_scaling=0.5):
-        #self.client = HandeyeClient()  # TODO: move around marker when eye_on_hand, automatically take samples via trigger topic
+        # self.client = HandeyeClient()  # TODO: move around marker when eye_on_hand, automatically take samples via trigger topic
         self.mgc = MoveGroupCommander(move_group_name)
         self.mgc.set_planner_id("RRTConnectkConfigDefault")
         self.mgc.set_max_velocity_scaling_factor(max_velocity_scaling)
@@ -27,7 +30,8 @@ class CalibrationMovements:
         self.start_pose = self.mgc.get_current_pose()
         self.poses = []
         self.current_pose_index = -1
-        self.fallback_joint_limits = [math.radians(90)]*4+[math.radians(90)]+[math.radians(180)]+[math.radians(350)]
+        self.fallback_joint_limits = [math.radians(90)] * 4 + [math.radians(90)] + [math.radians(180)] + [
+            math.radians(350)]
         if len(self.mgc.get_active_joints()) == 6:
             self.fallback_joint_limits = self.fallback_joint_limits[1:]
 
@@ -35,8 +39,8 @@ class CalibrationMovements:
         self.start_pose = self.mgc.get_current_pose()
         basis = np.eye(3)
 
-        pos_deltas = [quaternion_from_euler(*rot_axis*angle_delta) for rot_axis in basis]
-        neg_deltas = [quaternion_from_euler(*rot_axis*(-angle_delta)) for rot_axis in basis]
+        pos_deltas = [quaternion_from_euler(*rot_axis * angle_delta) for rot_axis in basis]
+        neg_deltas = [quaternion_from_euler(*rot_axis * (-angle_delta)) for rot_axis in basis]
 
         quaternion_deltas = list(chain.from_iterable(izip(pos_deltas, neg_deltas)))  # interleave
 
@@ -46,8 +50,8 @@ class CalibrationMovements:
 
         # TODO: clean up
 
-        pos_deltas = [quaternion_from_euler(*rot_axis*angle_delta/2) for rot_axis in basis]
-        neg_deltas = [quaternion_from_euler(*rot_axis*(-angle_delta/2)) for rot_axis in basis]
+        pos_deltas = [quaternion_from_euler(*rot_axis * angle_delta / 2) for rot_axis in basis]
+        neg_deltas = [quaternion_from_euler(*rot_axis * (-angle_delta / 2)) for rot_axis in basis]
 
         quaternion_deltas = list(chain.from_iterable(izip(pos_deltas, neg_deltas)))  # interleave
         for qd in quaternion_deltas:
@@ -62,11 +66,11 @@ class CalibrationMovements:
             final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
-        fp.pose.position.x += translation_delta/2
+        fp.pose.position.x += translation_delta / 2
         final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
-        fp.pose.position.x -= translation_delta/2
+        fp.pose.position.x -= translation_delta / 2
         final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
@@ -78,7 +82,7 @@ class CalibrationMovements:
         final_poses.append(fp)
 
         fp = deepcopy(self.start_pose)
-        fp.pose.position.z += translation_delta/3
+        fp.pose.position.z += translation_delta / 3
         final_poses.append(fp)
 
         self.poses = final_poses
@@ -148,10 +152,8 @@ class CalibrationMovementsGUI(QWidget):
         self.local_mover = CalibrationMovements(move_group_name, max_velocity_scaling, max_acceleration_scaling)
         self.current_pose = -1
         self.current_plan = None
-        self.initUI()
         self.state = CalibrationMovementsGUI.NOT_INITED_YET
 
-    def initUI(self):
         self.layout = QVBoxLayout()
         self.labels_layout = QHBoxLayout()
         self.buttons_layout = QHBoxLayout()
@@ -195,10 +197,10 @@ class CalibrationMovementsGUI(QWidget):
         self.setWindowTitle('Local Mover')
         self.show()
 
-    def updateUI(self):
+    def update_ui(self):
         self.progress_bar.setMaximum(len(self.local_mover.poses))
         self.progress_bar.setValue(self.current_pose + 1)
-        self.pose_number_lbl.setText('{}/{}'.format(self.current_pose+1, len(self.local_mover.poses)))
+        self.pose_number_lbl.setText('{}/{}'.format(self.current_pose + 1, len(self.local_mover.poses)))
 
         if self.state == CalibrationMovementsGUI.BAD_PLAN:
             self.bad_plan_lbl.setText('BAD plan!! Don\'t do it!!!!')
@@ -211,9 +213,11 @@ class CalibrationMovementsGUI(QWidget):
             self.bad_plan_lbl.setStyleSheet('')
 
         if self.state == CalibrationMovementsGUI.NOT_INITED_YET:
-            self.guide_lbl.setText('Bring the robot to a plausible position and check if it is a suitable starting pose')
+            self.guide_lbl.setText(
+                'Bring the robot to a plausible position and check if it is a suitable starting pose')
         elif self.state == CalibrationMovementsGUI.CHECKING_STARTING_POSITION:
-            self.guide_lbl.setText('Checking if the robot can translate and rotate in all directions from the current pose')
+            self.guide_lbl.setText(
+                'Checking if the robot can translate and rotate in all directions from the current pose')
         elif self.state == CalibrationMovementsGUI.BAD_STARTING_POSITION:
             self.guide_lbl.setText('Cannot calibrate from current position')
         elif self.state == CalibrationMovementsGUI.GOOD_STARTING_POSITION:
@@ -233,18 +237,18 @@ class CalibrationMovementsGUI(QWidget):
 
     def handle_check_current_state(self):
         self.state = CalibrationMovementsGUI.CHECKING_STARTING_POSITION
-        self.updateUI()
+        self.update_ui()
 
         self.local_mover.compute_poses_around_current_state(self.angle_delta, self.translation_delta)
 
-        joint_limits = [math.radians(90)]*5+[math.radians(180)]+[math.radians(350)]  # TODO: make param
+        joint_limits = [math.radians(90)] * 5 + [math.radians(180)] + [math.radians(350)]  # TODO: make param
         if self.local_mover.check_poses(joint_limits):
             self.state = CalibrationMovementsGUI.GOOD_STARTING_POSITION
         else:
             self.state = CalibrationMovementsGUI.BAD_STARTING_POSITION
         self.current_pose = -1
 
-        self.updateUI()
+        self.update_ui()
 
     def handle_next_pose(self):
         self.guide_lbl.setText('Going to center position')
@@ -254,27 +258,28 @@ class CalibrationMovementsGUI(QWidget):
                 self.guide_lbl.setText('Failed planning to center position: try again')
             else:
                 self.local_mover.execute_plan(plan)
-        if self.current_pose < len(self.local_mover.poses)-1:
+        if self.current_pose < len(self.local_mover.poses) - 1:
             self.current_pose += 1
         self.state = CalibrationMovementsGUI.GOOD_STARTING_POSITION
-        self.updateUI()
+        self.update_ui()
 
     def handle_plan(self):
         self.guide_lbl.setText('Planning to the next position. Click on execute when a good one was found')
         if self.current_pose >= 0:
             self.current_plan = self.local_mover.plan_to_pose(self.local_mover.poses[self.current_pose])
-            if CalibrationMovements.is_crazy_plan(self.current_plan, self.local_mover.fallback_joint_limits):  #TODO: sort out this limits story
+            if CalibrationMovements.is_crazy_plan(self.current_plan,
+                                                  self.local_mover.fallback_joint_limits):  # TODO: sort out this limits story
                 self.state = CalibrationMovementsGUI.BAD_PLAN
             else:
                 self.state = CalibrationMovementsGUI.GOOD_PLAN
-        self.updateUI()
+        self.update_ui()
 
     def handle_execute(self):
         if self.current_plan is not None:
             self.guide_lbl.setText('Going to the selected pose')
             self.local_mover.execute_plan(self.current_plan)
             self.state = CalibrationMovementsGUI.MOVED_TO_POSE
-            self.updateUI()
+            self.update_ui()
 
 
 class RqtCalibrationMovements(Plugin):
@@ -344,6 +349,3 @@ if __name__ == '__main__':
     # generate poses around current pose, each rotating by angle_delta in each direction
     # generate a plan to each pose and back
     # if all movements are possible, perform them in a row (at low speed)
-
-
-

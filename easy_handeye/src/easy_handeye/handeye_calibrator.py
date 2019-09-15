@@ -1,6 +1,5 @@
 import rospy
 import tf2_ros
-from geometry_msgs.msg import Vector3, Quaternion, Transform
 from visp_hand2eye_calibration.msg import TransformArray
 from visp_hand2eye_calibration.srv import compute_effector_camera_quick
 from easy_handeye.handeye_calibration import HandeyeCalibration
@@ -95,9 +94,10 @@ class HandeyeCalibrator(object):
 
         :rtype: None
         """
-        self.tfBuffer.lookup_transform(self.robot_base_frame, self.robot_effector_frame, rospy.Time(0), rospy.Duration(20))
+        self.tfBuffer.lookup_transform(self.robot_base_frame, self.robot_effector_frame, rospy.Time(0),
+                                       rospy.Duration(20))
         self.tfBuffer.lookup_transform(self.tracking_base_frame, self.tracking_marker_frame, rospy.Time(0),
-                                         rospy.Duration(60))
+                                       rospy.Duration(60))
 
     def _get_transforms(self, time=None):
         """
@@ -112,10 +112,13 @@ class HandeyeCalibrator(object):
 
         # here we trick the library (it is actually made for eye_on_hand only). Trust me, I'm an engineer
         if self.eye_on_hand:
-            rob = self.tfBuffer.lookup_transform(self.robot_base_frame, self.robot_effector_frame, time, rospy.Duration(10))
+            rob = self.tfBuffer.lookup_transform(self.robot_base_frame, self.robot_effector_frame, time,
+                                                 rospy.Duration(10))
         else:
-            rob = self.tfBuffer.lookup_transform(self.robot_effector_frame, self.robot_base_frame, time, rospy.Duration(10))
-        opt = self.tfBuffer.lookup_transform(self.tracking_base_frame, self.tracking_marker_frame, time, rospy.Duration(10))
+            rob = self.tfBuffer.lookup_transform(self.robot_effector_frame, self.robot_base_frame, time,
+                                                 rospy.Duration(10))
+        opt = self.tfBuffer.lookup_transform(self.tracking_base_frame, self.tracking_marker_frame, time,
+                                             rospy.Duration(10))
         return {'robot': rob, 'optical': opt}
 
     def take_sample(self):
@@ -146,7 +149,7 @@ class HandeyeCalibrator(object):
         :rtype: visp_hand2eye_calibration.msg.TransformArray
         """
         hand_world_samples = TransformArray()
-        #hand_world_samples.header.frame_id = self.robot_base_frame
+        # hand_world_samples.header.frame_id = self.robot_base_frame
         hand_world_samples.header.frame_id = self.tracking_base_frame
         # DONTFIXME: yes, I know, it should be like the line above.
         # thing is, otherwise the results of the calibration are wrong. don't ask me why

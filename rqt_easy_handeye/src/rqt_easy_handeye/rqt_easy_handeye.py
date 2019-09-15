@@ -63,7 +63,6 @@ class RqtHandeyeCalibration(Plugin):
         else:
             self._widget.calibTypeLineEdit.setText("eye on base")
 
-
         self._widget.takeButton.clicked[bool].connect(self.handle_take_sample)
         self._widget.removeButton.clicked[bool].connect(self.handle_remove_sample)
         self._widget.computeButton.clicked[bool].connect(self.handle_compute_calibration)
