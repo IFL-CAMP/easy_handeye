@@ -10,8 +10,6 @@ catkin_package( )
 install(PROGRAMS
     scripts/rqt_calibrationmovements
     scripts/${PROJECT_NAME}
-    src/${PROJECT_NAME}/rqt_calibrationmovements.py
-    src/${PROJECT_NAME}/${PROJECT_NAME}.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
