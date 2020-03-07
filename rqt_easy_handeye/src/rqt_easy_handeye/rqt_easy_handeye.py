@@ -71,7 +71,6 @@ class RqtHandeyeCalibration(Plugin):
         self._infoWidget.robotEffectorFrameLineEdit.setText(self.client.robot_effector_frame)
         if self.client.eye_on_hand:
             self._infoWidget.calibTypeLineEdit.setText("eye on hand")
-
         else:
             self._infoWidget.calibTypeLineEdit.setText("eye on base")
 

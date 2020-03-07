@@ -27,4 +27,18 @@
             <statustip>Interactive hand-eye calibration system.</statustip>
         </qtgui>
     </class>
+    <class name="Hand-eye Calibration evaluator" type="rqt_easy_handeye.rqt_calibration_evaluator.RqtCalibrationEvaluator"
+           base_class_type="rqt_gui_py::Plugin">
+        <description>
+            GUI for automatically evaluate the quality of the performed hand-eye calibration.
+        </description>
+        <qtgui>
+            <group>
+                <label>Robot Tools</label>
+            </group>
+            <label>Hand-eye calibration Evaluator</label>
+            <icon type="theme">system-help</icon>
+            <statustip>Interactive hand-eye calibration system.</statustip>
+        </qtgui>
+    </class>
 </library>
