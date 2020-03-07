@@ -4,7 +4,7 @@ from tf.transformations import quaternion_multiply, quaternion_from_euler
 from geometry_msgs.msg import Quaternion
 from moveit_commander import MoveGroupCommander
 from qt_gui.plugin import Plugin
-from python_qt_binding.QtCore import QCoreApplication
+from python_qt_binding.QtCore import QCoreApplication, Qt
 
 try:
     from python_qt_binding.QtGui import QWidget, QApplication, QVBoxLayout, QHBoxLayout, QProgressBar, QLabel, \
@@ -161,6 +161,7 @@ class CalibrationMovementsGUI(QWidget):
         self.progress_bar = QProgressBar()
         self.pose_number_lbl = QLabel('0/8')
         self.bad_plan_lbl = QLabel('No plan yet')
+        self.bad_plan_lbl.setAlignment(Qt.AlignCenter)
         self.guide_lbl = QLabel('Hello')
         self.guide_lbl.setWordWrap(True)
 
