@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 from __future__ import division
 from tf.transformations import quaternion_multiply, quaternion_from_euler
 from geometry_msgs.msg import Quaternion
@@ -300,8 +301,8 @@ class RqtCalibrationMovements(Plugin):
                             help="Put plugin in silent mode")
         args, unknowns = parser.parse_known_args(context.argv())
         if not args.quiet:
-            print 'arguments: ', args
-            print 'unknowns: ', unknowns
+            print('arguments: ', args)
+            print('unknowns: ', unknowns)
 
         # Create QWidget
         self._widget = CalibrationMovementsGUI()
@@ -338,11 +339,8 @@ if __name__ == '__main__':
     while rospy.get_time() == 0.0:
         pass
 
-    lm = CalibrationMovements()
-    rospy.sleep(1.0)
-
     qapp = QApplication(sys.argv)
-    lmg = CalibrationMovementsGUI(lm)
+    lmg = CalibrationMovementsGUI()
     lmg.show()
     sys.exit(qapp.exec_())
 

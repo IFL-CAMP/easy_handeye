@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>649</width>
-    <height>650</height>
+    <height>516</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,76 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QGroupBox" name="groupBox_4">
-       <property name="title">
-        <string>Info</string>
-       </property>
-       <layout class="QFormLayout" name="formLayout">
-        <item row="1" column="0">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Name:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Type:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Tracking Base Frame:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0">
-         <widget class="QLabel" name="trackingMarkerFrameLabel_2">
-          <property name="text">
-           <string>Tracking Marker Frame:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="calibNameLineEdit"/>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="calibTypeLineEdit"/>
-        </item>
-        <item row="5" column="1">
-         <widget class="QLineEdit" name="trackingBaseFrameLineEdit"/>
-        </item>
-        <item row="7" column="1">
-         <widget class="QLineEdit" name="trackingMarkerFrameLineEdit"/>
-        </item>
-        <item row="8" column="0">
-         <widget class="QLabel" name="robotFrameLabel_3">
-          <property name="text">
-           <string>Robot Base Frame:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLineEdit" name="robotBaseFrameLineEdit"/>
-        </item>
-        <item row="9" column="0">
-         <widget class="QLabel" name="robotFrameLabel">
-          <property name="text">
-           <string>Robot Effector Frame:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="1">
-         <widget class="QLineEdit" name="robotEffectorFrameLineEdit"/>
-        </item>
-       </layout>
-      </widget>
-     </item>
+    <layout class="QHBoxLayout" name="horizontalLayout_infoAndActions">
      <item>
       <widget class="QGroupBox" name="groupBox_3">
        <property name="title">
@@ -125,28 +56,32 @@
     </layout>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>Samples</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <item>
-       <widget class="QListWidget" name="sampleListWidget"/>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="title">
-      <string>Result</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
-      <item>
-       <widget class="QPlainTextEdit" name="outputBox"/>
-      </item>
-     </layout>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Samples</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QListWidget" name="sampleListWidget"/>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="title">
+        <string>Result</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QPlainTextEdit" name="outputBox"/>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

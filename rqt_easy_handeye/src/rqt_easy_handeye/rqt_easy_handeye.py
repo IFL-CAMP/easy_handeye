@@ -1,3 +1,4 @@
+from __future__ import print_function
 from __future__ import division
 import os
 import rospy
@@ -5,6 +6,7 @@ import rospkg
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from easy_handeye.handeye_client import HandeyeClient
+
 try:
     from python_qt_binding.QtGui import QWidget, QListWidgetItem
 except ImportError:
@@ -12,6 +14,12 @@ except ImportError:
         from python_qt_binding.QtWidgets import QWidget, QListWidgetItem
     except:
         raise ImportError('Could not import QWidgets')
+
+
+def format_sample(sample):
+    x, y, z = sample.translation.x, sample.translation.y, sample.translation.z
+    qx, qy, qz, qw = sample.rotation.x, sample.rotation.y, sample.rotation.z, sample.rotation.w
+    return 'translation: [{:+.2f}, {:+.2f}, {:+.2f}]\nrotation: [{:+.2f}, {:+.2f}, {:+.2f}, {:+.2f}]'.format(x, y, z, qx, qy, qz, qw)
 
 
 class RqtHandeyeCalibration(Plugin):
@@ -29,15 +37,19 @@ class RqtHandeyeCalibration(Plugin):
                             help="Put plugin in silent mode")
         args, unknowns = parser.parse_known_args(context.argv())
         if not args.quiet:
-            print 'arguments: ', args
-            print 'unknowns: ', unknowns
+            print('arguments: ', args)
+            print('unknowns: ', unknowns)
 
-        # Create QWidget
+        # Create QWidgets
         self._widget = QWidget()
+        self._infoWidget = QWidget()
         # Get path to UI file which should be in the "resource" folder of this package
         ui_file = os.path.join(rospkg.RosPack().get_path('rqt_easy_handeye'), 'resource', 'rqt_handeye.ui')
+        ui_info_file = os.path.join(rospkg.RosPack().get_path('rqt_easy_handeye'), 'resource', 'rqt_handeye_info.ui')
         # Extend the widget with all attributes and children from UI file
         loadUi(ui_file, self._widget)
+        loadUi(ui_info_file, self._infoWidget)
+        self._widget.horizontalLayout_infoAndActions.insertWidget(0, self._infoWidget)
         # Give QObjects reasonable names
         self._widget.setObjectName('RqtHandeyeCalibrationUI')
         # Show _widget.windowTitle on left-top of each plugin (when 
@@ -52,16 +64,16 @@ class RqtHandeyeCalibration(Plugin):
 
         self.client = HandeyeClient()
 
-        self._widget.calibNameLineEdit.setText(rospy.get_namespace())
-        self._widget.trackingBaseFrameLineEdit.setText(self.client.tracking_base_frame)
-        self._widget.trackingMarkerFrameLineEdit.setText(self.client.tracking_marker_frame)
-        self._widget.robotBaseFrameLineEdit.setText(self.client.robot_base_frame)
-        self._widget.robotEffectorFrameLineEdit.setText(self.client.robot_effector_frame)
+        self._infoWidget.calibNameLineEdit.setText(rospy.get_namespace())
+        self._infoWidget.trackingBaseFrameLineEdit.setText(self.client.tracking_base_frame)
+        self._infoWidget.trackingMarkerFrameLineEdit.setText(self.client.tracking_marker_frame)
+        self._infoWidget.robotBaseFrameLineEdit.setText(self.client.robot_base_frame)
+        self._infoWidget.robotEffectorFrameLineEdit.setText(self.client.robot_effector_frame)
         if self.client.eye_on_hand:
-            self._widget.calibTypeLineEdit.setText("eye on hand")
+            self._infoWidget.calibTypeLineEdit.setText("eye on hand")
 
         else:
-            self._widget.calibTypeLineEdit.setText("eye on base")
+            self._infoWidget.calibTypeLineEdit.setText("eye on base")
 
         self._widget.takeButton.clicked[bool].connect(self.handle_take_sample)
         self._widget.removeButton.clicked[bool].connect(self.handle_remove_sample)
@@ -95,13 +107,12 @@ class RqtHandeyeCalibration(Plugin):
         self._widget.sampleListWidget.clear()
 
         for i in range(len(sample_list.hand_world_samples.transforms)):
+            formatted_robot_sample = format_sample(sample_list.hand_world_samples.transforms[i])
+            formatted_tracking_sample = format_sample(sample_list.camera_marker_samples.transforms[i])
             self._widget.sampleListWidget.addItem(
-                '{}) \n hand->world {} \n camera->marker {}\n'.format(i+1,
-                                                                      sample_list.hand_world_samples.transforms[
-                                                                          i],
-                                                                      sample_list.camera_marker_samples.transforms[
-                                                                          i]))
-        self._widget.sampleListWidget.setCurrentRow(len(sample_list.hand_world_samples.transforms)-1)
+                '{}) \n hand->world \n {} \n camera->marker\n {}\n'.format(i + 1, formatted_robot_sample,
+                                                                      formatted_tracking_sample))
+        self._widget.sampleListWidget.setCurrentRow(len(sample_list.hand_world_samples.transforms) - 1)
         self._widget.removeButton.setEnabled(len(sample_list.hand_world_samples.transforms) > 0)
 
     def handle_take_sample(self):
