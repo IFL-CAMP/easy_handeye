@@ -30,13 +30,13 @@ class HandeyeCalibrationCommander:
             self.client.take_sample()
 
     def _display_sample_list(self, sample_list):
-        for i in range(len(sample_list.hand_world_samples.transforms)):
+        for i in range(len(sample_list.hand_world_samples)):
             print('{}) \n hand->world {} \n camera->marker {}\n'.format(i,
-                                       sample_list.hand_world_samples.transforms[i],
-                                       sample_list.camera_marker_samples.transforms[i]))
+                                       sample_list.hand_world_samples[i],
+                                       sample_list.camera_marker_samples[i]))
 
     def _edit_menu(self):
-        while len(self.client.get_sample_list().hand_world_samples.transforms) > 0:
+        while len(self.client.get_sample_list().hand_world_samples) > 0:
             prompt_str = 'Press a number and ENTER to delete the respective sample, or ENTER to continue:\n'
             self._display_sample_list(self.client.get_sample_list())
             sample_to_delete = raw_input(prompt_str)

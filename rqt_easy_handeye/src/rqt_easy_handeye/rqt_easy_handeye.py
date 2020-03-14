@@ -105,26 +105,26 @@ class RqtHandeyeCalibration(Plugin):
     def _display_sample_list(self, sample_list):
         self._widget.sampleListWidget.clear()
 
-        for i in range(len(sample_list.hand_world_samples.transforms)):
-            formatted_robot_sample = format_sample(sample_list.hand_world_samples.transforms[i])
-            formatted_tracking_sample = format_sample(sample_list.camera_marker_samples.transforms[i])
+        for i in range(len(sample_list.hand_world_samples)):
+            formatted_robot_sample = format_sample(sample_list.hand_world_samples[i])
+            formatted_tracking_sample = format_sample(sample_list.camera_marker_samples[i])
             self._widget.sampleListWidget.addItem(
                 '{}) \n hand->world \n {} \n camera->marker\n {}\n'.format(i + 1, formatted_robot_sample,
                                                                       formatted_tracking_sample))
-        self._widget.sampleListWidget.setCurrentRow(len(sample_list.hand_world_samples.transforms) - 1)
-        self._widget.removeButton.setEnabled(len(sample_list.hand_world_samples.transforms) > 0)
+        self._widget.sampleListWidget.setCurrentRow(len(sample_list.hand_world_samples) - 1)
+        self._widget.removeButton.setEnabled(len(sample_list.hand_world_samples) > 0)
 
     def handle_take_sample(self):
         sample_list = self.client.take_sample()
         self._display_sample_list(sample_list)
-        self._widget.computeButton.setEnabled(len(sample_list.hand_world_samples.transforms) > 1)
+        self._widget.computeButton.setEnabled(len(sample_list.hand_world_samples) > 1)
         self._widget.saveButton.setEnabled(False)
 
     def handle_remove_sample(self):
         index = self._widget.sampleListWidget.currentRow()
         sample_list = self.client.remove_sample(index)
         self._display_sample_list(sample_list)
-        self._widget.computeButton.setEnabled(len(sample_list.hand_world_samples.transforms) > 1)
+        self._widget.computeButton.setEnabled(len(sample_list.hand_world_samples) > 1)
         self._widget.saveButton.setEnabled(False)
 
     def handle_compute_calibration(self):

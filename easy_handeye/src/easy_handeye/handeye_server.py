@@ -51,8 +51,11 @@ class HandeyeServer:
         self.last_calibration = None
 
     def _retrieve_sample_list(self):
-        return SampleList(*self.calibration_service.get_visp_samples(samples=self.sampler.get_samples(),
-                          handeye_parameters=self.parameters))
+        ret = SampleList()
+        for s in self.sampler.get_samples():
+            ret.camera_marker_samples.append(s['optical'].transform)
+            ret.hand_world_samples.append(s['robot'].transform)
+        return ret
 
     def get_sample_lists(self, _):
         return hec.srv.TakeSampleResponse(self._retrieve_sample_list())

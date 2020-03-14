@@ -1,2 +1,2 @@
-visp_hand2eye_calibration/TransformArray hand_world_samples
-visp_hand2eye_calibration/TransformArray camera_marker_samples
+geometry_msgs/Transform[] hand_world_samples
+geometry_msgs/Transform[] camera_marker_samples
