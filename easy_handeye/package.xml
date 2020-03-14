@@ -7,11 +7,11 @@
         of cameras.
     </description>
 
-    <maintainer email="marco.esposito@tum.de">Marco Esposito</maintainer>
+    <maintainer email="esposito@imfusion.com">Marco Esposito</maintainer>
 
     <license>LGPLv3</license>
 
-    <author email="marco.esposito@tum.de">Marco Esposito</author>
+    <author email="esposito@imfusion.com">Marco Esposito</author>
 
     <buildtool_depend>catkin</buildtool_depend>
 
