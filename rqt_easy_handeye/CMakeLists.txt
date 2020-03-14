@@ -7,7 +7,7 @@ catkin_python_setup()
 
 catkin_package()
 
-install(PROGRAMS
+catkin_install_python(PROGRAMS
     scripts/rqt_calibration_evaluator
     scripts/rqt_calibrationmovements
     scripts/${PROJECT_NAME}

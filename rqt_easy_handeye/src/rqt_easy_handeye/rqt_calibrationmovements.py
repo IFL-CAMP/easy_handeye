@@ -1,4 +1,3 @@
-#!/usr/bin/env python2
 from __future__ import print_function
 from __future__ import division
 from tf.transformations import quaternion_multiply, quaternion_from_euler

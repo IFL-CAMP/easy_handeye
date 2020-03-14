@@ -35,7 +35,7 @@ catkin_package(
     CATKIN_DEPENDS geometry_msgs message_runtime std_msgs visp_hand2eye_calibration
 )
 
-install(PROGRAMS
+catkin_install_python(PROGRAMS
     scripts/calibrate.py
     scripts/handeye_calibration_commander.py
     scripts/publish.py
