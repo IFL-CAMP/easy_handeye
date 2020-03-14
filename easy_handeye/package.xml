@@ -3,8 +3,7 @@
     <name>easy_handeye</name>
     <version>0.2.0</version>
     <description>
-        Use visp_hand2eye_calibration to determine the extrinsic parameters
-        of cameras.
+        Simple, straighforward ROS library for hand-eye calibration
     </description>
 
     <maintainer email="esposito@imfusion.com">Marco Esposito</maintainer>

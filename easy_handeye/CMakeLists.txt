@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(easy_handeye)
 
 find_package(catkin REQUIRED COMPONENTS
@@ -39,10 +39,6 @@ install(PROGRAMS
     scripts/calibrate.py
     scripts/handeye_calibration_commander.py
     scripts/publish.py
-    src/${PROJECT_NAME}/handeye_calibration.py
-    src/${PROJECT_NAME}/handeye_calibrator.py
-    src/${PROJECT_NAME}/handeye_client.py
-    src/${PROJECT_NAME}/handeye_server.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
