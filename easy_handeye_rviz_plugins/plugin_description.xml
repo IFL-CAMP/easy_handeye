@@ -1,0 +1,17 @@
+<library path="libeasy_handeye_rviz_plugins">
+    <class name="easy_handeye_rviz_plugins/CalibrationPanel"
+           type="easy_handeye_rviz_plugins::CalibrationPanel"
+           base_class_type="rviz::Panel">
+        <description>
+            A panel widget allowing to perform a hand-eye calibration
+        </description>
+    </class>
+
+<!--    <class name="easy_handeye_panel/EvaluationPanel"
+           type="easy_handeye_panel::EvaluationPanel"
+           base_class_type="rviz::Panel">
+        <description>
+            A panel widget allowing to evaluate the accuracy of a hand-eye calibration
+        </description>
+    </class>-->
+</library>
