@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(easy_handeye_rviz_plugins)
 
-find_package(catkin REQUIRED COMPONENTS rviz easy_handeye_msgs geometry_msgs)
+find_package(catkin REQUIRED COMPONENTS rviz easy_handeye_msgs geometry_msgs std_srvs)
 
 catkin_package()
 
@@ -22,6 +22,7 @@ endif ()
 
 add_library(${PROJECT_NAME}
         src/calibration_panel.cpp
+        src/handeye_client.cpp
         )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${catkin_INCLUDE_DIRS})

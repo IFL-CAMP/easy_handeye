@@ -18,6 +18,7 @@
   <depend>libqt5-core</depend>
   <depend>libqt5-widgets</depend>
   <depend>geometry_msgs</depend>
+  <depend>std_srvs</depend>
   <depend>easy_handeye_msgs</depend>
 
   <export>

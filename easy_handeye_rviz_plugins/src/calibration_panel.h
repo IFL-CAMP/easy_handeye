@@ -7,6 +7,8 @@
 #include <rviz/panel.h>
 #endif
 
+#include "handeye_client.h"
+
 class QLineEdit;
 
 namespace easy_handeye_rviz_plugins {
@@ -28,6 +30,7 @@ protected:
 
   // One-line text editor for entering the outgoing ROS topic name.
   QLineEdit *output_topic_editor_;
+  HandeyeClient client;
   ros::NodeHandle nh_;
 };
 
