@@ -3,7 +3,7 @@
     <name>easy_handeye</name>
     <version>0.2.0</version>
     <description>
-        Simple, straighforward ROS library for hand-eye calibration
+        Simple, hardware-independent ROS library for hand-eye calibration
     </description>
 
     <maintainer email="esposito@imfusion.com">Marco Esposito</maintainer>
@@ -14,13 +14,11 @@
 
     <buildtool_depend>catkin</buildtool_depend>
 
-    <build_depend>message_generation</build_depend>
-
-    <depend>geometry_msgs</depend>
-    <depend>std_msgs</depend>
-    <depend>std_srvs</depend>
-    <depend>visp_hand2eye_calibration</depend>
-
+    <exec_depend>geometry_msgs</exec_depend>
+    <exec_depend>std_msgs</exec_depend>
+    <exec_depend>std_srvs</exec_depend>
+    <exec_depend>easy_handeye_msgs</exec_depend>
+    <exec_depend>visp_hand2eye_calibration</exec_depend>
     <exec_depend>message_runtime</exec_depend>
     <exec_depend>tf2_ros</exec_depend>
 </package>

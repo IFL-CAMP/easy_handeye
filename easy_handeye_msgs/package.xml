@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>easy_handeye_msgs</name>
+  <version>0.2.0</version>
+  <description>Message formats to perform a hand-eye calibration from sampled tf transforms</description>
+
+  <maintainer email="esposito@imfusion.com">Marco Esposito</maintainer>
+
+  <license>LGPLv3</license>
+
+  <author email="esposito@imfusion.com">Marco Esposito</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+
+  <export>
+  </export>
+</package>
