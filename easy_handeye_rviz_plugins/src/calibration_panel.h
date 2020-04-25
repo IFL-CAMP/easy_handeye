@@ -28,7 +28,6 @@ public Q_SLOTS:
 protected Q_SLOTS:
   void onTakeSamplePressed(bool);
   void onRemoveSamplePressed(bool);
-  void onComputeCalibrationPressed(bool);
   void onSaveCalibrationPressed(bool);
 
 protected:
@@ -36,7 +35,6 @@ protected:
   void updateUI();
 
   void setSampleList(const easy_handeye_msgs::SampleList& new_list, int focused_item_index = -1);
-  void setCalibrationTransform(const geometry_msgs::TransformStamped& calibration_transform);
   void onSavedCalibration();
 
   Ui_CalibrationPanel* m_ui;

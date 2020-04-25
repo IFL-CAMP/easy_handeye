@@ -4,8 +4,8 @@
 #include <QTimer>
 
 #include "calibration_panel.h"
-#include </home/marco/ros/catkin_ws/build/easy_handeye_rviz_plugins/easy_handeye_rviz_plugins_autogen/include/ui_calibration_panel.h>  // TODO remove
-//#include <ui_calibration_panel.h>
+//#include </home/marco/ros/catkin_ws/build/easy_handeye_rviz_plugins/easy_handeye_rviz_plugins_autogen/include/ui_calibration_panel.h>  // TODO remove
+#include <ui_calibration_panel.h>
 
 namespace easy_handeye_rviz_plugins
 {
@@ -26,12 +26,13 @@ CalibrationPanel::CalibrationPanel(QWidget* parent) : rviz::Panel(parent)
   if (client.getSampleList(sl))
     setSampleList(sl);
 
+  updateUI();
+
   connect(m_ui->comboBox_namespace, QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
           [this](const QString& newNamespace) { activateCalibration(newNamespace.toStdString()); });
 
   connect(m_ui->takeButton, &QPushButton::clicked, this, &CalibrationPanel::onTakeSamplePressed);
   connect(m_ui->removeButton, &QPushButton::clicked, this, &CalibrationPanel::onRemoveSamplePressed);
-  connect(m_ui->computeButton, &QPushButton::clicked, this, &CalibrationPanel::onComputeCalibrationPressed);
   connect(m_ui->saveButton, &QPushButton::clicked, this, &CalibrationPanel::onSaveCalibrationPressed);
 }
 
@@ -81,27 +82,14 @@ void CalibrationPanel::onTakeSamplePressed(bool)
 void CalibrationPanel::onRemoveSamplePressed(bool)
 {
   int sample_index = m_ui->sampleListWidget->currentRow();
-  easy_handeye_msgs::SampleList newSampleList;
-  if (client.removeSample(sample_index, newSampleList))
+  easy_handeye_msgs::SampleList new_sample_list;
+  if (client.removeSample(sample_index, new_sample_list))
   {
-    setSampleList(newSampleList);
+    setSampleList(new_sample_list, sample_index);
   }
   else
   {
     ROS_DEBUG_STREAM("Could not remove sample " << sample_index);
-  }
-}
-
-void CalibrationPanel::onComputeCalibrationPressed(bool)
-{
-  easy_handeye_msgs::HandeyeCalibration result_calibration;
-  if (client.computeCalibration(result_calibration))
-  {
-    setCalibrationTransform(result_calibration.transform);
-  }
-  else
-  {
-    ROS_DEBUG("Could not compute the calibration");
   }
 }
 
@@ -116,6 +104,7 @@ void CalibrationPanel::onSaveCalibrationPressed(bool)
     ROS_DEBUG("Could not compute the calibration");
   }
 }
+
 void CalibrationPanel::setSampleList(const easy_handeye_msgs::SampleList& new_list, int focused_item_index)
 {
   ROS_ASSERT(new_list.camera_marker_samples.size() == new_list.hand_world_samples.size());
@@ -127,6 +116,8 @@ void CalibrationPanel::setSampleList(const easy_handeye_msgs::SampleList& new_li
 
   if (focused_item_index < 0)
     focused_item_index = new_list.camera_marker_samples.size() + focused_item_index;
+
+  focused_item_index = std::min(focused_item_index, int(new_list.camera_marker_samples.size())-1);
 
   ROS_ASSERT(focused_item_index < new_list.camera_marker_samples.size() && focused_item_index >= 0);
 
@@ -164,14 +155,6 @@ void CalibrationPanel::setSampleList(const easy_handeye_msgs::SampleList& new_li
   updateUI();
 }
 
-void CalibrationPanel::setCalibrationTransform(const geometry_msgs::TransformStamped& calibration_transform)
-{
-  // TODO: print the calibration transformation into its widget
-  std::stringstream s;
-  s << calibration_transform.transform;
-  m_ui->resultTextEdit->setPlainText(QString::fromStdString(s.str()));
-  updateUI();
-}
 
 void CalibrationPanel::onSavedCalibration()
 {
@@ -182,8 +165,41 @@ void CalibrationPanel::onSavedCalibration()
 void CalibrationPanel::updateUI()
 {
   m_ui->removeButton->setEnabled(m_ui->sampleListWidget->count() > 0);
-  m_ui->computeButton->setEnabled(m_ui->sampleListWidget->count() > 3); // make dynamic per-algorithm?
-  m_ui->saveButton->setEnabled(m_ui->computeButton->isEnabled()); // TODO: only if calibration has been computed
+  // TODO: client->enoughSamples()
+  if (m_ui->sampleListWidget->count() > 3)
+  {
+    easy_handeye_msgs::HandeyeCalibration result_calibration;
+    if (client.computeCalibration(result_calibration))
+    {
+      auto formatSample = [](const geometry_msgs::Transform& s) {
+        std::stringstream sample_stream;
+        sample_stream << std::fixed << std::setprecision(3);
+        sample_stream << "tr: [" << s.translation.x << ", " << s.translation.y << ", " << s.translation.z << "]"
+                      << std::endl;
+        sample_stream << "rot: [" << s.rotation.x << ", " << s.rotation.y << ", " << s.rotation.z << ", "
+                      << s.rotation.w << "]";
+        return sample_stream.str();
+      };
+
+      std::stringstream s;
+      s << formatSample(result_calibration.transform.transform) << std::endl << std::endl;
+      s << "Outliers detected: TODO" << std::endl << std::endl;
+      s << "The calibration could already be computed, but the more samples the better." << std::endl << std::endl;
+      s << "Remember to SAVE the calibration!" << std::endl;
+      m_ui->resultTextEdit->setPlainText(QString::fromStdString(s.str()));
+
+      m_ui->saveButton->setEnabled(true);
+      m_ui->saveButton->setFocus();
+      return;
+    } else {
+      m_ui->resultTextEdit->setPlainText("Could not compute the calibration: communication with the backend failed");
+    }
+  } else {
+    m_ui->resultTextEdit->setPlainText("Not enough samples to compute the calibration");
+  }
+  ROS_DEBUG("Could not compute the calibration");
+  // TODO: feedback to the user
+  m_ui->saveButton->setEnabled(false);
 }
 
 }  // namespace easy_handeye_rviz_plugins
