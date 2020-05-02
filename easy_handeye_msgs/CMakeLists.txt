@@ -8,13 +8,25 @@ add_message_files(
         FILES
         HandeyeCalibration.msg
         SampleList.msg
+        TargetPoseList.msg
 )
 
 add_service_files(
+        DIRECTORY srv/calibration
         FILES
         ComputeCalibration.srv
         RemoveSample.srv
         TakeSample.srv
+)
+
+add_service_files(
+        DIRECTORY srv/robot_movements
+        FILES
+        CheckStartingPose.srv
+        EnumerateTargetPoses.srv
+        SelectTargetPose.srv
+        PlanToSelectedTargetPose.srv
+        ExecutePlan.srv
 )
 
 generate_messages(
