@@ -69,7 +69,7 @@ class HandeyeCalibrationServiceVisp(object):
             result_tuple = ((transl.x, transl.y, transl.z),
                             (rot.x, rot.y, rot.z, rot.w))
 
-            ret = HandeyeCalibration(handeye_parameters=handeye_parameters,
+            ret = HandeyeCalibration(calibration_parameters=handeye_parameters,
                                      transformation=result_tuple)
 
             return ret

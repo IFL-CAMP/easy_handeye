@@ -7,6 +7,16 @@
     <arg if="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_hand" doc="the namespace the node will run in, and the folder in which the result will be saved" />
     <arg unless="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_base" doc="the namespace the node will run in, and the folder in which the result will be saved" />
 
+    <!-- Automatic robot movements -->
+    <arg name="freehand_robot_movement" default="false" doc="if false, the rqt plugin for the automatic robot motion with MoveIt! will be started" />
+    <arg name="move_group_namespace" default=""  doc="the namespace of move_group for the automatic robot motion with MoveIt!" />
+    <arg name="move_group" default="manipulator"  doc="the name of move_group for the automatic robot motion with MoveIt!" />
+
+    <arg name="translation_delta_meters" default="0.1" doc="the maximum movement that the robot should perform in the translation phase" />
+    <arg name="rotation_delta_degrees" default="25" doc="the maximum rotation that the robot should perform" />
+    <arg name="robot_velocity_scaling" default="0.3" doc="the maximum speed the robot should reach, as a factor of the speed declared in the joint_limits.yaml" />
+    <arg name="robot_acceleration_scaling" default="0.2" doc="the maximum acceleration the robot should reach, as a factor of the acceleration declared in the joint_limits.yaml" />
+
     <!-- The input reference frames -->
     <arg name="robot_base_frame" default="base_link" />
     <arg name="robot_effector_frame" default="tool0" />
@@ -22,13 +32,6 @@
     <arg name="start_sampling_gui" default="true" doc="if true, rqt will be started with the provided perspective" />
     <arg name="rqt_perspective_file" default="$(find easy_handeye)/launch/rqt_easy_handeye.perspective" doc="the path to the rqt perspective file to be opened" />
     
-    <arg name="freehand_robot_movement" default="false" doc="if false, the rqt plugin for the automatic robot motion with MoveIt! will be started" />
-    <arg name="move_group" default="manipulator" doc="the name of move_group for the automatic robot motion with MoveIt!" />
-    <arg name="translation_delta_meters" default="0.1" doc="the maximum movement that the robot should perform in the translation phase" />
-    <arg name="rotation_delta_degrees" default="25" doc="the maximum rotation that the robot should perform" />
-    <arg name="robot_velocity_scaling" default="0.3" doc="the maximum speed the robot should reach, as a factor of the speed declared in the joint_limits.yaml" />
-    <arg name="robot_acceleration_scaling" default="0.2" doc="the maximum acceleration the robot should reach, as a factor of the acceleration declared in the joint_limits.yaml" />
-    
     <!-- Dummy calibration to have a fully connected tf tree and see all frames -->
     <group if="$(arg publish_dummy)">
         <node unless="$(arg eye_on_hand)" name="dummy_handeye" pkg="tf" type="static_transform_publisher"
@@ -37,42 +40,46 @@
             args="0 0 0.05 0 0 0 $(arg robot_effector_frame) $(arg tracking_base_frame) 10" />
     </group>
 
-    <!-- Run the ViSP solver to determine the extrinsic parameters -->
-    <node ns="$(arg namespace)" name="hand_eye_solver"
-          pkg="visp_hand2eye_calibration"
-          type="visp_hand2eye_calibration_calibrator">
-        <remap from="/compute_effector_camera_quick" to="compute_effector_camera_quick"/>
-    </node>
+    <group ns="$(arg namespace)">
 
-    <group ns="$(arg namespace)" >
+        <!-- Store the parameters in the calibration's namespace-->
         <param name="eye_on_hand" value="$(arg eye_on_hand)"/>
+        <param name="move_group_namespace" value="$(arg move_group_namespace)"/>
+        <param name="move_group" value="$(arg move_group)"/>
         <param name="robot_base_frame" value="$(arg robot_base_frame)" />
         <param name="robot_effector_frame" value="$(arg robot_effector_frame)" />
         <param name="tracking_base_frame" value="$(arg tracking_base_frame)" />
         <param name="tracking_marker_frame" value="$(arg tracking_marker_frame)" />
+
+        <!-- Run the ViSP solver to determine the extrinsic parameters -->
+        <node name="hand_eye_solver"
+              pkg="visp_hand2eye_calibration"
+              type="visp_hand2eye_calibration_calibrator">
+            <remap from="/compute_effector_camera_quick" to="compute_effector_camera_quick"/>
+        </node>
+
+        <!-- Start the backend -->
+        <node name="easy_handeye_calibration_server"
+              pkg="easy_handeye"
+              type="calibrate.py"
+              output="screen" />
+
+        <!-- start rqt GUI for taking_samples -->
+        <node if="$(arg start_sampling_gui)" name="$(anon namespace)_rqt" pkg="rqt_easy_handeye" type="rqt_easy_handeye" respawn="false" output="screen" />
+
+        <!-- start the GUI for moving the robot around the starting pose -->
+        <node unless="$(arg freehand_robot_movement)" name="calibration_mover" pkg="rqt_easy_handeye" type="rqt_calibrationmovements" respawn="false" >
+            <param name="move_group" value="$(arg move_group)" />
+            <param name="translation_delta_meters" value="$(arg translation_delta_meters)" />
+            <param name="rotation_delta_degrees" value="$(arg rotation_delta_degrees)" />
+            <param name="max_velocity_scaling" value="$(arg robot_velocity_scaling)" />
+            <param name="max_acceleration_scaling" value="$(arg robot_acceleration_scaling)" />
+        </node>
+
     </group>
 
-    <!-- Connect the tracker to the solver -->
-    <node name="hand_eye_connector"
-          ns="$(arg namespace)"
-          pkg="easy_handeye"
-          type="calibrate.py"
-          output="screen" />
-
-    <!-- start Rviz with our configuration -->
-    <node if="$(arg start_rviz)" name="$(anon rviz)" pkg="rviz" type="rviz" respawn="true"
+    <!-- start Rviz with our configuration, in the move group's namespace -->
+    <node if="$(arg start_rviz)" ns="$(arg move_group_namespace)" name="$(anon rviz)" pkg="rviz" type="rviz" respawn="true"
           args="-d $(arg rviz_config_file)" output="screen" />
-
-    <!-- start rqt GUI for taking_samples -->
-    <node if="$(arg start_sampling_gui)" ns="$(arg namespace)" name="$(anon namespace)_rqt" pkg="rqt_easy_handeye" type="rqt_easy_handeye" respawn="false" output="screen" />
-
-    <!-- start the GUI for moving the robot around the starting pose -->
-    <node unless="$(arg freehand_robot_movement)" name="calibration_mover" pkg="rqt_easy_handeye" type="rqt_calibrationmovements" respawn="false" >
-        <param name="move_group" value="$(arg move_group)" />
-        <param name="translation_delta_meters" value="$(arg translation_delta_meters)" />
-        <param name="rotation_delta_degrees" value="$(arg rotation_delta_degrees)" />
-        <param name="max_velocity_scaling" value="$(arg robot_velocity_scaling)" />
-        <param name="max_acceleration_scaling" value="$(arg robot_acceleration_scaling)" />
-    </node>
 
 </launch>

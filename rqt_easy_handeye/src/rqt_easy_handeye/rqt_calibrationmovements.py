@@ -1,11 +1,8 @@
 from __future__ import print_function
 from __future__ import division
-from tf.transformations import quaternion_multiply, quaternion_from_euler
-from geometry_msgs.msg import Quaternion
-from moveit_commander import MoveGroupCommander
 from qt_gui.plugin import Plugin
 from python_qt_binding.QtCore import QCoreApplication, Qt
-
+from easy_handeye.handeye_client import HandeyeClient
 try:
     from python_qt_binding.QtGui import QWidget, QApplication, QVBoxLayout, QHBoxLayout, QProgressBar, QLabel, \
         QPushButton
@@ -13,124 +10,7 @@ except ImportError:
     from python_qt_binding.QtWidgets import QWidget, QApplication, QVBoxLayout, QHBoxLayout, QProgressBar, QLabel, \
         QPushButton
 import rospy
-import numpy as np
-from itertools import chain, izip
-from copy import deepcopy
-import math
 import sys
-
-
-class CalibrationMovements:
-    def __init__(self, move_group_name, max_velocity_scaling=0.5, max_acceleration_scaling=0.5):
-        # self.client = HandeyeClient()  # TODO: move around marker when eye_on_hand, automatically take samples via trigger topic
-        self.mgc = MoveGroupCommander(move_group_name)
-        self.mgc.set_planner_id("RRTConnectkConfigDefault")
-        self.mgc.set_max_velocity_scaling_factor(max_velocity_scaling)
-        self.mgc.set_max_acceleration_scaling_factor(max_acceleration_scaling)
-        self.start_pose = self.mgc.get_current_pose()
-        self.poses = []
-        self.current_pose_index = -1
-        self.fallback_joint_limits = [math.radians(90)] * 4 + [math.radians(90)] + [math.radians(180)] + [
-            math.radians(350)]
-        if len(self.mgc.get_active_joints()) == 6:
-            self.fallback_joint_limits = self.fallback_joint_limits[1:]
-
-    def compute_poses_around_current_state(self, angle_delta, translation_delta):
-        self.start_pose = self.mgc.get_current_pose()
-        basis = np.eye(3)
-
-        pos_deltas = [quaternion_from_euler(*rot_axis * angle_delta) for rot_axis in basis]
-        neg_deltas = [quaternion_from_euler(*rot_axis * (-angle_delta)) for rot_axis in basis]
-
-        quaternion_deltas = list(chain.from_iterable(izip(pos_deltas, neg_deltas)))  # interleave
-
-        final_rots = []
-        for qd in quaternion_deltas:
-            final_rots.append(list(qd))
-
-        # TODO: clean up
-
-        pos_deltas = [quaternion_from_euler(*rot_axis * angle_delta / 2) for rot_axis in basis]
-        neg_deltas = [quaternion_from_euler(*rot_axis * (-angle_delta / 2)) for rot_axis in basis]
-
-        quaternion_deltas = list(chain.from_iterable(izip(pos_deltas, neg_deltas)))  # interleave
-        for qd in quaternion_deltas:
-            final_rots.append(list(qd))
-
-        final_poses = []
-        for rot in final_rots:
-            fp = deepcopy(self.start_pose)
-            ori = fp.pose.orientation
-            combined_rot = quaternion_multiply([ori.x, ori.y, ori.z, ori.w], rot)
-            fp.pose.orientation = Quaternion(*combined_rot)
-            final_poses.append(fp)
-
-        fp = deepcopy(self.start_pose)
-        fp.pose.position.x += translation_delta / 2
-        final_poses.append(fp)
-
-        fp = deepcopy(self.start_pose)
-        fp.pose.position.x -= translation_delta / 2
-        final_poses.append(fp)
-
-        fp = deepcopy(self.start_pose)
-        fp.pose.position.y += translation_delta
-        final_poses.append(fp)
-
-        fp = deepcopy(self.start_pose)
-        fp.pose.position.y -= translation_delta
-        final_poses.append(fp)
-
-        fp = deepcopy(self.start_pose)
-        fp.pose.position.z += translation_delta / 3
-        final_poses.append(fp)
-
-        self.poses = final_poses
-        self.current_pose_index = -1
-
-    def check_poses(self, joint_limits):
-        if len(self.fallback_joint_limits) == 6:
-            joint_limits = joint_limits[1:]
-        for fp in self.poses:
-            self.mgc.set_pose_target(fp)
-            plan = self.mgc.plan()
-            if len(plan.joint_trajectory.points) == 0 or CalibrationMovements.is_crazy_plan(plan, joint_limits):
-                return False
-        return True
-
-    def plan_to_start_pose(self):
-        return self.plan_to_pose(self.start_pose)
-
-    def plan_to_pose(self, pose):
-        self.mgc.set_start_state_to_current_state()
-        self.mgc.set_pose_target(pose)
-        plan = self.mgc.plan()
-        return plan
-
-    def execute_plan(self, plan):
-        if CalibrationMovements.is_crazy_plan(plan, self.fallback_joint_limits):
-            raise RuntimeError("got crazy plan!")
-        self.mgc.execute(plan)
-
-    @staticmethod
-    def rot_per_joint(plan, degrees=False):
-        np_traj = np.array([p.positions for p in plan.joint_trajectory.points])
-        if len(np_traj) == 0:
-            raise ValueError
-        np_traj_max_per_joint = np_traj.max(axis=0)
-        np_traj_min_per_joint = np_traj.min(axis=0)
-        ret = abs(np_traj_max_per_joint - np_traj_min_per_joint)
-        if degrees:
-            ret = [math.degrees(j) for j in ret]
-        return ret
-
-    @staticmethod
-    def is_crazy_plan(plan, max_rotation_per_joint):
-        abs_rot_per_joint = CalibrationMovements.rot_per_joint(plan)
-        if (abs_rot_per_joint > max_rotation_per_joint).any():
-            return True
-        else:
-            return False
 
 
 class CalibrationMovementsGUI(QWidget):
@@ -141,17 +21,14 @@ class CalibrationMovementsGUI(QWidget):
     BAD_STARTING_POSITION = 4
     GOOD_STARTING_POSITION = 5
     CHECKING_STARTING_POSITION = 6
+    MOVEMENT_FAILED = 7
 
     def __init__(self):
         super(CalibrationMovementsGUI, self).__init__()
-        move_group_name = rospy.get_param('~move_group', 'manipulator')
-        self.angle_delta = math.radians(rospy.get_param('~rotation_delta_degrees', 25))
-        self.translation_delta = rospy.get_param('~translation_delta_meters', 0.1)
-        max_velocity_scaling = rospy.get_param('~max_velocity_scaling', 0.5)
-        max_acceleration_scaling = rospy.get_param('~max_acceleration_scaling', 0.5)
-        self.local_mover = CalibrationMovements(move_group_name, max_velocity_scaling, max_acceleration_scaling)
-        self.current_pose = -1
-        self.current_plan = None
+        self.handeye_client = HandeyeClient()
+        self.current_target_pose = -1  # -1 is home
+        self.target_poses = None
+        self.plan_was_successful = None
         self.state = CalibrationMovementsGUI.NOT_INITED_YET
 
         self.layout = QVBoxLayout()
@@ -159,7 +36,7 @@ class CalibrationMovementsGUI(QWidget):
         self.buttons_layout = QHBoxLayout()
 
         self.progress_bar = QProgressBar()
-        self.pose_number_lbl = QLabel('0/8')
+        self.pose_number_lbl = QLabel('0/0')
         self.bad_plan_lbl = QLabel('No plan yet')
         self.bad_plan_lbl.setAlignment(Qt.AlignCenter)
         self.guide_lbl = QLabel('Hello')
@@ -199,9 +76,13 @@ class CalibrationMovementsGUI(QWidget):
         self.show()
 
     def update_ui(self):
-        self.progress_bar.setMaximum(len(self.local_mover.poses))
-        self.progress_bar.setValue(self.current_pose + 1)
-        self.pose_number_lbl.setText('{}/{}'.format(self.current_pose + 1, len(self.local_mover.poses)))
+        if self.target_poses:
+            count_target_poses = len(self.target_poses)
+        else:
+            count_target_poses = 1
+        self.progress_bar.setMaximum(count_target_poses)
+        self.progress_bar.setValue(self.current_target_pose + 1)
+        self.pose_number_lbl.setText('{}/{}'.format(self.current_target_pose + 1, count_target_poses))
 
         if self.state == CalibrationMovementsGUI.BAD_PLAN:
             self.bad_plan_lbl.setText('BAD plan!! Don\'t do it!!!!')
@@ -239,47 +120,44 @@ class CalibrationMovementsGUI(QWidget):
     def handle_check_current_state(self):
         self.state = CalibrationMovementsGUI.CHECKING_STARTING_POSITION
         self.update_ui()
-
-        self.local_mover.compute_poses_around_current_state(self.angle_delta, self.translation_delta)
-
-        joint_limits = [math.radians(90)] * 5 + [math.radians(180)] + [math.radians(350)]  # TODO: make param
-        if self.local_mover.check_poses(joint_limits):
+        res = self.handeye_client.check_starting_pose()
+        if res.can_calibrate:
             self.state = CalibrationMovementsGUI.GOOD_STARTING_POSITION
         else:
             self.state = CalibrationMovementsGUI.BAD_STARTING_POSITION
-        self.current_pose = -1
+        self.current_target_pose = res.target_poses.current_target_pose_index
+        self.target_poses = res.target_poses.target_poses
+        self.plan_was_successful = None
 
         self.update_ui()
 
     def handle_next_pose(self):
-        self.guide_lbl.setText('Going to center position')
-        if self.current_pose != -1:
-            plan = self.local_mover.plan_to_start_pose()
-            if plan is None:
-                self.guide_lbl.setText('Failed planning to center position: try again')
-            else:
-                self.local_mover.execute_plan(plan)
-        if self.current_pose < len(self.local_mover.poses) - 1:
-            self.current_pose += 1
+        res = self.handeye_client.select_target_pose(self.current_target_pose+1)
+        self.current_target_pose = res.target_poses.current_target_pose_index
+        self.target_poses = res.target_poses.target_poses
+        self.plan_was_successful = None
+
         self.state = CalibrationMovementsGUI.GOOD_STARTING_POSITION
         self.update_ui()
 
     def handle_plan(self):
         self.guide_lbl.setText('Planning to the next position. Click on execute when a good one was found')
-        if self.current_pose >= 0:
-            self.current_plan = self.local_mover.plan_to_pose(self.local_mover.poses[self.current_pose])
-            if CalibrationMovements.is_crazy_plan(self.current_plan,
-                                                  self.local_mover.fallback_joint_limits):  # TODO: sort out this limits story
-                self.state = CalibrationMovementsGUI.BAD_PLAN
-            else:
-                self.state = CalibrationMovementsGUI.GOOD_PLAN
+        res = self.handeye_client.plan_to_selected_target_pose()
+        self.plan_was_successful = res.success
+        if self.plan_was_successful:
+            self.state = CalibrationMovementsGUI.GOOD_PLAN
+        else:
+            self.state = CalibrationMovementsGUI.BAD_PLAN
         self.update_ui()
 
     def handle_execute(self):
-        if self.current_plan is not None:
+        if self.plan_was_successful:
             self.guide_lbl.setText('Going to the selected pose')
-            self.local_mover.execute_plan(self.current_plan)
-            self.state = CalibrationMovementsGUI.MOVED_TO_POSE
+            res = self.handeye_client.execute_plan()
+            if res.success:
+                self.state = CalibrationMovementsGUI.MOVED_TO_POSE
+            else:
+                self.state = CalibrationMovementsGUI.MOVEMENT_FAILED
             self.update_ui()
 
 
