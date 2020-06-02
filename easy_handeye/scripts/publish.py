@@ -36,7 +36,7 @@ dest = calib.transformation.child_frame_id  # tracking_base_frame
 broadcaster = tf2_ros.StaticTransformBroadcaster()
 static_transformStamped = geometry_msgs.msg.TransformStamped()
 
-static_transformStamped.header.stamp = rospy.Time.now()
+static_transformStamped.header.stamp = rospy.Time(0)
 static_transformStamped.header.frame_id = orig
 static_transformStamped.child_frame_id = dest
 

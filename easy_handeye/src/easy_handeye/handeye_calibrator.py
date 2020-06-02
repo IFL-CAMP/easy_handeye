@@ -108,7 +108,7 @@ class HandeyeCalibrator(object):
         :rtype: dict[str, ((float, float, float), (float, float, float, float))]
         """
         if time is None:
-            time = rospy.Time.now()
+            time = rospy.Time(0)
 
         # here we trick the library (it is actually made for eye_on_hand only). Trust me, I'm an engineer
         if self.eye_on_hand:
