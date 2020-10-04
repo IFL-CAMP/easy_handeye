@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
     <name>rqt_easy_handeye</name>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
     <description>rqt GUI for the easy_handeye package</description>
 
     <maintainer email="esposito@imfusion.com">Marco Esposito</maintainer>
