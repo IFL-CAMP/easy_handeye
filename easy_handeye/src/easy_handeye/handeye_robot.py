@@ -5,7 +5,11 @@ from geometry_msgs.msg import Quaternion
 from moveit_commander import MoveGroupCommander
 import rospy
 import numpy as np
-from itertools import chain, izip
+from itertools import chain
+try:
+    from itertools import izip as zip
+except ImportError: # will be 3.x series
+    pass
 from copy import deepcopy
 import math
 
@@ -82,7 +86,13 @@ class CalibrationMovements:
     def _plan_to_pose(self, pose):
         self.mgc.set_start_state_to_current_state()
         self.mgc.set_pose_target(pose)
-        plan = self.mgc.plan()
+        ret = self.mgc.plan()
+        if type(ret) is tuple:
+            # noetic
+            success, plan, planning_time, error_code = ret
+        else:
+            # melodic
+            plan = ret
         if CalibrationMovements._is_crazy_plan(plan, self.fallback_joint_limits):
             rospy.logwarn("Planning failed")
             self.plan = None
@@ -97,7 +107,13 @@ class CalibrationMovements:
             joint_limits = joint_limits[1:]
         for fp in self.target_poses:
             self.mgc.set_pose_target(fp)
-            plan = self.mgc.plan()
+            ret = self.mgc.plan()
+            if type(ret) is tuple:
+                # noetic
+                success, plan, planning_time, error_code = ret
+            else:
+                # melodic
+                plan = ret
             if len(plan.joint_trajectory.points) == 0 or CalibrationMovements._is_crazy_plan(plan, joint_limits):
                 return False
         return True
@@ -109,7 +125,7 @@ class CalibrationMovements:
         pos_deltas = [quaternion_from_euler(*rot_axis * angle_delta) for rot_axis in basis]
         neg_deltas = [quaternion_from_euler(*rot_axis * (-angle_delta)) for rot_axis in basis]
 
-        quaternion_deltas = list(chain.from_iterable(izip(pos_deltas, neg_deltas)))  # interleave
+        quaternion_deltas = list(chain.from_iterable(zip(pos_deltas, neg_deltas)))  # interleave
 
         final_rots = []
         for qd in quaternion_deltas:
@@ -120,7 +136,7 @@ class CalibrationMovements:
         pos_deltas = [quaternion_from_euler(*rot_axis * angle_delta / 2) for rot_axis in basis]
         neg_deltas = [quaternion_from_euler(*rot_axis * (-angle_delta / 2)) for rot_axis in basis]
 
-        quaternion_deltas = list(chain.from_iterable(izip(pos_deltas, neg_deltas)))  # interleave
+        quaternion_deltas = list(chain.from_iterable(zip(pos_deltas, neg_deltas)))  # interleave
         for qd in quaternion_deltas:
             final_rots.append(list(qd))
 
