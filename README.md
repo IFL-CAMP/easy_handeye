@@ -1,28 +1,31 @@
 
-
-easy_handeye: TF / VISP Hand-Eye Calibration
-============================================
+# easy_handeye: automated, hardware-independent Hand-Eye Calibration
 
 <img src="docs/img/eye_on_base_ndi_pic.png" width="345"/> <img src="docs/img/05_calibrated_rviz.png" width="475"/> 
 
-This package wraps the hand-eye calibration routine from the ViSP library
-(contained in the `visp_hand2eye_calibration` package) to provide a simple
-camera pose estimation solution. Input is expected as transformations published in `tf`.
 
-Additionally, a method for saving and publishing the resulting calibration is provided.
-Computing and using a calibration can be achieved by including/starting a single launch file respectively.
+This package provides functionality and a GUI to: 
+- **sample** the robot position and tracking system output via `tf`,
+- **compute** the eye-on-base or eye-in-hand calibration matrix through the ViSP library's Tsai-Lenz algorithm 
+implementation (contained in the `visp_hand2eye_calibration` package),
+- **store** the result of the calibration,
+- **publish** the result of the calibration procedure as a `tf` transform at each subsequent system startup,
+- (optional) automatically **move** a robot around a starting pose via `MoveIt!` to acquire the samples. 
 
-The `rqt_easy_handeye` package (also in this repository) provides a GUI to sample the data, compute and save the 
-calibration.
- 
-Another GUI for automatically moving the robot during the calibration procedure is included in the same package. 
-This script uses MoveIt! to rotate and translate the end effector around the starting position. Its usage is optional, 
-as you can also move the robot by hand in teaching mode (if the robot's ROS driver supports reading the robot position 
-in said mode).
+The intended result is to make it easy and straightforward to perform the calibration, and to keep it up-to-date throughout the system. 
+Two launch files are provided to be run, respectively to perform the calibration and check its result. 
+A further launch file can be integrated into your own launch files, to make use of the result of the calibration in a transparent way: 
+if the calibration is performed again, the updated result will be used without further action required.    
 
 You can try out this software in a simulator, through the 
 [easy_handeye_demo package](https://github.com/marcoesposito1988/easy_handeye_demo). This package also serves as an 
-example for integrating `easy_handeye` into your own launch scripts. 
+example for integrating `easy_handeye` into your own launch scripts.
+
+## News
+- version 0.3.0 
+    - ROS Noetic compatibility
+    - added "evaluator" GUI to evaluate the accuracy of the calibration while running `check_calibration.launch`
+ 
 
 ## Use Cases
 
