@@ -6,6 +6,8 @@ find_package(catkin REQUIRED COMPONENTS rviz easy_handeye_msgs geometry_msgs std
 catkin_package()
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR "YES")
 
 if (rviz_QT_VERSION VERSION_LESS "5")
     message(STATUS "Using Qt4 based on the rviz_QT_VERSION: ${rviz_QT_VERSION}")
@@ -22,6 +24,7 @@ endif ()
 
 add_library(${PROJECT_NAME}
         src/calibration_panel.cpp
+        src/calibration_panel.ui
         src/handeye_client.cpp
         )
 

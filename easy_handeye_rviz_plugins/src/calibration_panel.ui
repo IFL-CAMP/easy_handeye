@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>CalibrationPanel</class>
+ <widget class="QWidget" name="CalibrationPanel">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,7 +23,26 @@
       <attribute name="title">
        <string>Info</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QGroupBox" name="groupBox_5">
+         <property name="title">
+          <string>Namespace</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Handeye Calibration Namespace</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="comboBox_namespace"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item>
         <widget class="QGroupBox" name="groupBox_4">
          <property name="title">
@@ -156,7 +175,7 @@
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
-           <widget class="QPlainTextEdit" name="outputBox"/>
+           <widget class="QPlainTextEdit" name="resultTextEdit"/>
           </item>
          </layout>
         </widget>

@@ -5,19 +5,53 @@
 #include <easy_handeye_msgs/SampleList.h>
 #include <easy_handeye_msgs/HandeyeCalibration.h>
 
-namespace easy_handeye_rviz_plugins {
-
-class HandeyeClient {
+namespace easy_handeye_rviz_plugins
+{
+class HandeyeClient
+{
 public:
   HandeyeClient();
 
+  static std::vector<std::string> listRunningCalibrations();
+  void selectCalibration(const std::string& calibration_namespace);
+
+  bool init(int32_t timeout_seconds);
+
+  bool isEyeOnHand() const
+  {
+    return is_eye_on_hand;
+  }
+
+  std::string robotBaseFrame() const
+  {
+    return robot_base_frame;
+  }
+
+  std::string robotEffectorFrame() const
+  {
+    return robot_effector_frame;
+  }
+
+  std::string trackingBaseFrame() const
+  {
+    return tracking_base_frame;
+  }
+
+  std::string trackingMarkerFrame() const
+  {
+    return tracking_marker_frame;
+  }
+
   bool getSampleList(easy_handeye_msgs::SampleList& out);
-  bool takeSample(easy_handeye_msgs::SampleList& newList);
-  bool removeSample(size_t index, easy_handeye_msgs::SampleList& newList);
+  bool takeSample(easy_handeye_msgs::SampleList& new_list);
+  bool removeSample(size_t index, easy_handeye_msgs::SampleList& new_list);
   bool computeCalibration(easy_handeye_msgs::HandeyeCalibration& result);
   bool saveCalibration();
 
 private:
+  std::string active_calibration_namespace = "";
+
+  bool is_ready = false;
 
   bool is_eye_on_hand{};
   std::string robot_base_frame;
@@ -34,4 +68,4 @@ private:
   ros::NodeHandle nh;
 };
 
-};
+};  // namespace easy_handeye_rviz_plugins

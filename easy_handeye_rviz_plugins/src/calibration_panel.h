@@ -9,29 +9,39 @@
 
 #include "handeye_client.h"
 
-class QLineEdit;
+class Ui_CalibrationPanel;
 
-namespace easy_handeye_rviz_plugins {
-
-class CalibrationPanel : public rviz::Panel {
+namespace easy_handeye_rviz_plugins
+{
+class CalibrationPanel : public rviz::Panel
+{
   Q_OBJECT
 public:
-  explicit CalibrationPanel(QWidget *parent = nullptr);
+  explicit CalibrationPanel(QWidget* parent = nullptr);
   ~CalibrationPanel() override = default;
 
-  void load(const rviz::Config &config) override;
+  void load(const rviz::Config& config) override;
   void save(rviz::Config config) const override;
 
 public Q_SLOTS:
 
 protected Q_SLOTS:
+  void onTakeSamplePressed(bool);
+  void onRemoveSamplePressed(bool);
+  void onComputeCalibrationPressed(bool);
+  void onSaveCalibrationPressed(bool);
 
 protected:
+  void activateCalibration(const std::string& calibrationNamespace);
+  void updateUI();
 
-  // One-line text editor for entering the outgoing ROS topic name.
-  QLineEdit *output_topic_editor_;
+  void setSampleList(const easy_handeye_msgs::SampleList& new_list, int focused_item_index = -1);
+  void setCalibrationTransform(const geometry_msgs::TransformStamped& calibration_transform);
+  void onSavedCalibration();
+
+  Ui_CalibrationPanel* m_ui;
+
   HandeyeClient client;
-  ros::NodeHandle nh_;
 };
 
-}
+}  // namespace easy_handeye_rviz_plugins
