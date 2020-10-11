@@ -22,6 +22,22 @@ You can try out this software in a simulator, through the
 example for integrating `easy_handeye` into your own launch scripts.
 
 ## News
+### Known issue in current master
+Version 0.3.0 included a [regression](https://github.com/IFL-CAMP/easy_handeye/issues/62) that will manifest when the `move_group` action is in the global namespace, which is the default for most MoveIt configurations.
+The workaround is to move the MoveGroup to a namespace during calibration (publishing shoudln't be affected):
+```
+<!-- your calibrate.launch -->
+<!-- note the ns="..." -->
+<include ns="/my_robot" file="$(find ur10_moveit_config)/launch/..."/>
+
+<!-- add the same namespace as move_group_namespace argument -->
+<include file="$(find easy_handeye)/launch/calibrate.launch" >
+...
+        <arg name="move_group_namespace" value="/my_robot" />
+...
+</include>
+```
+
 - version 0.3.0 
     - ROS Noetic compatibility
     - added "evaluator" GUI to evaluate the accuracy of the calibration while running `check_calibration.launch`
