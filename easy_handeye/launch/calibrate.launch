@@ -9,7 +9,7 @@
 
     <!-- Automatic robot movements -->
     <arg name="freehand_robot_movement" default="false" doc="if false, the rqt plugin for the automatic robot motion with MoveIt! will be started" />
-    <arg name="move_group_namespace" default=""  doc="the namespace of move_group for the automatic robot motion with MoveIt!" />
+    <arg name="move_group_namespace" default="/"  doc="the namespace of move_group for the automatic robot motion with MoveIt!" />
     <arg name="move_group" default="manipulator"  doc="the name of move_group for the automatic robot motion with MoveIt!" />
 
     <arg name="translation_delta_meters" default="0.1" doc="the maximum movement that the robot should perform in the translation phase" />

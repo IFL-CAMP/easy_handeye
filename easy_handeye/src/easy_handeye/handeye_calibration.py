@@ -6,7 +6,7 @@ from geometry_msgs.msg import Vector3, Quaternion, Transform, TransformStamped
 
 # TODO: make this a data class in python3
 class HandeyeCalibrationParameters(object):
-    def __init__(self, namespace, move_group_namespace='', move_group='manipulator', eye_on_hand=None,
+    def __init__(self, namespace, move_group_namespace='/', move_group='manipulator', eye_on_hand=None,
                  robot_base_frame=None, robot_effector_frame=None,
                  tracking_base_frame=None,
                  tracking_marker_frame=None):
