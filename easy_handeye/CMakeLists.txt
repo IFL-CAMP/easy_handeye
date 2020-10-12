@@ -9,6 +9,7 @@ catkin_package()
 
 catkin_install_python(PROGRAMS
     scripts/calibrate.py
+    scripts/robot.py
     scripts/handeye_calibration_commander.py
     scripts/publish.py
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

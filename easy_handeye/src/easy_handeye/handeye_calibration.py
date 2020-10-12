@@ -40,6 +40,9 @@ class HandeyeCalibrationParameters(object):
         import rospy
         rospy.loginfo("Loading parameters for calibration {} from the parameters server".format(namespace))
 
+        if not namespace.endswith('/'):
+            namespace = namespace + '/'
+
         ret = HandeyeCalibrationParameters(namespace=namespace,
                                            move_group_namespace=rospy.get_param(namespace + 'move_group_namespace'),
                                            move_group=rospy.get_param(namespace + 'move_group'),

@@ -15,9 +15,12 @@ import math
 
 
 class CalibrationMovements:
-    def __init__(self, move_group_name, max_velocity_scaling, max_acceleration_scaling, angle_delta, translation_delta, move_group_namespace=''):
+    def __init__(self, move_group_name, max_velocity_scaling, max_acceleration_scaling, angle_delta, translation_delta, move_group_namespace='/'):
         # self.client = HandeyeClient()  # TODO: move around marker when eye_on_hand, automatically take samples via trigger topic
-        self.mgc = MoveGroupCommander(move_group_name, robot_description=move_group_namespace+'/robot_description', ns=move_group_namespace)
+        if move_group_namespace != '/':
+            self.mgc = MoveGroupCommander(move_group_name, robot_description=move_group_namespace+'robot_description', ns=move_group_namespace)
+        else:
+            self.mgc = MoveGroupCommander(move_group_name)
         self.mgc.set_planner_id("RRTConnectkConfigDefault")  # TODO: this is only needed for the UR5
         self.mgc.set_max_velocity_scaling_factor(max_velocity_scaling)
         self.mgc.set_max_acceleration_scaling_factor(max_acceleration_scaling)

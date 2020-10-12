@@ -40,6 +40,16 @@
             args="0 0 0.05 0 0 0 $(arg robot_effector_frame) $(arg tracking_base_frame) 10" />
     </group>
 
+
+    <!-- Start the robot backend outside the namespace, so that it can connect to a MoveGroup in the global namespace -->
+    <!-- see https://github.com/ros-planning/moveit/issues/2364 -->
+    <node name="easy_handeye_calibration_server_robot"
+          pkg="easy_handeye"
+          type="robot.py"
+          output="screen" >
+        <param name="calibration_namespace" value="$(arg namespace)" />
+    </node>
+
     <group ns="$(arg namespace)">
 
         <!-- Store the parameters in the calibration's namespace-->
