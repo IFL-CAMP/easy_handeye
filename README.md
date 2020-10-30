@@ -22,6 +22,8 @@ You can try out this software in a simulator, through the
 example for integrating `easy_handeye` into your own launch scripts.
 
 ## News
+- version 0.3.1
+    - restored compatibility with Melodic and Kinetic along with Noetic
 - version 0.3.0 
     - ROS Noetic compatibility
     - added "evaluator" GUI to evaluate the accuracy of the calibration while running `check_calibration.launch`
