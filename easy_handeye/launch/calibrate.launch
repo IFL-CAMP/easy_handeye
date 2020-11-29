@@ -61,13 +61,6 @@
         <param name="tracking_base_frame" value="$(arg tracking_base_frame)" />
         <param name="tracking_marker_frame" value="$(arg tracking_marker_frame)" />
 
-        <!-- Run the ViSP solver to determine the extrinsic parameters -->
-        <node name="hand_eye_solver"
-              pkg="visp_hand2eye_calibration"
-              type="visp_hand2eye_calibration_calibrator">
-            <remap from="/compute_effector_camera_quick" to="compute_effector_camera_quick"/>
-        </node>
-
         <!-- Start the backend -->
         <node name="easy_handeye_calibration_server"
               pkg="easy_handeye"

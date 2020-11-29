@@ -18,7 +18,8 @@
     <exec_depend>std_msgs</exec_depend>
     <exec_depend>std_srvs</exec_depend>
     <exec_depend>easy_handeye_msgs</exec_depend>
-    <exec_depend>visp_hand2eye_calibration</exec_depend>
     <exec_depend>message_runtime</exec_depend>
     <exec_depend>tf2_ros</exec_depend>
+    <exec_depend>python-transforms3d</exec_depend>
+    <exec_depend>python-opencv</exec_depend>
 </package>

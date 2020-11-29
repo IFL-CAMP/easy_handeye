@@ -6,8 +6,8 @@
 
 This package provides functionality and a GUI to: 
 - **sample** the robot position and tracking system output via `tf`,
-- **compute** the eye-on-base or eye-in-hand calibration matrix through the ViSP library's Tsai-Lenz algorithm 
-implementation (contained in the `visp_hand2eye_calibration` package),
+- **compute** the eye-on-base or eye-in-hand calibration matrix through the OpenCV library's Tsai-Lenz algorithm 
+implementation,
 - **store** the result of the calibration,
 - **publish** the result of the calibration procedure as a `tf` transform at each subsequent system startup,
 - (optional) automatically **move** a robot around a starting pose via `MoveIt!` to acquire the samples. 
@@ -89,8 +89,7 @@ as illustrated below in the section "Publishing"
 
 For both use cases, you can either launch the `calibrate.launch`
 launch file, or you can include it in another launchfile as shown below. Either
-way, the launch file will bring up the `visp_hand2eye_calibration` solver, along with an
-integration script. By default, the integration script will interactively ask you
+way, the launch file will bring up a calibration script. By default, the script will interactively ask you
 to accept or discard each sample. At the end, the parameters will be saved in a yaml file.
 
 #### eye-in-hand

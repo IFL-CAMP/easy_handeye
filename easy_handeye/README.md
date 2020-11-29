@@ -1,14 +1,13 @@
 
-easy_handeye: TF / VISP Hand-Eye Calibration
+easy_handeye: TF / OpenCV / MoveIt! Hand-Eye Calibration
 ============================================
 
-This package wraps the hand-eye calibration routine from the ViSP library
-(contained in the `visp_hand2eye_calibration` package) to provide a simple
-camera pose estimation solution. Input is expected as transformations published in TF.
+This package wraps the hand-eye calibration routine from the OpenCV library to provide a simple
+camera pose estimation solution. Input is expected as transformations published in `tf`.
 
 Two scripts are provided:
 - calibrator: takes care of sampling the specified transformations, computing the calibration and storing the result in a .yaml file.
-- publisher: loads the calibration from the .yaml file and publishes it in tf; by default uses the frames specified during calibration, but they can be overridden individually via ROS params.
+- publisher: loads the calibration from the .yaml file and publishes it in `tf`; by default uses the frames specified during calibration, but they can be overridden individually via ROS params.
 
 The included launch files allow to override all the script params, and to start the GUI contained in `rqt_easy_handeye`.
 

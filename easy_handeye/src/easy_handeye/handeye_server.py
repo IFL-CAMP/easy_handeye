@@ -1,5 +1,3 @@
-import math
-
 import easy_handeye_msgs as ehm
 import rospy
 import std_msgs
@@ -10,7 +8,7 @@ from std_srvs import srv
 
 import easy_handeye as hec
 from easy_handeye.handeye_calibration import HandeyeCalibration, HandeyeCalibrationParameters
-from easy_handeye.handeye_calibration_service_visp import HandeyeCalibrationServiceVisp
+from easy_handeye.handeye_calibration_backend_opencv import HandeyeCalibrationBackendOpenCV
 from easy_handeye.handeye_sampler import HandeyeSampler
 
 
@@ -21,7 +19,7 @@ class HandeyeServer:
         self.parameters = HandeyeCalibrationParameters.init_from_parameter_server(namespace)
 
         self.sampler = HandeyeSampler(handeye_parameters=self.parameters)
-        self.calibration_service = HandeyeCalibrationServiceVisp()
+        self.calibration_service = HandeyeCalibrationBackendOpenCV()
 
         # setup calibration services and topics
 
