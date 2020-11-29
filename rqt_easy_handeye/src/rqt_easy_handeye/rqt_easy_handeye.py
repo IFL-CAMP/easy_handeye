@@ -11,7 +11,7 @@ try:
     from python_qt_binding.QtGui import QWidget, QListWidgetItem
 except ImportError:
     try:
-        from python_qt_binding.QtWidgets import QWidget, QListWidgetItem
+        from python_qt_binding.QtWidgets import QWidget, QListWidgetItem, QLabel, QComboBox, QHBoxLayout
     except:
         raise ImportError('Could not import QWidgets')
 
@@ -50,6 +50,13 @@ class RqtHandeyeCalibration(Plugin):
         loadUi(ui_file, self._widget)
         loadUi(ui_info_file, self._infoWidget)
         self._widget.horizontalLayout_infoAndActions.insertWidget(0, self._infoWidget)
+
+        self._calibration_algorithm_combobox = QComboBox()
+        self._calibration_algorithm_layout = QHBoxLayout()
+        self._calibration_algorithm_layout.insertWidget(0, QLabel('Calibration algorithm: '))
+        self._calibration_algorithm_layout.insertWidget(1, self._calibration_algorithm_combobox)
+        self._infoWidget.layout().insertLayout(-1, self._calibration_algorithm_layout)
+
         # Give QObjects reasonable names
         self._widget.setObjectName('RqtHandeyeCalibrationUI')
         # Show _widget.windowTitle on left-top of each plugin (when 
@@ -63,6 +70,13 @@ class RqtHandeyeCalibration(Plugin):
         context.add_widget(self._widget)
 
         self.client = HandeyeClient()
+
+        resp = self.client.list_algorithms()
+        for i, a in enumerate(resp.algorithms):
+            self._calibration_algorithm_combobox.insertItem(i, a)
+        index_of_curr_alg = resp.algorithms.index(resp.current_algorithm)
+        self._calibration_algorithm_combobox.setCurrentIndex(index_of_curr_alg)
+        self._calibration_algorithm_combobox.currentTextChanged.connect(self.client.set_algorithm)
 
         self._infoWidget.calibNameLineEdit.setText(rospy.get_namespace())
         self._infoWidget.trackingBaseFrameLineEdit.setText(self.client.parameters.tracking_base_frame)

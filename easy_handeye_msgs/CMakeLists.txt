@@ -14,6 +14,8 @@ add_message_files(
 add_service_files(
         DIRECTORY srv/calibration
         FILES
+        ListAlgorithms.srv
+        SetAlgorithm.srv
         ComputeCalibration.srv
         RemoveSample.srv
         TakeSample.srv

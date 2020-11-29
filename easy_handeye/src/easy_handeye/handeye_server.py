@@ -1,3 +1,5 @@
+import itertools
+
 import easy_handeye_msgs as ehm
 import rospy
 import std_msgs
@@ -19,10 +21,14 @@ class HandeyeServer:
         self.parameters = HandeyeCalibrationParameters.init_from_parameter_server(namespace)
 
         self.sampler = HandeyeSampler(handeye_parameters=self.parameters)
-        self.calibration_service = HandeyeCalibrationBackendOpenCV()
+        self.calibration_backends = {'OpenCV': HandeyeCalibrationBackendOpenCV()}
+        self.calibration_algorithm = 'OpenCV/Tsai-Lenz'
 
         # setup calibration services and topics
 
+        self.list_algorithms_service = rospy.Service(hec.LIST_ALGORITHMS_TOPIC,
+                                                     ehm.srv.ListAlgorithms, self.list_algorithms)
+        self.set_algorithm_service = rospy.Service(hec.SET_ALGORITHM_TOPIC, ehm.srv.SetAlgorithm, self.set_algorithm)
         self.get_sample_list_service = rospy.Service(hec.GET_SAMPLE_LIST_TOPIC,
                                                      ehm.srv.TakeSample, self.get_sample_lists)
         self.take_sample_service = rospy.Service(hec.TAKE_SAMPLE_TOPIC,
@@ -42,6 +48,29 @@ class HandeyeServer:
                                                           self.remove_last_sample)
 
         self.last_calibration = None
+
+    # algorithm
+
+    def list_algorithms(self, _):
+        algorithms_nested = [[bck_name + '/' + alg_name for alg_name in bck.AVAILABLE_ALGORITHMS] for bck_name, bck in
+                             self.calibration_backends.items()]
+        available_algorithms = list(itertools.chain(*algorithms_nested))
+        return ehm.srv.ListAlgorithmsResponse(algorithms=available_algorithms,
+                                              current_algorithm=self.calibration_algorithm)
+
+    def set_algorithm(self, req):
+        alg_to_set = req.new_algorithm
+        bckname_algname = alg_to_set.split('/')
+        if len(bckname_algname) != 2:
+            return ehm.srv.SetAlgorithmResponse(success=False)
+        bckname, algname = bckname_algname
+        if bckname not in self.calibration_backends:
+            return ehm.srv.SetAlgorithmResponse(success=False)
+        if algname not in self.calibration_backends[bckname].AVAILABLE_ALGORITHMS:
+            return ehm.srv.SetAlgorithmResponse(success=False)
+        rospy.loginfo('switching to calibration algorithm {}'.format(alg_to_set))
+        self.calibration_algorithm = alg_to_set
+        return ehm.srv.SetAlgorithmResponse(success=True)
 
     # sampling
 
@@ -73,7 +102,11 @@ class HandeyeServer:
 
     def compute_calibration(self, _):
         samples = self.sampler.get_samples()
-        self.last_calibration = self.calibration_service.compute_calibration(self.parameters, samples)
+
+        bckname, algname = self.calibration_algorithm.split('/')
+        backend = self.calibration_backends[bckname]
+
+        self.last_calibration = backend.compute_calibration(self.parameters, samples, algorithm=algname)
         ret = ehm.srv.ComputeCalibrationResponse()
         if self.last_calibration is None:
             rospy.logwarn('No valid calibration computed')

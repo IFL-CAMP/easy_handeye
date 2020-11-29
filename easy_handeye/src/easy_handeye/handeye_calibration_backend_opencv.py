@@ -1,13 +1,23 @@
-from rospy import logerr, logwarn, loginfo
-from easy_handeye.handeye_calibration import HandeyeCalibration
 import cv2
-import transforms3d as tfs
 import numpy as np
+
+import transforms3d as tfs
+from rospy import logerr, logwarn, loginfo
+
+from easy_handeye.handeye_calibration import HandeyeCalibration
 
 
 class HandeyeCalibrationBackendOpenCV(object):
     MIN_SAMPLES = 2  # TODO: correct? this is what is stated in the paper, but sounds strange
     """Minimum samples required for a successful calibration."""
+
+    AVAILABLE_ALGORITHMS = {
+        'Tsai-Lenz': cv2.CALIB_HAND_EYE_TSAI,
+        'Park': cv2.CALIB_HAND_EYE_PARK,
+        'Horaud': cv2.CALIB_HAND_EYE_HORAUD,
+        'Andreff': cv2.CALIB_HAND_EYE_ANDREFF,
+        'Daniilidis': cv2.CALIB_HAND_EYE_DANIILIDIS,
+    }
 
     @staticmethod
     def _msg_to_opencv(transform_msg):
@@ -42,12 +52,17 @@ class HandeyeCalibrationBackendOpenCV(object):
 
         return (hand_base_rot, hand_base_tr), (marker_camera_rot, marker_camera_tr)
 
-    def compute_calibration(self, handeye_parameters, samples):
+    def compute_calibration(self, handeye_parameters, samples, algorithm=None):
         """
         Computes the calibration through the OpenCV library and returns it.
 
         :rtype: easy_handeye.handeye_calibration.HandeyeCalibration
         """
+        if algorithm is None:
+            algorithm = 'Tsai-Lenz'
+
+        loginfo('OpenCV backend calibrating with algorithm {}'.format(algorithm))
+
         if len(samples) < HandeyeCalibrationBackendOpenCV.MIN_SAMPLES:
             logwarn("{} more samples needed! Not computing the calibration".format(
                 HandeyeCalibrationBackendOpenCV.MIN_SAMPLES - len(samples)))
@@ -63,8 +78,10 @@ class HandeyeCalibrationBackendOpenCV(object):
 
         loginfo("Computing from %g poses..." % len(samples))
 
+        method = HandeyeCalibrationBackendOpenCV.AVAILABLE_ALGORITHMS[algorithm]
+
         camera_hand_rot, camera_hand_tr = cv2.calibrateHandEye(hand_world_rot, hand_world_tr, marker_camera_rot,
-                                                               marker_camera_tr, method=cv2.CALIB_HAND_EYE_TSAI)
+                                                               marker_camera_tr, method=method)
         hand_camera_rot = camera_hand_rot
         hand_camera_tr = camera_hand_tr
         result = tfs.affines.compose(np.squeeze(hand_camera_tr), hand_camera_rot, [1, 1, 1])

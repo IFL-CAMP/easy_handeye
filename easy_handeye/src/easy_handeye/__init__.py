@@ -1,4 +1,6 @@
 
+LIST_ALGORITHMS_TOPIC = 'list_algorithms'
+SET_ALGORITHM_TOPIC = 'set_algorithm'
 GET_SAMPLE_LIST_TOPIC = 'get_sample_list'
 TAKE_SAMPLE_TOPIC = 'take_sample'
 REMOVE_SAMPLE_TOPIC = 'remove_sample'

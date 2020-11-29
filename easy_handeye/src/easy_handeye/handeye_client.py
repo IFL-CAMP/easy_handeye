@@ -14,6 +14,8 @@ class HandeyeClient(object):
             namespace = rospy.get_namespace()
 
         self.parameters = None
+        self.list_algorithms_proxy = None
+        self.set_algorithm_proxy = None
         self.get_sample_proxy = None
         self.take_sample_proxy = None
         self.remove_sample_proxy = None
@@ -43,6 +45,10 @@ class HandeyeClient(object):
         self.remove_sample_proxy = rospy.ServiceProxy(hec.REMOVE_SAMPLE_TOPIC, ehm.srv.RemoveSample)
 
         # init services: calibration
+        rospy.wait_for_service(hec.LIST_ALGORITHMS_TOPIC)
+        self.list_algorithms_proxy = rospy.ServiceProxy(hec.LIST_ALGORITHMS_TOPIC, ehm.srv.ListAlgorithms)
+        rospy.wait_for_service(hec.SET_ALGORITHM_TOPIC)
+        self.set_algorithm_proxy = rospy.ServiceProxy(hec.SET_ALGORITHM_TOPIC, ehm.srv.SetAlgorithm)
         rospy.wait_for_service(hec.COMPUTE_CALIBRATION_TOPIC)
         self.compute_calibration_proxy = rospy.ServiceProxy(hec.COMPUTE_CALIBRATION_TOPIC, ehm.srv.ComputeCalibration)
         rospy.wait_for_service(hec.SAVE_CALIBRATION_TOPIC)
@@ -72,6 +78,12 @@ class HandeyeClient(object):
         return self.remove_sample_proxy(ehm.srv.RemoveSampleRequest(sample_index=index)).samples
 
     # services: calibration
+
+    def list_algorithms(self):
+        return self.list_algorithms_proxy()
+
+    def set_algorithm(self, new_algorithm):
+        return self.set_algorithm_proxy(new_algorithm)
 
     def compute_calibration(self):
         return self.compute_calibration_proxy()
