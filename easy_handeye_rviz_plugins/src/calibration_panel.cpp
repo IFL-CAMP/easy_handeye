@@ -23,7 +23,7 @@ CalibrationPanel::CalibrationPanel(QWidget* parent) : rviz::Panel(parent)
   activateCalibration(m_ui->comboBox_namespace->currentText().toStdString());
 
   easy_handeye_msgs::SampleList sl;
-  if (client.getSampleList(sl))
+  if (m_handeyeClient.getSampleList(sl))
     setSampleList(sl);
 
   updateUI();
@@ -34,18 +34,21 @@ CalibrationPanel::CalibrationPanel(QWidget* parent) : rviz::Panel(parent)
   connect(m_ui->takeButton, &QPushButton::clicked, this, &CalibrationPanel::onTakeSamplePressed);
   connect(m_ui->removeButton, &QPushButton::clicked, this, &CalibrationPanel::onRemoveSamplePressed);
   connect(m_ui->saveButton, &QPushButton::clicked, this, &CalibrationPanel::onSaveCalibrationPressed);
+
+  connect(m_ui->checkStartPoseButton, &QPushButton::clicked, this, &CalibrationPanel::onCheckStartingPosePressed);
 }
 
 void CalibrationPanel::activateCalibration(const std::string& calibrationNamespace)
 {
-  client.selectCalibration(calibrationNamespace);
+  m_handeyeClient.selectCalibration(calibrationNamespace);
+  m_robotMovementsClient.selectCalibration(calibrationNamespace);
 
   m_ui->calibNameLineEdit->setText(QString::fromStdString(calibrationNamespace));
-  m_ui->calibTypeLineEdit->setText(client.isEyeOnHand() ? "eye on hand" : "eye on base");
-  m_ui->robotBaseFrameLineEdit->setText(QString::fromStdString(client.robotBaseFrame()));
-  m_ui->robotEffectorFrameLineEdit->setText(QString::fromStdString(client.robotEffectorFrame()));
-  m_ui->trackingBaseFrameLineEdit->setText(QString::fromStdString(client.trackingBaseFrame()));
-  m_ui->trackingMarkerFrameLineEdit->setText(QString::fromStdString(client.trackingMarkerFrame()));
+  m_ui->calibTypeLineEdit->setText(m_handeyeClient.isEyeOnHand() ? "eye on hand" : "eye on base");
+  m_ui->robotBaseFrameLineEdit->setText(QString::fromStdString(m_handeyeClient.robotBaseFrame()));
+  m_ui->robotEffectorFrameLineEdit->setText(QString::fromStdString(m_handeyeClient.robotEffectorFrame()));
+  m_ui->trackingBaseFrameLineEdit->setText(QString::fromStdString(m_handeyeClient.trackingBaseFrame()));
+  m_ui->trackingMarkerFrameLineEdit->setText(QString::fromStdString(m_handeyeClient.trackingMarkerFrame()));
 }
 
 // Save all configuration data from this panel to the given
@@ -68,8 +71,10 @@ void CalibrationPanel::load(const rviz::Config& config)
 
 void CalibrationPanel::onTakeSamplePressed(bool)
 {
+  m_ui->takeButton->setEnabled(false);
+  QCoreApplication::processEvents();
   easy_handeye_msgs::SampleList new_sample_list;
-  if (client.takeSample(new_sample_list))
+  if (m_handeyeClient.takeSample(new_sample_list))
   {
     setSampleList(new_sample_list);
   }
@@ -77,13 +82,16 @@ void CalibrationPanel::onTakeSamplePressed(bool)
   {
     ROS_DEBUG("Could not get a new sample");
   }
+  computeCalibration();
+  m_ui->takeButton->setEnabled(true);
 }
 
 void CalibrationPanel::onRemoveSamplePressed(bool)
 {
+  m_ui->removeButton->setEnabled(false);
   int sample_index = m_ui->sampleListWidget->currentRow();
   easy_handeye_msgs::SampleList new_sample_list;
-  if (client.removeSample(sample_index, new_sample_list))
+  if (m_handeyeClient.removeSample(sample_index, new_sample_list))
   {
     setSampleList(new_sample_list, sample_index);
   }
@@ -91,21 +99,43 @@ void CalibrationPanel::onRemoveSamplePressed(bool)
   {
     ROS_DEBUG_STREAM("Could not remove sample " << sample_index);
   }
+  m_ui->removeButton->setEnabled(true);
 }
 
 void CalibrationPanel::onSaveCalibrationPressed(bool)
 {
-  if (client.saveCalibration())
+  m_ui->saveButton->setEnabled(false);
+  if (m_handeyeClient.saveCalibration())
   {
-    onSavedCalibration();
+    m_ui->textEditRobotStatus->setText("Calibration saved");
+    ROS_DEBUG("Could not save the calibration");
   }
   else
   {
-    ROS_DEBUG("Could not compute the calibration");
+    ROS_DEBUG("Could not save the calibration");
   }
+  m_ui->saveButton->setEnabled(true);
+  updateUI();
 }
 
-void CalibrationPanel::setSampleList(const easy_handeye_msgs::SampleList& new_list, int focused_item_index)
+void CalibrationPanel::onCheckStartingPosePressed(bool) {
+  m_canCalibrate = false;
+  m_ui->checkStartPoseButton->setEnabled(false);
+  m_ui->textEditRobotStatus->setText("Checking if the robot can rotate/translate in all directions...");
+  QCoreApplication::processEvents();
+
+  if (m_robotMovementsClient.checkStartingPose(m_targetPoses)) {
+    m_ui->textEditRobotStatus->setText("The calibration can be performed from the current position");
+    m_canCalibrate = true;
+  } else {
+    m_ui->textEditRobotStatus->setText("The calibration CANNOT be performed from the current position; move the robot so that it can rotate the end effector in all directions");
+  }
+
+  m_ui->checkStartPoseButton->setEnabled(true);
+  updateUI();
+}
+
+void CalibrationPanel::setSampleList(const easy_handeye_msgs::SampleList& new_list, std::optional<size_t> focused_item_index)
 {
   ROS_ASSERT(new_list.camera_marker_samples.size() == new_list.hand_world_samples.size());
 
@@ -114,10 +144,10 @@ void CalibrationPanel::setSampleList(const easy_handeye_msgs::SampleList& new_li
   if (new_list.camera_marker_samples.empty())
     return;
 
-  if (focused_item_index < 0)
-    focused_item_index = new_list.camera_marker_samples.size() + focused_item_index;
+  if (!focused_item_index.has_value())
+    focused_item_index = 0;
 
-  focused_item_index = std::min(focused_item_index, int(new_list.camera_marker_samples.size())-1);
+  focused_item_index = std::min(*focused_item_index, new_list.camera_marker_samples.size()-1);
 
   ROS_ASSERT(focused_item_index < new_list.camera_marker_samples.size() && focused_item_index >= 0);
 
@@ -150,26 +180,19 @@ void CalibrationPanel::setSampleList(const easy_handeye_msgs::SampleList& new_li
 
   // this could have been the last sample
   if (focused_item_index < m_ui->sampleListWidget->count())
-    m_ui->sampleListWidget->setCurrentRow(focused_item_index);
+    m_ui->sampleListWidget->setCurrentRow(*focused_item_index);
 
   updateUI();
 }
 
 
-void CalibrationPanel::onSavedCalibration()
+void CalibrationPanel::computeCalibration()
 {
-  // TODO: give feedback to the user
-  updateUI();
-}
-
-void CalibrationPanel::updateUI()
-{
-  m_ui->removeButton->setEnabled(m_ui->sampleListWidget->count() > 0);
   // TODO: client->enoughSamples()
   if (m_ui->sampleListWidget->count() > 3)
   {
     easy_handeye_msgs::HandeyeCalibration result_calibration;
-    if (client.computeCalibration(result_calibration))
+    if (m_handeyeClient.computeCalibration(result_calibration))
     {
       auto formatSample = [](const geometry_msgs::Transform& s) {
         std::stringstream sample_stream;
@@ -196,10 +219,27 @@ void CalibrationPanel::updateUI()
     }
   } else {
     m_ui->resultTextEdit->setPlainText("Not enough samples to compute the calibration");
+    ROS_DEBUG("Could not compute the calibration");
+    // TODO: feedback to the user
   }
-  ROS_DEBUG("Could not compute the calibration");
-  // TODO: feedback to the user
-  m_ui->saveButton->setEnabled(false);
+}
+
+void CalibrationPanel::updateUI()
+{
+  m_ui->removeButton->setEnabled(m_ui->sampleListWidget->count() > 0);
+  m_ui->saveButton->setEnabled(m_calibrationComputed);
+
+  bool hasPoses = m_canCalibrate && m_targetPoses.has_value();
+  int i = m_targetPoses->current_target_pose_index;
+  int len = m_targetPoses->target_poses.size();
+  bool hasPrevPose = hasPoses && i > 0;
+  bool hasNextPose = hasPoses && i < len;
+  bool canPlan = hasPoses && 0 < i && i < len;
+  m_ui->pushButtonPosePrevious->setEnabled(hasPrevPose);
+  m_ui->pushButtonPoseNext->setEnabled(hasNextPose);
+  m_ui->nextPoseButton->setEnabled(hasNextPose);
+  m_ui->planButton->setEnabled(canPlan);
+  m_ui->moveButton->setEnabled(m_hasNewPlan);
 }
 
 }  // namespace easy_handeye_rviz_plugins

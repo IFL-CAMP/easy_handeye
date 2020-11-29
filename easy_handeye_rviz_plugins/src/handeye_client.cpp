@@ -1,5 +1,6 @@
 
 #include "handeye_client.h"
+#include "utils.h"
 
 #include <ros/master.h>
 #include <ros/service.h>
@@ -9,40 +10,9 @@
 #include <easy_handeye_msgs/TakeSample.h>
 #include <std_srvs/Empty.h>
 
-bool hasEnding(std::string const& full_string, std::string const& ending)
-{
-  if (full_string.length() >= ending.length())
-  {
-    return (0 == full_string.compare(full_string.length() - ending.length(), ending.length(), ending));
-  }
-  else
-  {
-    return false;
-  }
-}
-
-std::vector<std::string> listServices()
-{
-  XmlRpc::XmlRpcValue req = "/node";
-  XmlRpc::XmlRpcValue res;
-  XmlRpc::XmlRpcValue pay;
-
-  std::vector<std::string> state;
-  ros::master::execute("getSystemState", req, res, pay, true);
-
-  for (int x = 0; x < res[2][2].size(); x++)
-  {
-    std::string gh = res[2][2][x][0].toXml();
-    // remove <value></value>
-    state.push_back(gh.substr(7, gh.size() - 15));
-  }
-
-  return state;
-}
 
 namespace easy_handeye_rviz_plugins
 {
-
 HandeyeClient::HandeyeClient()
 {
   init(1);
@@ -71,6 +41,7 @@ std::vector<std::string> HandeyeClient::listRunningCalibrations()
 void HandeyeClient::selectCalibration(const std::string& calibration_namespace)
 {
   active_calibration_namespace = calibration_namespace;
+  is_ready = false;
   init(1);
 }
 
@@ -78,12 +49,16 @@ bool HandeyeClient::init(int32_t timeout_seconds)
 {
   if (active_calibration_namespace.empty())
   {
+    ROS_WARN("No calibration specified, can't init HandeyeClient");
     is_ready = false;
     return false;
   }
 
   if (is_ready)
+  {
+    ROS_WARN_STREAM("already inited for calibration: " << active_calibration_namespace << ", skipping new init");
     return true;
+  }
 
   const std::string& acn = active_calibration_namespace;
 
@@ -99,6 +74,7 @@ bool HandeyeClient::init(int32_t timeout_seconds)
   {
     if (!ros::service::waitForService(acn + service, timeout_seconds))
     {
+      ROS_ERROR_STREAM("could not find service " << service);
       return false;
     }
   }
@@ -110,6 +86,8 @@ bool HandeyeClient::init(int32_t timeout_seconds)
   save_calibration_client = nh.serviceClient<std_srvs::Empty>(acn + "save_calibration");
 
   is_ready = true;
+
+  ROS_INFO_STREAM("ready for calibration: " << active_calibration_namespace);
 
   return true;
 }

@@ -1,5 +1,5 @@
 <library path="libeasy_handeye_rviz_plugins">
-    <class name="easy_handeye_rviz_plugins/CalibrationPanel"
+    <class name="easy_handeye_rviz_plugins/HandeyeCalibration"
            type="easy_handeye_rviz_plugins::CalibrationPanel"
            base_class_type="rviz::Panel">
         <description>

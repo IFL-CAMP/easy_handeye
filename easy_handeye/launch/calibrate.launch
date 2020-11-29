@@ -9,6 +9,8 @@
 
     <!-- Automatic robot movements -->
     <arg name="freehand_robot_movement" default="false" doc="if false, the rqt plugin for the automatic robot motion with MoveIt! will be started" />
+    <arg name="start_rqt_movement" default="true" unless="$(arg freehand_robot_movement)" doc="if false, the rqt plugin for the automatic robot motion with MoveIt! will be started" />
+    <arg name="start_rqt_movement" default="false" if="$(arg freehand_robot_movement)" doc="if false, the rqt plugin for the automatic robot motion with MoveIt! will be started" />
     <arg name="move_group_namespace" default="/"  doc="the namespace of move_group for the automatic robot motion with MoveIt!" />
     <arg name="move_group" default="manipulator"  doc="the name of move_group for the automatic robot motion with MoveIt!" />
 
@@ -71,7 +73,7 @@
         <node if="$(arg start_sampling_gui)" name="$(anon namespace)_rqt" pkg="rqt_easy_handeye" type="rqt_easy_handeye" respawn="false" output="screen" />
 
         <!-- start the GUI for moving the robot around the starting pose -->
-        <node unless="$(arg freehand_robot_movement)" name="calibration_mover" pkg="rqt_easy_handeye" type="rqt_calibrationmovements" respawn="false" >
+        <node if="$(arg start_rqt_movement)" name="calibration_mover" pkg="rqt_easy_handeye" type="rqt_calibrationmovements" respawn="false" >
             <param name="move_group" value="$(arg move_group)" />
             <param name="translation_delta_meters" value="$(arg translation_delta_meters)" />
             <param name="rotation_delta_degrees" value="$(arg rotation_delta_degrees)" />

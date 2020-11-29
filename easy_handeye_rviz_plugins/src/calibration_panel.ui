@@ -39,7 +39,7 @@
           <item row="0" column="0">
            <widget class="QLabel" name="label_4">
             <property name="text">
-             <string>Handeye Calibration Namespace</string>
+             <string>Handeye calibration namespace</string>
             </property>
            </widget>
           </item>
@@ -78,14 +78,14 @@
           <item row="5" column="0">
            <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>Tracking Base Frame:</string>
+             <string>Tracking base frame:</string>
             </property>
            </widget>
           </item>
           <item row="7" column="0">
            <widget class="QLabel" name="trackingMarkerFrameLabel_2">
             <property name="text">
-             <string>Tracking Marker Frame:</string>
+             <string>Tracking marker frame:</string>
             </property>
            </widget>
           </item>
@@ -104,7 +104,7 @@
           <item row="8" column="0">
            <widget class="QLabel" name="robotFrameLabel_3">
             <property name="text">
-             <string>Robot Base Frame:</string>
+             <string>Robot base frame:</string>
             </property>
            </widget>
           </item>
@@ -114,7 +114,7 @@
           <item row="9" column="0">
            <widget class="QLabel" name="robotFrameLabel">
             <property name="text">
-             <string>Robot Effector Frame:</string>
+             <string>Robot effector frame:</string>
             </property>
            </widget>
           </item>
@@ -143,7 +143,7 @@
           <item>
            <widget class="QPushButton" name="checkStartPoseButton">
             <property name="text">
-             <string>Check Starting Pose</string>
+             <string>Check starting pose</string>
             </property>
             <property name="icon">
              <iconset theme="system-reboot">
@@ -152,9 +152,50 @@
            </widget>
           </item>
           <item>
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Target pose</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QPushButton" name="pushButtonPosePrevious">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset theme="arrow-left">
+                 <normaloff>.</normaloff>.</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelPose">
+               <property name="text">
+                <string>0/21</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButtonPoseNext">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset theme="arrow-right">
+                 <normaloff>.</normaloff>.</iconset>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="nextPoseButton">
             <property name="text">
-             <string>Home and Select Next Pose</string>
+             <string>Home and select next pose</string>
             </property>
             <property name="icon">
              <iconset theme="go-home">
@@ -165,7 +206,7 @@
           <item>
            <widget class="QPushButton" name="planButton">
             <property name="text">
-             <string>Plan</string>
+             <string>Plan to next pose</string>
             </property>
             <property name="icon">
              <iconset theme="system-search">
@@ -176,7 +217,7 @@
           <item>
            <widget class="QPushButton" name="moveButton">
             <property name="text">
-             <string>Move</string>
+             <string>Execute plan</string>
             </property>
             <property name="icon">
              <iconset theme="go-next">
@@ -185,23 +226,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTextEdit" name="textEdit">
-            <property name="html">
-             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Calibration workflow:&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1) Bring the robot to a position where the marker is visible and the robot has space to move&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2) &amp;quot;Check the starting pose&amp;quot; to attempt planning motion to each of the sampling positions&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;3) If successful, &amp;quot;Select the next pose&amp;quot; to get started&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;4) &amp;quot;Plan&amp;quot; the motion to the selected pose&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;5) If successful, &amp;quot;Move&amp;quot; to the planned pose; or &amp;quot;Select the next pose&amp;quot; to skip this target pose&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;6) &amp;quot;Take a sample&amp;quot;; you can &amp;quot;Remove&amp;quot; the sample and take it again if necessary&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;7) Go back to 3 (the robot will move back to the starting position to minimize unexpected motion) and collect more samples&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
+           <widget class="QTextEdit" name="textEditRobotStatus"/>
           </item>
          </layout>
         </widget>
@@ -209,61 +234,102 @@ p, li { white-space: pre-wrap; }
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
-          <string>Samples</string>
+          <string>Calibration</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <property name="spacing">
            <number>24</number>
           </property>
           <item>
-           <widget class="QPushButton" name="takeButton">
-            <property name="text">
-             <string>Take Sample</string>
-            </property>
-            <property name="icon">
-             <iconset theme="list-add">
-              <normaloff>.</normaloff>.</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="removeButton">
-            <property name="text">
-             <string>Remove Sample</string>
-            </property>
-            <property name="icon">
-             <iconset theme="list-remove">
-              <normaloff>.</normaloff>.</iconset>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QListWidget" name="sampleListWidget"/>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="groupBox_2">
+           <widget class="QGroupBox" name="groupBox_7">
             <property name="title">
-             <string>Calibration Result</string>
+             <string>Samples</string>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <widget class="QPlainTextEdit" name="resultTextEdit"/>
+              <widget class="QPushButton" name="takeButton">
+               <property name="text">
+                <string>Take sample</string>
+               </property>
+               <property name="icon">
+                <iconset theme="list-add">
+                 <normaloff>.</normaloff>.</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="removeButton">
+               <property name="text">
+                <string>Remove sample</string>
+               </property>
+               <property name="icon">
+                <iconset theme="list-remove">
+                 <normaloff>.</normaloff>.</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QListWidget" name="sampleListWidget"/>
              </item>
             </layout>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="saveButton">
-            <property name="text">
-             <string>Save</string>
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="title">
+             <string>Result</string>
             </property>
-            <property name="icon">
-             <iconset theme="document-save">
-              <normaloff>.</normaloff>.</iconset>
-            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QPlainTextEdit" name="resultTextEdit"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="saveButton">
+               <property name="text">
+                <string>Save</string>
+               </property>
+               <property name="icon">
+                <iconset theme="document-save">
+                 <normaloff>.</normaloff>.</iconset>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Help</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QTextEdit" name="textEdit">
+         <property name="html">
+          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Calibration workflow:&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1) Bring the robot to a position where the marker is visible and the robot has space to move&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2) &amp;quot;Check the starting pose&amp;quot; to attempt planning motion to each of the sampling positions&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;3) If successful, &amp;quot;Select the next pose&amp;quot; to get started&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;4) &amp;quot;Plan&amp;quot; the motion to the selected pose&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;5) If successful, &amp;quot;Move&amp;quot; to the planned pose; or &amp;quot;Select the next pose&amp;quot; to skip this target pose&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;6) &amp;quot;Take a sample&amp;quot;; you can &amp;quot;Remove&amp;quot; the sample and take it again if necessary&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;7) Go back to 3 (the robot will move back to the starting position to minimize unexpected motion) and collect more samples&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
         </widget>
        </item>
       </layout>
