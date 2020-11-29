@@ -22,6 +22,9 @@ You can try out this software in a simulator, through the
 example for integrating `easy_handeye` into your own launch scripts.
 
 ## News
+- version 0.4.0
+    - switched to OpenCV as a backend for the algorithm implementation 
+    - added UI element to pick the calibration algorithm (Tsai-Lenz, Park, Horaud, Andreff, Daniilidis)
 - version 0.3.1
     - restored compatibility with Melodic and Kinetic along with Noetic
 - version 0.3.0 
