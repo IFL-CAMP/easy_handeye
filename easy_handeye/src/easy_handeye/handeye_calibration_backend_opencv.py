@@ -80,16 +80,15 @@ class HandeyeCalibrationBackendOpenCV(object):
 
         method = HandeyeCalibrationBackendOpenCV.AVAILABLE_ALGORITHMS[algorithm]
 
-        camera_hand_rot, camera_hand_tr = cv2.calibrateHandEye(hand_world_rot, hand_world_tr, marker_camera_rot,
+        hand_camera_rot, hand_camera_tr = cv2.calibrateHandEye(hand_world_rot, hand_world_tr, marker_camera_rot,
                                                                marker_camera_tr, method=method)
-        hand_camera_rot = camera_hand_rot
-        hand_camera_tr = camera_hand_tr
         result = tfs.affines.compose(np.squeeze(hand_camera_tr), hand_camera_rot, [1, 1, 1])
 
         loginfo("Computed calibration: {}".format(str(result)))
-        (hcqw, hcqx, hcqy, hcqz) = tfs.quaternions.mat2quat(hand_camera_rot)
-        hand_camera_q = (hcqx, hcqy, hcqz, hcqw)
-        result_tuple = (hand_camera_tr, hand_camera_q)
+        (hcqw, hcqx, hcqy, hcqz) = [float(i) for i in tfs.quaternions.mat2quat(hand_camera_rot)]
+        (hctx, hcty, hctz) = [float(i) for i in hand_camera_tr]
+
+        result_tuple = ((hctx, hcty, hctz), (hcqx, hcqy, hcqz, hcqw))
 
         ret = HandeyeCalibration(calibration_parameters=handeye_parameters,
                                  transformation=result_tuple)
