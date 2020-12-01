@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
     <name>easy_handeye</name>
-    <version>0.4.0</version>
+    <version>0.4.1</version>
     <description>
         Simple, hardware-independent ROS library for hand-eye calibration
     </description>

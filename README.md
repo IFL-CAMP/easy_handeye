@@ -22,6 +22,8 @@ You can try out this software in a simulator, through the
 example for integrating `easy_handeye` into your own launch scripts.
 
 ## News
+- version 0.4.1
+    - fixed a bug that prevented loading and publishing the calibration - thanks to @lyh458!
 - version 0.4.0
     - switched to OpenCV as a backend for the algorithm implementation 
     - added UI element to pick the calibration algorithm (Tsai-Lenz, Park, Horaud, Andreff, Daniilidis)
