@@ -191,7 +191,7 @@ Please check the [troubleshooting](docs/troubleshooting.md)
 
 #### How can I ...
 ##### Calibrate an RGBD camera (e.g. Kinect, Xtion, ...) with a robot for automatic object collision avoidance with MoveIt! ?
-This is a perfect example of an eye-on-base calibration. You can take a look at this [example launch file](docs/example_launch/ur5_kinect_calibration.launch) written for an UR5 and a Kinect via aruco_ros.
+This is a perfect example of an eye-on-base calibration. You can take a look at this [example launch file](docs/example_launch/ur5_kinect_calibration.launch) written for an UR5 and a Kinect via aruco_ros, or [example for LWR iiwa with Xtion/Kinect ](docs/example_launch/iiwa_kinect_xtion_calibration.launch).
 ##### Disable the automatic robotic movements GUI?
 You can pass the argument `freehand_robot_movement:=true` to `calibrate.launch`.
 ##### Calibrate one robot against multiple tracking systems?
