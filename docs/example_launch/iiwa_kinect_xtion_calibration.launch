@@ -1,6 +1,6 @@
 <launch>
     <arg name="namespace_prefix" default="iiwa_kinect_xtion" />
-    <arg name="marker_size" default="0.05" doc="Size of the ArUco marker used, in meters" />
+    <arg name="marker_size" doc="Size of the ArUco marker used, in meters" />
     <arg name="marker_id" default="100" doc="The ID of the ArUco marker used" />
 
     <!-- start camera driver -->
