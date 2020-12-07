@@ -1,0 +1,60 @@
+<launch>
+    <arg name="namespace_prefix" default="iiwa_kinect_xtion" />
+    <arg name="marker_size" doc="Size of the ArUco marker used, in meters" />
+    <arg name="marker_id" doc="The ID of the ArUco marker used" />
+
+    <!-- start camera driver -->
+    <!-- if you use OpenNI -->
+    <!-- start the Kinect_v1/Xtion with openNI -->
+    <include file="$(find openni_launch)/launch/openni.launch" >
+        <arg name="depth_registration" value="true" />
+    </include>
+
+    <!-- if you use libfreenect -->
+    <!-- start the Kinect_v1 with libfreenect -->
+    <!-- <include file="$(find freenect_launch)/launch/freenect.launch" >
+        <arg name="depth_registration" value="true" />
+    </include> -->
+
+    <!-- start the Kinect_v2 with libfreenect -->
+    <!-- <include file="$(find freenect2_launch)/launch/freenect2.launch" >
+        <arg name="depth_registration" value="true" />
+    </include> -->
+
+    <!-- start ArUco -->
+    <node name="aruco_tracker" pkg="aruco_ros" type="single">
+        <remap from="/camera_info" to="/camera/rgb/camera_info"/>
+        <remap from="/image" to="/camera/rgb/image_raw"/>
+        <param name="image_is_rectified" value="true"/>
+        <param name="marker_size"        value="$(arg marker_size)"/>
+        <param name="marker_id"          value="$(arg marker_id)"/>
+        <param name="reference_frame"    value="camera_link"/>
+        <param name="camera_frame"       value="camera_rgb_optical_frame"/>
+        <param name="marker_frame"       value="camera_marker"/>
+    </node>
+
+    <!-- start the robot -->
+    <include file="$(find iiwa_moveit)/launch/moveit_planning_execution.launch">
+        <arg name="sim" value="false" />
+        <arg name="rviz" value="false" />
+    </include>
+
+    <!-- start easy_handeye -->
+    <include file="$(find easy_handeye)/launch/calibrate.launch" >
+        <arg name="namespace_prefix" value="$(arg namespace_prefix)" />
+        <arg name="eye_on_hand" value="false" />
+        <arg name="start_rviz" value="true"/>
+        <arg name="move_group_namespace" value="/iiwa" />
+        <arg name="move_group" value="manipulator" />
+        <!-- need to copy iiwa_stack_config.rviz to launch/ folder -->
+        <arg name="rviz_config_file" value="$(find easy_handeye)/launch/iiwa_stack_config.rviz" />
+        <arg name="tracking_base_frame" value="camera_link" />
+        <arg name="tracking_marker_frame" value="camera_marker" />
+        <arg name="robot_base_frame" value="iiwa_link_0" />
+        <arg name="robot_effector_frame" value="iiwa_link_ee" />
+        <arg name="freehand_robot_movement" value="false" />
+        <arg name="robot_velocity_scaling" value="0.5" />
+        <arg name="robot_acceleration_scaling" value="0.2" />
+    </include>
+
+</launch>
