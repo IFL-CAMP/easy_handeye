@@ -148,6 +148,22 @@ to accept or discard each sample. At the end, the parameters will be saved in a 
 
 A GUI for automatic robot movement is provided by the `rqt_easy_handeye` package. Please refer to [its documentation](rqt_easy_handeye/README.md).
 
+This is optional, and can be disabled in both aforementioned cases with:
+```xml
+<launch>
+  <include file="$(find easy_handeye)/launch/calibrate.launch">
+      <!-- other arguments, as described above... -->
+      
+      <arg name="freehand_robot_movement" value="true" />
+  </include>
+</launch>
+```
+
+It will then be the user's responsibility to make the robot publish its own pose into `tf`. Please check that the robot's pose is updated correctly in 
+RViz before starting to acquire samples (the robot driver may not work while the teaching mode button is pressed, etc).
+
+The same applies to the validity of the samples. For the calibration to be found reliably, the end effector must be rotated as much as possible 
+(up to 90°) about each axis, in both directions. Translating the end effector is not necessary, but can't hurt either.
 
 <img src="docs/img/02_plan_movements.png" width="345"/> <img src="docs/img/04_plan_show.png" width="495"/>
 
