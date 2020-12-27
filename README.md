@@ -108,7 +108,7 @@ to accept or discard each sample. At the end, the parameters will be saved in a 
     <arg name="eye_on_hand" value="true"/>
 
     <!-- you can choose any identifier, as long as you use the same for publishing the calibration -->
-    <arg name="namespace" value="my_eih_calib"/>
+    <arg name="namespace_prefix" value="my_eih_calib"/>
 
     <!-- fill in the following parameters according to your robot's published tf frames -->
     <arg name="robot_base_frame" value="/base_link"/>
@@ -130,7 +130,7 @@ to accept or discard each sample. At the end, the parameters will be saved in a 
 
   <include file="$(find easy_handeye)/launch/calibrate.launch">
     <arg name="eye_on_hand" value="false"/>
-    <arg name="namespace" value="my_eob_calib"/>
+    <arg name="namespace_prefix" value="my_eob_calib"/>
 
     <!-- fill in the following parameters according to your robot's published tf frames -->
     <arg name="robot_base_frame" value="/base_link"/>
@@ -189,10 +189,10 @@ publish many calibrations simultaneously; the following example publishes one ey
   <!-- (start your tracking system's ROS driver) -->
 
   <include file="$(find easy_handeye)/launch/publish.launch">
-    <arg name="namespace" value="my_eob_calib"/> <!-- use the same namespace that you used during calibration! -->
+    <arg name="namespace_prefix" value="my_eob_calib"/> <!-- use the same namespace that you used during calibration! -->
   </include>
   <include file="$(find easy_handeye)/launch/publish.launch">
-    <arg name="namespace" value="my_eih_calib"/> <!-- use the same namespace that you used during calibration! -->
+    <arg name="namespace_prefix" value="my_eih_calib"/> <!-- use the same namespace that you used during calibration! -->
   </include>
 </launch>
 ```
