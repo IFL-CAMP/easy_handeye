@@ -54,17 +54,18 @@ class HandeyeClient(object):
         rospy.wait_for_service(hec.SAVE_CALIBRATION_TOPIC)
         self.save_calibration_proxy = rospy.ServiceProxy(hec.SAVE_CALIBRATION_TOPIC, std_srvs.srv.Empty)
 
-        # init services: robot movement
-        rospy.wait_for_service(hec.CHECK_STARTING_POSE_TOPIC)
-        self.check_starting_pose_proxy = rospy.ServiceProxy(hec.CHECK_STARTING_POSE_TOPIC, ehm.srv.CheckStartingPose)
-        rospy.wait_for_service(hec.ENUMERATE_TARGET_POSES_TOPIC)
-        self.enumerate_target_poses_proxy = rospy.ServiceProxy(hec.ENUMERATE_TARGET_POSES_TOPIC, ehm.srv.EnumerateTargetPoses)
-        rospy.wait_for_service(hec.SELECT_TARGET_POSE_TOPIC)
-        self.select_target_pose_proxy = rospy.ServiceProxy(hec.SELECT_TARGET_POSE_TOPIC, ehm.srv.SelectTargetPose)
-        rospy.wait_for_service(hec.PLAN_TO_SELECTED_TARGET_POSE_TOPIC)
-        self.plan_to_selected_target_pose_proxy = rospy.ServiceProxy(hec.PLAN_TO_SELECTED_TARGET_POSE_TOPIC, ehm.srv.PlanToSelectedTargetPose)
-        rospy.wait_for_service(hec.EXECUTE_PLAN_TOPIC)
-        self.execute_plan_proxy = rospy.ServiceProxy(hec.EXECUTE_PLAN_TOPIC, ehm.srv.ExecutePlan)
+        if not self.parameters.freehand_robot_movement:
+            # init services: robot movement
+            rospy.wait_for_service(hec.CHECK_STARTING_POSE_TOPIC)
+            self.check_starting_pose_proxy = rospy.ServiceProxy(hec.CHECK_STARTING_POSE_TOPIC, ehm.srv.CheckStartingPose)
+            rospy.wait_for_service(hec.ENUMERATE_TARGET_POSES_TOPIC)
+            self.enumerate_target_poses_proxy = rospy.ServiceProxy(hec.ENUMERATE_TARGET_POSES_TOPIC, ehm.srv.EnumerateTargetPoses)
+            rospy.wait_for_service(hec.SELECT_TARGET_POSE_TOPIC)
+            self.select_target_pose_proxy = rospy.ServiceProxy(hec.SELECT_TARGET_POSE_TOPIC, ehm.srv.SelectTargetPose)
+            rospy.wait_for_service(hec.PLAN_TO_SELECTED_TARGET_POSE_TOPIC)
+            self.plan_to_selected_target_pose_proxy = rospy.ServiceProxy(hec.PLAN_TO_SELECTED_TARGET_POSE_TOPIC, ehm.srv.PlanToSelectedTargetPose)
+            rospy.wait_for_service(hec.EXECUTE_PLAN_TOPIC)
+            self.execute_plan_proxy = rospy.ServiceProxy(hec.EXECUTE_PLAN_TOPIC, ehm.srv.ExecutePlan)
 
     # services: sampling
 

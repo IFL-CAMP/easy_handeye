@@ -60,6 +60,7 @@
         <param name="robot_effector_frame" value="$(arg robot_effector_frame)" />
         <param name="tracking_base_frame" value="$(arg tracking_base_frame)" />
         <param name="tracking_marker_frame" value="$(arg tracking_marker_frame)" />
+        <param name="freehand_robot_movement" value="$(arg freehand_robot_movement)" />
 
         <!-- Start the backend -->
         <node name="easy_handeye_calibration_server"

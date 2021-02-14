@@ -9,7 +9,8 @@ class HandeyeCalibrationParameters(object):
     def __init__(self, namespace, move_group_namespace='/', move_group='manipulator', eye_on_hand=None,
                  robot_base_frame=None, robot_effector_frame=None,
                  tracking_base_frame=None,
-                 tracking_marker_frame=None):
+                 tracking_marker_frame=None,
+                 freehand_robot_movement=None):
         """
         Creates a HandeyeCalibrationParameters object.
 
@@ -34,6 +35,7 @@ class HandeyeCalibrationParameters(object):
         self.robot_effector_frame = robot_effector_frame
         self.tracking_base_frame = tracking_base_frame
         self.tracking_marker_frame = tracking_marker_frame
+        self.freehand_robot_movement = freehand_robot_movement
 
     @staticmethod
     def init_from_parameter_server(namespace):
@@ -50,7 +52,8 @@ class HandeyeCalibrationParameters(object):
                                            robot_effector_frame=rospy.get_param(namespace + 'robot_effector_frame'),
                                            robot_base_frame=rospy.get_param(namespace + 'robot_base_frame'),
                                            tracking_base_frame=rospy.get_param(namespace + 'tracking_base_frame'),
-                                           tracking_marker_frame=rospy.get_param(namespace + 'tracking_marker_frame'))
+                                           tracking_marker_frame=rospy.get_param(namespace + 'tracking_marker_frame'),
+                                           freehand_robot_movement=rospy.get_param(namespace + 'freehand_robot_movement'))
         return ret
 
     @staticmethod
