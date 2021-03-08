@@ -124,7 +124,7 @@
         <arg name="eye_on_hand" value="false"/>
 
         <arg name="tracking_base_frame" value="camera_base"/>
-        <arg name="tracking_marker_frame" value="camera_marker"/>
+        <arg name="tracking_marker_frame" value="board"/>
         <arg name="robot_base_frame" value="base_link"/>
         <arg name="robot_effector_frame" value="wrist_3_link"/>
 
