@@ -1,25 +1,21 @@
 <launch>
-    <arg name="namespace_prefix" default="ur5_k4a_handeyecalibration"/>
-
-    <arg name="ur_robot_driver"
-         doc="If true, the new ur_robot_driver will be used; otherwise, the old ur_modern_driver"/>
     <arg name="robot_simulated"
          doc="If true, the demo.launch of ur5_moveit_config will be launched; otherwise, a connection to the real robot will be established"/>
-    <arg name="robot_ip" doc="The IP address of the UR5 robot"/>
-
-    <arg name="marker_size" doc="Size of the ArUco marker used, in meters"/>
-    <arg name="marker_id" doc="The ID of the ArUco marker used"/>
+    <arg unless="$(arg robot_simulated)" name="ur_robot_driver"
+         doc="If true, the new ur_robot_driver will be used; otherwise, the old ur_modern_driver"/>
+    <arg unless="$(arg robot_simulated)" name="robot_ip" default="192.168.0.21" doc="The IP address of the UR5 robot"/>
 
     <!-- start the Kinect -->
 
+    <arg name="start_kinect" default="true" />
     <arg name="rgb_rect" default="1" />
-    <arg name="depth_rect" default="1" />
-    <arg name="ir_rect" default="1" />
-    <arg name="point_cloud" default="1" />
-    <arg name="rgb_point_cloud" default="1" />
+    <arg name="depth_rect" default="0" />
+    <arg name="ir_rect" default="0" />
+    <arg name="point_cloud" default="0" />
+    <arg name="rgb_point_cloud" default="0" />
 
     <!-- Start the K4A sensor driver -->
-    <group ns="k4a" >
+    <group if="$(arg start_kinect)" ns="k4a" >
         <include file="$(find azure_kinect_ros_driver)/launch/driver.launch" >
             <arg name="overwrite_robot_description" value="false" />
         </include>
@@ -88,7 +84,7 @@
     </group>
 
     <!-- start easy_aruco to track the example board -->
-    <include file="$(find easy_aruco)/launch/track_charuco_board.launch">
+    <include if="$(arg start_kinect)" file="$(find easy_aruco)/launch/track_charuco_board.launch">
         <arg name="camera_namespace" value="/k4a/rgb"/>
         <arg name="dictionary" value="DICT_6X6_250"/>
         <arg name="square_number_x" value="7"/>
@@ -103,11 +99,11 @@
     <group unless="$(arg robot_simulated)">
         <include if="$(arg ur_robot_driver)" file="$(find ur_robot_driver)/launch/ur5_bringup.launch">
             <arg name="limited" value="true"/>
-            <arg name="robot_ip" value="192.168.0.21"/>
+            <arg name="robot_ip" value="$(arg robot_ip)"/>
         </include>
         <include unless="$(arg ur_robot_driver)" file="$(find ur_bringup)/launch/ur5_bringup.launch">
             <arg name="limited" value="true"/>
-            <arg name="robot_ip" value="192.168.0.21"/>
+            <arg name="robot_ip" value="$(arg robot_ip)"/>
         </include>
         <include file="$(find ur5_moveit_config)/launch/ur5_moveit_planning_execution.launch">
             <arg name="limited" value="true"/>
@@ -117,20 +113,5 @@
         <arg name="limited" value="true" />
     </include>
     <!-- we don't start RViz, we have our own -->
-
-    <!-- start easy_handeye -->
-    <include file="$(find easy_handeye)/launch/calibrate.launch">
-        <arg name="namespace_prefix" value="$(arg namespace_prefix)"/>
-        <arg name="eye_on_hand" value="false"/>
-
-        <arg name="tracking_base_frame" value="camera_base"/>
-        <arg name="tracking_marker_frame" value="board"/>
-        <arg name="robot_base_frame" value="base_link"/>
-        <arg name="robot_effector_frame" value="wrist_3_link"/>
-
-        <arg name="freehand_robot_movement" value="false"/>
-        <arg name="robot_velocity_scaling" value="0.5"/>
-        <arg name="robot_acceleration_scaling" value="0.2"/>
-    </include>
 
 </launch>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="eye_on_hand" doc="eye-on-hand instead of eye-on-base" />
+    <arg name="namespace_prefix" default="easy_handeye" />
+    <arg if="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_hand" />
+    <arg unless="$(arg eye_on_hand)" name="namespace" value="$(arg namespace_prefix)_eye_on_base" />
+
+    <!--it is possible to override the link names saved in the yaml file in case of name clashes, for example-->
+    <arg if="$(arg eye_on_hand)" name="robot_effector_frame" default="" />
+    <arg unless="$(arg eye_on_hand)" name="robot_base_frame" default="" />
+    <arg name="tracking_base_frame" default="" />
+    
+    <arg name="inverse" default="false" />
+    
+    <!--publish the hand-eye calibration-->
+    <include file="$(find easy_handeye)/launch/publish.launch">
+        <arg name="eye_on_hand" value="$(arg eye_on_hand)" />
+        <arg name="namespace_prefix" value="$(arg namespace_prefix)" />
+        <arg unless="$(arg eye_on_hand)" name="robot_base_frame" value="$(arg robot_base_frame)" />
+        <arg if="$(arg eye_on_hand)" name="robot_effector_frame" value="$(arg robot_effector_frame)" />
+        <arg name="tracking_base_frame" value="$(arg tracking_base_frame)" />
+        <arg name="inverse" value="$(arg inverse)" />
+        <node name="$(anon handeye_publisher)" pkg="easy_handeye" type="publish.py" output="screen"/>
+    </include>
+
+    <!--run the evaluator-->
+    <group ns="$(arg namespace)">
+        <node name="$(anon handeye_evaluator)" pkg="rqt_easy_handeye" type="rqt_calibration_evaluator" output="screen"/>
+    </group>
+</launch>

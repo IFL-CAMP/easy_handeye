@@ -1,0 +1,35 @@
+<launch>
+    <arg name="namespace_prefix" default="ur5_k4a_handeyecalibration"/>
+    <arg name="eye_on_hand" doc="if false, it will be the eye_on_base case"/>
+
+    <arg name="start_kinect" default="true" />
+
+    <arg name="ur_robot_driver"
+         doc="If true, the new ur_robot_driver will be used; otherwise, the old ur_modern_driver"/>
+    <arg name="robot_simulated"
+         doc="If true, the demo.launch of ur5_moveit_config will be launched; otherwise, a connection to the real robot will be established"/>
+    <arg unless="$(arg robot_simulated)" name="robot_ip" default="192.168.0.21" doc="The IP address of the UR5 robot"/>
+
+    <include file="$(find easy_handeye)/../docs/example_launch/ur5_k4a_base.launch">
+        <arg name="robot_simulated" value="$(arg robot_simulated)"/>
+        <arg name="start_kinect" value="$(arg start_kinect)"/>
+        <arg unless="$(arg robot_simulated)" name="ur_robot_driver" value="$(arg ur_robot_driver)"/>
+        <arg unless="$(arg robot_simulated)" name="robot_ip"  value="$(arg robot_ip)"/>
+    </include>
+
+    <!-- start easy_handeye -->
+    <include file="$(find easy_handeye)/launch/calibrate.launch">
+        <arg name="namespace_prefix" value="$(arg namespace_prefix)"/>
+        <arg name="eye_on_hand" value="$(arg eye_on_hand)"/>
+
+        <arg name="tracking_base_frame" value="camera_base"/>
+        <arg name="tracking_marker_frame" value="board"/>
+        <arg name="robot_base_frame" value="base_link"/>
+        <arg name="robot_effector_frame" value="wrist_3_link"/>
+
+        <arg name="freehand_robot_movement" value="false"/>
+        <arg name="robot_velocity_scaling" value="0.5"/>
+        <arg name="robot_acceleration_scaling" value="0.2"/>
+    </include>
+
+</launch>

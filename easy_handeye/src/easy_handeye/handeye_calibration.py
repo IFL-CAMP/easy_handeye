@@ -214,10 +214,10 @@ class HandeyeCalibration(object):
         rospy.set_param(namespace + 'transformation/y', t.translation.y)
         rospy.set_param(namespace + 'transformation/z', t.translation.z)
 
-        rospy.set_param(namespace + 'transformation/x', t.rotation.x)
-        rospy.set_param(namespace + 'transformation/y', t.rotation.y)
-        rospy.set_param(namespace + 'transformation/z', t.rotation.z)
-        rospy.set_param(namespace + 'transformation/w', t.rotation.w)
+        rospy.set_param(namespace + 'transformation/qx', t.rotation.x)
+        rospy.set_param(namespace + 'transformation/qy', t.rotation.y)
+        rospy.set_param(namespace + 'transformation/qz', t.rotation.z)
+        rospy.set_param(namespace + 'transformation/qw', t.rotation.w)
 
     def filename(self):
         return HandeyeCalibration.filename_for_namespace(self.parameters.namespace)
