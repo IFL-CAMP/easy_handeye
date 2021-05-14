@@ -11,8 +11,10 @@ while rospy.get_time() == 0.0:
     pass
 
 inverse = rospy.get_param('inverse')
+filename = rospy.get_param('calibration_file')
+print("filename", filename)
 
-calib = HandeyeCalibration.from_file(rospy.get_namespace())
+calib = HandeyeCalibration.from_filename(filename)
 
 if calib.parameters.eye_on_hand:
     overriding_robot_effector_frame = rospy.get_param('robot_effector_frame')
