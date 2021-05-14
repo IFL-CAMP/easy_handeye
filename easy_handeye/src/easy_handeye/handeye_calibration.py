@@ -253,3 +253,14 @@ class HandeyeCalibration(object):
 
         with open(HandeyeCalibration.filename_for_namespace(namespace)) as calib_file:
             return HandeyeCalibration.from_yaml(calib_file.read())
+
+    @staticmethod
+    def from_filename(filename):
+        """
+        Parses a yaml file at the specified location.
+
+        :rtype: None
+        """
+
+        with open(filename) as calib_file:
+            return HandeyeCalibration.from_yaml(calib_file.read())
