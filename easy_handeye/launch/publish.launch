@@ -11,6 +11,7 @@
     <arg name="tracking_base_frame" default="" />
     
     <arg name="inverse" default="false" />
+    <arg name="calibration_file" default="" />
     
     <!--publish hand-eye calibration-->
     <group ns="$(arg namespace)">
@@ -19,6 +20,7 @@
         <param if="$(arg eye_on_hand)" name="robot_effector_frame" value="$(arg robot_effector_frame)" />
         <param name="tracking_base_frame" value="$(arg tracking_base_frame)" />
         <param name="inverse" value="$(arg inverse)" />
+        <param name="calibration_file" value="$(arg calibration_file)" />
         <node name="$(anon handeye_publisher)" pkg="easy_handeye" type="publish.py" output="screen"/>
     </group>
 </launch>
