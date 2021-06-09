@@ -12,7 +12,7 @@ while rospy.get_time() == 0.0:
 
 inverse = rospy.get_param('inverse')
 filename = rospy.get_param('calibration_file')
-rospy.loginfo("filename", filename)
+rospy.loginfo("filename: %s", filename)
 
 if filename == '':
     calib = HandeyeCalibration.from_file(rospy.get_namespace())
@@ -47,5 +47,8 @@ static_transformStamped.child_frame_id = dest
 
 static_transformStamped.transform = calib.transformation.transform
 
-broadcaster.sendTransform(static_transformStamped)
-rospy.spin()
+rate = rospy.Rate(50)
+while not rospy.is_shutdown():
+	static_transformStamped.header.stamp = rospy.Time.now()
+	broadcaster.sendTransform(static_transformStamped)
+	rate.sleep()
