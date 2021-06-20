@@ -22,6 +22,8 @@ You can try out this software in a simulator, through the
 example for integrating `easy_handeye` into your own launch scripts.
 
 ## News
+- version 0.4.3
+    - documentation and bug fixes
 - version 0.4.2
     - fixes for the freehand robot movement scenario
 - version 0.4.1
