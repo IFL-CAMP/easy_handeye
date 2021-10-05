@@ -1,0 +1,63 @@
+<launch>
+    <arg name="namespace_prefix" default="ur5_kinect_handeyecalibration" />
+    <arg name="eye_on_hand" default="false" />
+
+    <arg name="camera_namespace" default="/camera/color" />
+    <arg name="robot_ip" doc="The IP address of the UR5 robot" default="101.101.101.12" />
+
+    <arg name="marker_size" doc="Size of the ArUco marker used, in meters" default="0.016" />
+    <arg name="square_size" doc="The ID of the ArUco marker used" default="0.024" />
+    <arg name="square_number_x" default="7" />
+    <arg name="square_number_y" default="9" />
+
+    <!-- start the realsense -->
+    <include file="$(find realsense2_camera)/launch/rs_rgbd.launch" >
+        <arg name="color_height" value="1080" />
+        <arg name="color_width" value="1920" />
+        <arg name="color_fps" value="30" />
+    </include>
+
+    <!-- start ArUco -->
+    <node name="easy_aruco_node" pkg="easy_aruco" type="easy_aruco_node">
+        <param name="object_type" value="charuco_board" />
+
+        <param name="camera_namespace" value="$(arg camera_namespace)" />
+        <param name="dictionary" value="DICT_6X6_250" />
+
+        <param name="camera_frame" value="camera_color_optical_frame" />
+        <param name="reference_frame" value="camera_color_optical_frame" />
+
+        <param name="marker_size" value="$(arg marker_size)" />
+        <param name="square_size" value="$(arg square_size)" />
+        <param name="square_number_x" value="$(arg square_number_x)" />
+        <param name="square_number_y" value="$(arg square_number_y)" />
+    </node>
+
+    <!-- start the robot (using https://github.com/UniversalRobots/Universal_Robots_ROS_Driver) -->
+    <include file="$(find ur_robot_driver)/launch/ur5e_bringup.launch">
+        <arg name="robot_ip" value="$(arg robot_ip)" />
+<!--        <arg name="kinematics_config" value="path/to/ur5e_calibration.yaml" />-->
+    </include>
+    <include file="$(find ur5e_moveit_config)/launch/ur5e_moveit_planning_execution.launch" />
+    <include file="$(find ur5e_moveit_config)/launch/moveit_rviz.launch" >
+        <arg name="rviz_config" value="$(find ur5e_moveit_config)/launch/moveit.rviz" />
+    </include>
+
+    <!-- start easy_handeye -->
+    <include file="$(find easy_handeye)/launch/calibrate.launch" >
+        <arg name="namespace_prefix" value="$(arg namespace_prefix)" />
+        <arg name="eye_on_hand" value="$(arg eye_on_hand)" />
+
+        <arg name="tracking_base_frame" value="camera_color_optical_frame" />
+        <arg name="tracking_marker_frame" value="board" />
+        <arg name="robot_base_frame" value="base_link" />
+        <arg name="robot_effector_frame" value="tool0" />
+
+        <arg name="freehand_robot_movement" value="true" />
+        <arg name="robot_velocity_scaling" value="0.5" />
+        <arg name="robot_acceleration_scaling" value="0.2" />
+        <arg name="translation_delta_meters" default="0.05"  />
+        <arg name="rotation_delta_degrees" default="25"  />
+    </include>
+
+</launch>
