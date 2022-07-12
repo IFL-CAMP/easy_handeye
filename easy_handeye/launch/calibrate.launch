@@ -48,6 +48,10 @@
           type="robot.py"
           output="screen" >
         <param name="calibration_namespace" value="$(arg namespace)" />
+        <param name="translation_delta_meters" value="$(arg translation_delta_meters)" />
+        <param name="rotation_delta_degrees" value="$(arg rotation_delta_degrees)" />
+        <param name="max_velocity_scaling" value="$(arg robot_velocity_scaling)" />
+        <param name="max_acceleration_scaling" value="$(arg robot_acceleration_scaling)" />
     </node>
 
     <group ns="$(arg namespace)">
