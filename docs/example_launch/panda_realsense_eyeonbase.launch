@@ -3,10 +3,9 @@
     <arg name="namespace_prefix" default="panda_eob_calib"/>
 
     <!-- (start your robot's MoveIt! stack, e.g. include its moveit_planning_execution.launch) -->
-    <include file="$(find panda_moveit_config)/launch/panda_control_moveit_rviz.launch">
+    <include file="$(find panda_moveit_config)/launch/franka_control.launch">
         <arg name="robot_ip" value="172.16.0.2"/> <!-- set your robot ip -->
         <arg name="load_gripper" value="true"/>
-        <arg name="launch_rviz" value="false"/>
     </include>        
     
     <!-- (start your tracking system's ROS driver) -->
@@ -40,12 +39,12 @@
     <include file="$(find easy_handeye)/launch/calibrate.launch">
         <arg name="eye_on_hand" value="false"/>
         <arg name="namespace_prefix" value="$(arg namespace_prefix)"/>
-        <arg name="move_group" value="panda_arm"  doc="the name of move_group for the automatic robot motion with MoveIt!" />
+        <arg name="move_group" value="panda_manipulator"  doc="the name of move_group for the automatic robot motion with MoveIt!" />
         <arg name="freehand_robot_movement" value="false"/>
 
         <!-- fill in the following parameters according to your robot's published tf frames -->
         <arg name="robot_base_frame" value="panda_link0"/>
-        <arg name="robot_effector_frame" value="panda_EE"/>
+        <arg name="robot_effector_frame" value="panda_hand_tcp"/>
 
         <!-- fill in the following parameters according to your tracking system's published tf frames -->
         <arg name="tracking_base_frame" value="camera_link"/>
