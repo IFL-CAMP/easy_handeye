@@ -1,5 +1,4 @@
-
-# easy_handeye: automated, hardware-independent Hand-Eye Calibration
+# easy_handeye: automated, hardware-independent Hand-Eye Calibration for ROS1
 
 <img src="docs/img/eye_on_base_ndi_pic.png" width="345"/> <img src="docs/img/05_calibrated_rviz.png" width="475"/> 
 
@@ -20,6 +19,8 @@ if the calibration is performed again, the updated result will be used without f
 You can try out this software in a simulator, through the 
 [easy_handeye_demo package](https://github.com/marcoesposito1988/easy_handeye_demo). This package also serves as an 
 example for integrating `easy_handeye` into your own launch scripts.
+
+**NOTE:** a (development) ROS2 version of this package is available [here](https://github.com/marcoesposito1988/easy_handeye2)
 
 ## News
 - version 0.4.3
