@@ -6,3 +6,48 @@ datasets
 *.pyc
 
 */cmake-build-debug
+
+# Testing related
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.py[cod]
+*$py.class
+
+# Claude settings
+.claude/*
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Poetry
+# Note: poetry.lock should be committed
+# poetry.lock
+
+# Tox
+.tox/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
